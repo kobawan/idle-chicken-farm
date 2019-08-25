@@ -14,6 +14,7 @@
     transform: translate(-50%, -50%);
     padding: 1em;
     background-color: #c6cbbbdb;
+    align-items: center;
   
     .row {
       margin-bottom: 1em;
@@ -39,12 +40,14 @@
     }
   
     .title {
-      align-self: center;
       margin-top: 0;
+      cursor: default;
     }
 
-    .button {
-      align-self: center;
+    .error {
+      color: #d33368;
+      font-size: 0.8em;
+      margin-top: 0.8em;
     }
   }
 }

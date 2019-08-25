@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect } from "react";
 import cx from "classnames";
 import styles from "./imageGenerator.module.scss";
 
+const MAX_CHUNKS = 100;
+
 interface DrawImageOptions {
   ctx: CanvasRenderingContext2D;
   img: CanvasImageSource;
@@ -113,9 +115,14 @@ export const ImageGenerator: React.FC = () => {
   const [shouldSplitImage, setShouldSplitImage] = useState(false);
   const [cols, setCols] = useState(1);
   const [rows, setRows] = useState(1);
+  const [error, setError] = useState("");
   
   useEffect(() => {
     if(!canvasRef.current || !width || !height || !imgs.length) {
+      return;
+    }
+    if(cols * rows > MAX_CHUNKS) {
+      setError("Image has too many chunks to split. Please lower column or row value");
       return;
     }
     const ctx = canvasRef.current.getContext('2d');
@@ -158,7 +165,7 @@ export const ImageGenerator: React.FC = () => {
       {!!width && !!height && (
         <canvas ref={canvasRef} width={width} height={height}></canvas>
       )}
-      <form className={styles.form}>
+      <form className={styles.form} onChange={() => setError("")}>
         <h3 className={styles.title}>Image generator</h3>
         <div className={styles.row}>
           <label className={styles.label}>Resolution Width</label>
@@ -179,7 +186,7 @@ export const ImageGenerator: React.FC = () => {
           />
         </div>
         <div className={styles.row}>
-          <label className={styles.label}>Split image</label>
+          <label className={styles.label}>Split sprite</label>
           <input
             className={cx(styles.input, styles.checkbox)}
             type="checkbox"
@@ -214,12 +221,12 @@ export const ImageGenerator: React.FC = () => {
           onChange={(e) => setImgs(Array.from(e.currentTarget.files || []))}
         />
         <button
-          className={styles.button}
           onClick={downloadImg}
-          disabled={!width || !height || !imgs.length}
+          disabled={!width || !height || !imgs.length || !!error}
         >
           Download
         </button>
+        {error && <span className={styles.error}>{error}</span>}
       </form>
     </div>
   );
