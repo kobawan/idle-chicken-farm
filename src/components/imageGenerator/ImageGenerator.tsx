@@ -1,39 +1,60 @@
 import React, { useRef, useState, useEffect } from "react";
 import cx from "classnames";
 import styles from "./imageGenerator.module.scss";
+import { loadImage } from "../../utils/loadImages";
 
 const MAX_CHUNKS = 100;
 
-interface DrawImageOptions {
-  ctx: CanvasRenderingContext2D;
-  img: CanvasImageSource;
+interface ImageChunks {
   sx: number;
   sy: number;
   sw: number;
   sh: number;
-  dx: number;
-  dy: number;
   dw: number;
   dh: number;
 }
+
+interface DrawImageOptions extends ImageChunks {
+  ctx: CanvasRenderingContext2D;
+  img: CanvasImageSource;
+  canvasWidth: number;
+  canvasHeight: number;
+  dx: number;
+  dy: number;
+}
+
 interface GetImageChunksOptions {
   sizeWidth: number;
   sizeHeight: number;
   cols: number;
   rows: number;
 }
-type DrawImage = (options: DrawImageOptions) => Promise<void>;
 
-const loadImage = (url: string): Promise<HTMLImageElement> => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.src = url;
-    img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error(`load ${url} failed`));
-  });
-};
+interface RenderChunksRandomlyOptions {
+  resWidth: number,
+  resHeight: number,
+  imageChunks: ImageChunks[],
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement;
+  sizeWidth: number;
+  sizeHeight: number;
+}
 
-const drawImage: DrawImage = async ({ ctx, img, dx, dy, dw, dh, sx, sy, sw, sh }) => {
+const drawImage = async ({
+  ctx,
+  img,
+  canvasWidth,
+  canvasHeight,
+  dx,
+  dy,
+  dw,
+  dh,
+  sx,
+  sy,
+  sw,
+  sh,
+}: DrawImageOptions) => {
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
   window.requestAnimationFrame(() => {
     ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
   });
@@ -59,15 +80,6 @@ const getImageChunks = ({ sizeHeight, sizeWidth, cols, rows }: GetImageChunksOpt
   return chunks;
 }
 
-interface RenderChunksRandomlyOptions {
-  resWidth: number,
-  resHeight: number,
-  imageChunks: Omit<DrawImageOptions, "dx"|"dy"|"ctx"|"img">[],
-  ctx: CanvasRenderingContext2D,
-  img: HTMLImageElement;
-  sizeWidth: number;
-  sizeHeight: number;
-}
 const renderChunksRandomly = async ({
   resWidth,
   resHeight,
@@ -88,6 +100,8 @@ const renderChunksRandomly = async ({
       drawImage({
         ctx,
         img,
+        canvasWidth: resWidth,
+        canvasHeight: resHeight,
         dx: i * sizeWidth,
         dy: j * sizeHeight,
         ...imageChunks[chunkIndex],
@@ -118,15 +132,11 @@ export const ImageGenerator: React.FC = () => {
   const [error, setError] = useState("");
   
   useEffect(() => {
-    if(!canvasRef.current || !width || !height || !imgs.length) {
+    if(!width || !height || !imgs.length) {
       return;
     }
     if(cols * rows > MAX_CHUNKS) {
       setError("Image has too many chunks to split. Please lower column or row value");
-      return;
-    }
-    const ctx = canvasRef.current.getContext('2d');
-    if(!ctx) {
       return;
     }
 
@@ -134,8 +144,16 @@ export const ImageGenerator: React.FC = () => {
       .then(urls => urls.filter(Boolean))
       .then(urls => loadImage(urls[0]))
       .then(img => {
-        const sizeWidth = shouldSplitImage ? Math.floor(img.width / cols) : img.width;
-        const sizeHeight = shouldSplitImage ? Math.floor(img.height / rows) : img.height;
+        if(!img || !canvasRef.current) {
+          return;
+        }
+        const ctx = canvasRef.current.getContext('2d');
+        if(!ctx) {
+          return;
+        }
+
+        const sizeWidth = shouldSplitImage ? Math.floor(img.naturalWidth / cols) : img.naturalWidth;
+        const sizeHeight = shouldSplitImage ? Math.floor(img.naturalHeight / rows) : img.naturalHeight;
 
         renderChunksRandomly({
           resHeight: height,
@@ -148,7 +166,7 @@ export const ImageGenerator: React.FC = () => {
         })
       });
 
-  }, [width, height, imgs, cols, rows])
+  }, [width, height, imgs, cols, rows, shouldSplitImage, canvasRef])
 
   const downloadImg = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
