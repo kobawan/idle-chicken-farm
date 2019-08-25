@@ -1,0 +1,50 @@
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #FAF2EA;
+}
+
+body {
+  margin: 0;
+  font-family: 'Livvic', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+	border: solid 1px gainsboro;
+	box-shadow: 1px 1px 5px 0 #00000070;
+	cursor: pointer;
+	padding: 0.2em 1em;
+  -webkit-tap-highlight-color: transparent;
+  
+  &:disabled {
+    cursor: default;
+    color: gainsboro;
+  }
+
+	@media (hover: hover) {
+		&:hover:not(:disabled) {
+			box-shadow: 0 0 9px 2px #0000004f;
+		}
+	}
+}
+
+button,
+input,
+textarea,
+select {
+  background-color: white;
+	font: 1em 'Livvic', sans-serif;
+
+	&::-webkit-calendar-picker-indicator {
+		color: black;
+		opacity: 1;
+		cursor: pointer;
+	}
+}

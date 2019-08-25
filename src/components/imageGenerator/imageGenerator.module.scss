@@ -1,0 +1,50 @@
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 1em;
+    background-color: #c6cbbbdb;
+  
+    .row {
+      margin-bottom: 1em;
+      display: flex;
+      width: 100%;
+      align-items: center;
+  
+      .label {
+        flex-basis: 6em;
+        flex-grow: 0;
+        margin-right: 0.5em;
+      }
+  
+      .input {
+        border: none;
+        flex-grow: 1;
+        padding: 0.4em;
+
+        &.checkbox {
+          flex: initial;
+        }
+      }
+    }
+  
+    .title {
+      align-self: center;
+      margin-top: 0;
+    }
+
+    .button {
+      align-self: center;
+    }
+  }
+}
