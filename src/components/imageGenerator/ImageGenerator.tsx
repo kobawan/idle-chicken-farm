@@ -60,14 +60,19 @@ const drawImage = async ({
   });
 };
 
-const getImageChunks = ({ sizeHeight, sizeWidth, cols, rows }: GetImageChunksOptions) => {
+const getImageChunks = ({
+  sizeHeight,
+  sizeWidth,
+  cols,
+  rows,
+}: GetImageChunksOptions) => {
   const commonOptions = {
     dw: sizeWidth,
     dh: sizeHeight,
     sw: sizeWidth,
     sh: sizeHeight,
   }
-  let chunks = [];
+  let chunks: ImageChunks[] = [];
   for(let row = 0; row < rows; row++) {
     for(let col = 0; col < cols; col++) {
       chunks.push({
