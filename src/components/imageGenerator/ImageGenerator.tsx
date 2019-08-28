@@ -3,9 +3,8 @@ import { useDropzone } from "react-dropzone";
 import cx from "classnames";
 import styles from "./imageGenerator.module.scss";
 import { loadMultipleImages } from "../../utils/loadImages";
-import { file } from "@babel/types";
 
-const MAX_CHUNKS = 100;
+const MAX_CHUNKS = 400;
 
 interface ImageChunks {
   sx: number;
@@ -17,10 +16,7 @@ interface ImageChunks {
 }
 
 interface DrawImageOptions extends ImageChunks {
-  ctx: CanvasRenderingContext2D;
   img: CanvasImageSource;
-  canvasWidth: number;
-  canvasHeight: number;
   dx: number;
   dy: number;
 }
@@ -32,35 +28,14 @@ interface GetImageChunksOptions {
   rows: number;
 }
 
-interface RenderChunksRandomlyOptions {
+interface GetAllChunksRandomlyOptions {
   resWidth: number;
   resHeight: number;
   imageChunks: ImageChunks[];
-  ctx: CanvasRenderingContext2D;
   imgs: HTMLImageElement[];
   sizeWidth: number;
   sizeHeight: number;
 }
-
-const drawImage = async ({
-  ctx,
-  img,
-  canvasWidth,
-  canvasHeight,
-  dx,
-  dy,
-  dw,
-  dh,
-  sx,
-  sy,
-  sw,
-  sh,
-}: DrawImageOptions) => {
-  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-  window.requestAnimationFrame(() => {
-    ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
-  });
-};
 
 const getImageChunks = ({
   sizeHeight,
@@ -87,17 +62,17 @@ const getImageChunks = ({
   return chunks;
 }
 
-const renderChunksRandomly = async ({
+const getAllChunksRandomly = ({
   resWidth,
   resHeight, 
   sizeWidth,
   sizeHeight,
   imageChunks,
-  ctx,
   imgs,
-}: RenderChunksRandomlyOptions) => {
+}: GetAllChunksRandomlyOptions): DrawImageOptions[] => {
   const cols = Math.ceil(resWidth / sizeWidth);
   const rows = Math.ceil(resHeight / sizeHeight);
+  const chunk = [];
 
   for(let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
@@ -107,17 +82,16 @@ const renderChunksRandomly = async ({
       const imgIndex = imgs.length === 1
         ? 0
         : Math.floor(Math.random() * imgs.length);
-      drawImage({
-        ctx,
+      chunk.push({
         img: imgs[imgIndex],
-        canvasWidth: resWidth,
-        canvasHeight: resHeight,
         dx: i * sizeWidth,
         dy: j * sizeHeight,
         ...imageChunks[chunkIndex],
       });
     }
   }
+
+  return chunk;
 }
 
 const readFiles = (imgs: File[]): Promise<string[]> => {
@@ -169,12 +143,13 @@ export const ImageGenerator: React.FC = () => {
     if(!width || !height || !canvasRef.current) {
       return;
     }
-    if(!files.length) {
-      const ctx = canvasRef.current.getContext('2d');
-        if(!ctx) {
-          return;
-        }
+
+    const ctx = canvasRef.current.getContext('2d');
+    if(ctx) {
       ctx.clearRect(0, 0, width, height);
+    }
+
+    if(!files.length) {
       return;
     }
     if(cols > 30 || rows > 30 || ((cols || 1) * (rows || 1) > MAX_CHUNKS)) {
@@ -197,17 +172,20 @@ export const ImageGenerator: React.FC = () => {
         const sizeWidth = shouldSplitImage ? Math.floor(imgs[0].naturalWidth / cols) : imgs[0].naturalWidth;
         const sizeHeight = shouldSplitImage ? Math.floor(imgs[0].naturalHeight / rows) : imgs[0].naturalHeight;
 
-        renderChunksRandomly({
-          resHeight: height,
-          resWidth: width,
-          sizeWidth,
-          sizeHeight,
-          imageChunks: getImageChunks({ sizeWidth, sizeHeight, cols, rows }),
-          ctx,
-          imgs,
-        })
+        window.requestAnimationFrame(() => {
+          ctx.clearRect(0, 0, width, height);
+          getAllChunksRandomly({
+            resHeight: height,
+            resWidth: width,
+            sizeWidth,
+            sizeHeight,
+            imageChunks: getImageChunks({ sizeWidth, sizeHeight, cols, rows }),
+            imgs,
+          }).forEach(({ img, sx, sy, sw, sh, dx, dy, dw, dh }) => {
+            ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+          })
+        });
       });
-
   }, [width, height, files, cols, rows, shouldSplitImage, canvasRef])
 
   const downloadImg = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -219,6 +197,14 @@ export const ImageGenerator: React.FC = () => {
     anchor.download = `${width}x${height}-generated.png`;
     anchor.click();
   };
+
+  const updateShouldSplit = () => {
+    if(shouldSplitImage) {
+      setCols(1);
+      setRows(1);
+    }
+    setShouldSplitImage(!shouldSplitImage)
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -256,7 +242,7 @@ export const ImageGenerator: React.FC = () => {
             <input
               className={cx(styles.input, styles.checkbox)}
               type="checkbox"
-              onChange={() => setShouldSplitImage(!shouldSplitImage)}
+              onChange={updateShouldSplit}
             />
           </div>
           {shouldSplitImage && <>
