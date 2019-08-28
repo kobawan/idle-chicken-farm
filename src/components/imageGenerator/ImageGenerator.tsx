@@ -166,7 +166,15 @@ export const ImageGenerator: React.FC = () => {
   })
 
   useEffect(() => {
-    if(!width || !height || !files.length) {
+    if(!width || !height || !canvasRef.current) {
+      return;
+    }
+    if(!files.length) {
+      const ctx = canvasRef.current.getContext('2d');
+        if(!ctx) {
+          return;
+        }
+      ctx.clearRect(0, 0, width, height);
       return;
     }
     if(cols > 30 || rows > 30 || ((cols || 1) * (rows || 1) > MAX_CHUNKS)) {
