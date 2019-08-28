@@ -1,7 +1,9 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
 import cx from "classnames";
 import styles from "./imageGenerator.module.scss";
-import { loadImage } from "../../utils/loadImages";
+import { loadMultipleImages } from "../../utils/loadImages";
+import { file } from "@babel/types";
 
 const MAX_CHUNKS = 100;
 
@@ -31,11 +33,11 @@ interface GetImageChunksOptions {
 }
 
 interface RenderChunksRandomlyOptions {
-  resWidth: number,
-  resHeight: number,
-  imageChunks: ImageChunks[],
-  ctx: CanvasRenderingContext2D,
-  img: HTMLImageElement;
+  resWidth: number;
+  resHeight: number;
+  imageChunks: ImageChunks[];
+  ctx: CanvasRenderingContext2D;
+  imgs: HTMLImageElement[];
   sizeWidth: number;
   sizeHeight: number;
 }
@@ -87,24 +89,27 @@ const getImageChunks = ({
 
 const renderChunksRandomly = async ({
   resWidth,
-  resHeight,
+  resHeight, 
   sizeWidth,
   sizeHeight,
   imageChunks,
   ctx,
-  img,
+  imgs,
 }: RenderChunksRandomlyOptions) => {
   const cols = Math.ceil(resWidth / sizeWidth);
   const rows = Math.ceil(resHeight / sizeHeight);
-  
+
   for(let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
       const chunkIndex = imageChunks.length === 1
         ? 0
         : Math.floor(Math.random() * imageChunks.length);
+      const imgIndex = imgs.length === 1
+        ? 0
+        : Math.floor(Math.random() * imgs.length);
       drawImage({
         ctx,
-        img,
+        img: imgs[imgIndex],
         canvasWidth: resWidth,
         canvasHeight: resHeight,
         dx: i * sizeWidth,
@@ -130,26 +135,50 @@ export const ImageGenerator: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
-  const [imgs, setImgs] = useState<File[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [shouldSplitImage, setShouldSplitImage] = useState(false);
   const [cols, setCols] = useState(1);
   const [rows, setRows] = useState(1);
   const [error, setError] = useState("");
-  
+
+  const {
+    getRootProps,
+    getInputProps,
+  } = useDropzone({
+    onDrop: useCallback((file: File[]) => setFiles(file), []),
+    accept: "image/png, image/jpeg"
+  });
+
+  const removeFile = (name: string) => {
+    setFiles(files.filter(file => file.name !== name));
+  }
+
+  const FileInfo = files.map((file, i) => {
+    return (
+      <span
+        key={i}
+        className={cx(styles.row, styles.fileName)}
+        onClick={() => removeFile(file.name)}
+      >
+        {file.name}
+      </span>
+    );
+  })
+
   useEffect(() => {
-    if(!width || !height || !imgs.length) {
+    if(!width || !height || !files.length) {
       return;
     }
-    if(cols * rows > MAX_CHUNKS) {
+    if(cols > 30 || rows > 30 || ((cols || 1) * (rows || 1) > MAX_CHUNKS)) {
       setError("Image has too many chunks to split. Please lower column or row value");
       return;
     }
 
-    readFiles(imgs)
+    readFiles(files)
       .then(urls => urls.filter(Boolean))
-      .then(urls => loadImage(urls[0]))
-      .then(img => {
-        if(!img || !canvasRef.current) {
+      .then(urls => loadMultipleImages(urls))
+      .then(imgs => {
+        if(!imgs.length || !canvasRef.current) {
           return;
         }
         const ctx = canvasRef.current.getContext('2d');
@@ -157,8 +186,8 @@ export const ImageGenerator: React.FC = () => {
           return;
         }
 
-        const sizeWidth = shouldSplitImage ? Math.floor(img.naturalWidth / cols) : img.naturalWidth;
-        const sizeHeight = shouldSplitImage ? Math.floor(img.naturalHeight / rows) : img.naturalHeight;
+        const sizeWidth = shouldSplitImage ? Math.floor(imgs[0].naturalWidth / cols) : imgs[0].naturalWidth;
+        const sizeHeight = shouldSplitImage ? Math.floor(imgs[0].naturalHeight / rows) : imgs[0].naturalHeight;
 
         renderChunksRandomly({
           resHeight: height,
@@ -167,11 +196,11 @@ export const ImageGenerator: React.FC = () => {
           sizeHeight,
           imageChunks: getImageChunks({ sizeWidth, sizeHeight, cols, rows }),
           ctx,
-          img,
+          imgs,
         })
       });
 
-  }, [width, height, imgs, cols, rows, shouldSplitImage, canvasRef])
+  }, [width, height, files, cols, rows, shouldSplitImage, canvasRef])
 
   const downloadImg = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -190,66 +219,69 @@ export const ImageGenerator: React.FC = () => {
       )}
       <form className={styles.form} onChange={() => setError("")}>
         <h3 className={styles.title}>Image generator</h3>
-        <div className={styles.row}>
-          <label className={styles.label}>Resolution Width</label>
-          <input
-            className={styles.input}
-            type="number"
-            onChange={(e) => setWidth(+e.currentTarget.value)}
-            min={1}
-          />
-        </div>
-        <div className={styles.row}>
-          <label className={styles.label}>Resolution Height</label>
-          <input
-            className={styles.input}
-            type="number"
-            onChange={(e) => setHeight(+e.currentTarget.value)}
-            min={1}
-          />
-        </div>
-        <div className={styles.row}>
-          <label className={styles.label}>Split sprite</label>
-          <input
-            className={cx(styles.input, styles.checkbox)}
-            type="checkbox"
-            onChange={() => setShouldSplitImage(!shouldSplitImage)}
-          />
-        </div>
-        {shouldSplitImage && <>
+        <div className={styles.content}>
           <div className={styles.row}>
-            <label className={styles.label}>Columns</label>
+            <label className={styles.label}>Resolution Width</label>
             <input
               className={styles.input}
               type="number"
-              onChange={(e) => setCols(+e.currentTarget.value)}
+              onChange={(e) => setWidth(+e.currentTarget.value)}
               min={1}
             />
           </div>
           <div className={styles.row}>
-            <label className={styles.label}>Rows</label>
+            <label className={styles.label}>Resolution Height</label>
             <input
               className={styles.input}
               type="number"
-              onChange={(e) => setRows(+e.currentTarget.value)}
+              onChange={(e) => setHeight(+e.currentTarget.value)}
               min={1}
             />
           </div>
-        </>}
-        <input
-          type="file"
-          className={styles.row}
-          accept="image/png, image/jpeg"
-          // multiple={true}
-          onChange={(e) => setImgs(Array.from(e.currentTarget.files || []))}
-        />
-        <button
-          onClick={downloadImg}
-          disabled={!width || !height || !imgs.length || !!error}
-        >
-          Download
-        </button>
-        {error && <span className={styles.error}>{error}</span>}
+          <div {...getRootProps()} className={cx(styles.row, styles.dropzone)}>
+            <input {...getInputProps()} />
+            <span>Drag 'n' drop some files here, or click to select files</span>
+          </div>
+          {FileInfo}
+          <div className={styles.row}>
+            <label className={styles.label}>Split sprites:</label>
+            <input
+              className={cx(styles.input, styles.checkbox)}
+              type="checkbox"
+              onChange={() => setShouldSplitImage(!shouldSplitImage)}
+            />
+          </div>
+          {shouldSplitImage && <>
+            <div className={styles.row}>
+              <label className={styles.label}>Columns</label>
+              <input
+                className={styles.input}
+                type="number"
+                onChange={(e) => setCols(+e.currentTarget.value)}
+                min={1}
+              />
+            </div>
+            <div className={styles.row}>
+              <label className={styles.label}>Rows</label>
+              <input
+                className={styles.input}
+                type="number"
+                onChange={(e) => setRows(+e.currentTarget.value)}
+                min={1}
+              />
+            </div>
+          </>}
+        </div>
+        <div className={styles.footer}>
+          <button
+            onClick={downloadImg}
+            disabled={!width || !height || !files.length || !!error}
+            className={styles.downloadButton}
+          >
+            Download
+          </button>
+          {error && <span className={styles.error}>{error}</span>}
+        </div>
       </form>
     </div>
   );
