@@ -11,7 +11,7 @@ app.use(cors());
 // Serving client
 app.use(express.static(path.join(__dirname, '..', 'build')));
 
-app.get('/', (req, res) => {
+app.get('*', (req, res) => {
 	return res.sendFile(path.join(__dirname, '..', 'build', "index.html"));
 });
 
