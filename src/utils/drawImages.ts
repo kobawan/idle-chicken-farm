@@ -59,20 +59,20 @@ const getChickens = async (ctx: CanvasRenderingContext2D, width: number, height:
   return chickens;
 }
 
+let animationId = 0;
 export const initFarm = async (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+  let frameCount = 0;
   ctx.imageSmoothingEnabled = false;
   ctx.clearRect(0, 0, width, height);
-
-  let frameCount = 0;
+  window.cancelAnimationFrame(animationId);
   const objects = await getObjects(ctx, width, height);
   const chickens = await getChickens(ctx, width, height);
-  let animationId = 0;
 
   const loop = () => {
     window.cancelAnimationFrame(animationId);
     frameCount++;
     if(frameCount < 15) {
-      window.requestAnimationFrame(loop);
+      animationId = window.requestAnimationFrame(loop);
       return;
     }
     frameCount = 0;

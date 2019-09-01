@@ -21,7 +21,7 @@ export const Farm: React.FC = memo(() => {
     }
 
     initFarm(ctx, resizedWidth, resizedHeight);
-  }, [canvasRef, resizedWidth, resizedHeight])
+  }, [canvasRef, resizedWidth, resizedHeight]);
 
   return (
     <div className={styles.wrapper}>
