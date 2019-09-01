@@ -1,35 +1,26 @@
 interface StaticObjectProps {
   img: HTMLImageElement;
-  width: number;
-  height: number;
-  ctx: CanvasRenderingContext2D;
   top: number;
   left: number;
 }
 
 export class StaticObject {
   img: HTMLImageElement;
-  width: number;
-  height: number;
-  ctx: CanvasRenderingContext2D;
   top: number;
   left: number;
 
-  constructor({ img, width, height, ctx, top, left }: StaticObjectProps) {
+  constructor({ img, top, left }: StaticObjectProps) {
     this.img = img;
-    this.width = width;
-    this.height = height;
-    this.ctx = ctx;
     this.top = top;
     this.left = left;
   }
 
-  public update() {
-    this.draw();
+  public update(ctx: CanvasRenderingContext2D) {
+    this.draw(ctx);
   }
 
-  private draw() {
-    this.ctx.drawImage(
+  private draw(ctx: CanvasRenderingContext2D) {
+    ctx.drawImage(
       this.img,
       0,
       0,

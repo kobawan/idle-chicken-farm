@@ -6,25 +6,22 @@ interface ChickenProps {
   imgs: HTMLImageElement[];
   width: number;
   height: number;
-  ctx: CanvasRenderingContext2D;
 }
 
 export class Chicken {
   imgs: HTMLImageElement[];
   width: number;
   height: number;
-  ctx: CanvasRenderingContext2D;
   imgIndex: number;
   top: number;
   left: number;
   currentImg: HTMLImageElement;
   restingTurns: number;
 
-  constructor({ imgs, width, height, ctx }: ChickenProps) {
+  constructor({ imgs, width, height }: ChickenProps) {
     this.imgs = imgs;
     this.width = width;
     this.height = height;
-    this.ctx = ctx;
     this.imgIndex = 0;
     this.currentImg = this.imgs[this.imgIndex];
     this.top = Math.round(Math.random() * (this.height - this.imgs[0].naturalHeight));
@@ -32,18 +29,18 @@ export class Chicken {
     this.restingTurns = 0;
   }
 
-  public update() {
+  public update(ctx: CanvasRenderingContext2D) {
     if(this.shouldRest()) {
       this.rest()
     } else {
       this.walk()
     }
     
-    this.draw();
+    this.draw(ctx);
   }
 
-  private draw() {
-    this.ctx.drawImage(
+  private draw(ctx: CanvasRenderingContext2D) {
+    ctx.drawImage(
       this.currentImg,
       0,
       0,
