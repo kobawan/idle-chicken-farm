@@ -65,8 +65,10 @@ export const initFarm = async (ctx: CanvasRenderingContext2D, width: number, hei
   let frameCount = 0;
   const objects = await getObjects(ctx, width, height);
   const chickens = await getChickens(ctx, width, height);
+  let animationId = 0;
 
   const loop = () => {
+    window.cancelAnimationFrame(animationId);
     frameCount++;
     if(frameCount < 15) {
       window.requestAnimationFrame(loop);
@@ -79,7 +81,7 @@ export const initFarm = async (ctx: CanvasRenderingContext2D, width: number, hei
     objects.forEach(object => object.update());
     chickens.forEach(chicken => chicken.update());
 
-    window.requestAnimationFrame(loop)
+    animationId = window.requestAnimationFrame(loop)
   }
 
   loop();

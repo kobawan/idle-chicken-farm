@@ -1,11 +1,11 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, memo } from "react";
 import styles from "./farm.module.scss";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
 import { initFarm } from "../../utils/drawImages";
 
 const RESIZE_BY = 2;
 
-export const Farm: React.FC = () => {
+export const Farm: React.FC = memo(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { width, height } = useWindowDimensions();
   const resizedWidth = width / RESIZE_BY;
@@ -33,4 +33,4 @@ export const Farm: React.FC = () => {
       ></canvas>
     </div>
   );
-}
+});
