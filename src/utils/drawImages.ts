@@ -60,6 +60,7 @@ const getChickens = async (ctx: CanvasRenderingContext2D, width: number, height:
 }
 
 export const initFarm = async (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+  ctx.imageSmoothingEnabled = false;
   ctx.clearRect(0, 0, width, height);
 
   let frameCount = 0;

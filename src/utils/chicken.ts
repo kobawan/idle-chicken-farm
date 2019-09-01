@@ -1,4 +1,6 @@
 const MOVEMENT_PX = 2;
+const RESTING_TURNS = 15;
+const RESTING_PROBABILITY = 10;
 
 interface ChickenProps {
   imgs: HTMLImageElement[];
@@ -16,6 +18,7 @@ export class Chicken {
   top: number;
   left: number;
   currentImg: HTMLImageElement;
+  restingTurns: number;
 
   constructor({ imgs, width, height, ctx }: ChickenProps) {
     this.imgs = imgs;
@@ -26,13 +29,15 @@ export class Chicken {
     this.currentImg = this.imgs[this.imgIndex];
     this.top = Math.round(Math.random() * (this.height - this.imgs[0].naturalHeight));
     this.left = Math.round(Math.random() * (this.width - this.imgs[0].naturalWidth));
+    this.restingTurns = 0;
   }
 
   public update() {
-    this.currentImg = this.imgs[this.imgIndex];
-    this.imgIndex = this.imgIndex + 1 >= this.imgs.length - 1 ? 0 : this.imgIndex + 1;
-
-    this.updatePosition();
+    if(this.shouldRest()) {
+      this.rest()
+    } else {
+      this.walk()
+    }
     
     this.draw();
   }
@@ -52,30 +57,35 @@ export class Chicken {
   }
 
   private updatePosition() {
-    const rand = Math.round(Math.random() * 3);
+    const dx = Math.round(Math.random() * 1);
+    const dy = Math.round(Math.random() * 1);
 
-    switch(rand) {
-      case 0:
-        this.top = Math.max(this.top - MOVEMENT_PX, 0);
-        break;
-      case 1:
-        this.left = Math.min(
-          this.left + MOVEMENT_PX,
-          this.width - this.currentImg.naturalWidth,
-        );
-        break;
-      case 2:
-        this.top = Math.min(
-          this.top + MOVEMENT_PX,
-          this.height - this.currentImg.naturalHeight,
-        );
-        break;
-      case 3:
-        this.left = Math.max(this.left - MOVEMENT_PX, 0);
-        break;
-      default:
-        console.error("Update position random number out of bounds");
-        break;
-    }
+    this.top = dy
+      ? Math.min(this.top + MOVEMENT_PX, this.height - this.currentImg.naturalHeight)
+      : Math.max(this.top - MOVEMENT_PX, 0)
+    ;
+
+    this.left = dx
+      ? Math.min(this.left + MOVEMENT_PX, this.width - this.currentImg.naturalWidth)
+      : Math.max(this.left - MOVEMENT_PX, 0)
+    ;
+  }
+
+  private walk() {
+    this.currentImg = this.imgs[this.imgIndex];
+    this.imgIndex = this.imgIndex + 1 >= this.imgs.length - 1 ? 0 : this.imgIndex + 1;
+
+    this.updatePosition();
+  }
+
+  private shouldRest() {
+    return this.restingTurns || (!this.restingTurns && (Math.random() * 100) < RESTING_PROBABILITY);
+  }
+
+  private rest() {
+    this.currentImg = this.imgs[this.imgs.length - 1];
+    this.restingTurns = this.restingTurns
+      ? Math.max(this.restingTurns - 1, 0)
+      : RESTING_TURNS;
   }
 }
