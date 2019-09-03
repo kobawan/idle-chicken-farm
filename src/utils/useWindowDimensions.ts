@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import debounce from "lodash.debounce";
 
-export const useWindowDimensions = () => {
+export const useWindowDimensions = (resizeBy = 1) => {
   const [{ width, height }, setDimensions] = useState({
     width: window.innerWidth,
     height: window.innerHeight
@@ -20,5 +20,8 @@ export const useWindowDimensions = () => {
     };
   }, []);
   
-  return { width, height };
+  return {
+    resizedWidth: width / resizeBy,
+    resizedHeight: height / resizeBy,
+  };
 }
