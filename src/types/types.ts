@@ -1,5 +1,6 @@
 import { Chicken } from "../utils/chicken";
 import { StaticObject } from "../utils/staticObject";
+import { Food } from "../utils/food";
 
 export interface Coordinates {
   left: number;
@@ -8,7 +9,7 @@ export interface Coordinates {
 
 export interface StaticItems {
   objects: StaticObject[];
-  food: StaticObject[];
+  food: Food[];
 }
 
 export interface DynItems {

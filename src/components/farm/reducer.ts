@@ -8,20 +8,23 @@ import {
   ToggleDraggingAction,
   FarmActions,
   RemoveFoodAction,
+  ToggleInfoAction,
 } from "./actions";
 
-type AllFarmActions = (
+export type AllFarmActions = (
   SetObjectsAction
   | AddFoodAction
   | RemoveFoodAction
   | SetChickensAction
   | ToggleFeedingAction
   | ToggleDraggingAction
+  | ToggleInfoAction
 );
 
 interface FarmState extends FarmItems {
   isFeeding: boolean;
   isDragging: boolean;
+  isInfoOpen: boolean;
 }
 
 export const initialFarmState: FarmState = {
@@ -30,6 +33,7 @@ export const initialFarmState: FarmState = {
   chickens: [],
   isFeeding: false,
   isDragging: false,
+  isInfoOpen: false,
 };
 
 type FarmReducerType = React.Reducer<FarmState, AllFarmActions>;
@@ -68,6 +72,11 @@ export const farmReducer: FarmReducerType = (state, action) => {
       return {
         ...state,
         isFeeding: !state.isFeeding,
+      }
+    case FarmActions.toggleInfo:
+      return {
+        ...state,
+        isInfoOpen: !state.isInfoOpen,
       }
     default:
       return state;

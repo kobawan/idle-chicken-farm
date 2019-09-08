@@ -17,38 +17,5 @@
 
   &.feeding {
     cursor: url("../../sprites/food3.png"), auto;
-
-    .toolBar .farmButton {
-      background-color: #B4C292;
-    }
-  }
-
-  .canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform: scale(2);
-    transform-origin: top left;
-  }
-
-  .toolBar {
-    display: flex;
-    position: absolute;
-    left: 1em;
-    top: 5.25em;
-    
-    .farmButton {
-      display: flex;
-      padding: 0.4em;
-      border: 1px solid #1F2D3D;
-      background-color: #C6CBBB;
-      transition: background-color 0.3s;
-
-      @media (hover) {
-        &:hover {
-          background-color: #B4C292;
-        }
-      }
-    }
   }
 }

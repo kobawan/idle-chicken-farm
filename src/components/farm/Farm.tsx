@@ -1,12 +1,9 @@
-import React, { useRef, useEffect, memo, useState, useCallback, useReducer } from "react";
+import React, { useEffect, memo, useState, useCallback, useReducer } from "react";
 import throttle from "lodash.throttle";
 import cx from "classnames";
 import styles from "./farm.module.scss";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
-import { getObjects, getChickens, drawStaticObjects, drawDynamicObjects } from "../../utils/drawImages";
-import foodUrl from "../../sprites/food1.png";
-import { StaticObject } from "../../utils/staticObject";
-import { loadImage } from "../../utils/loadImages";
+import { getObjects, getChickens, getFoodImgs } from "../../utils/drawImages";
 import { Chicken } from "../../utils/chicken";
 import { ChickenBreed } from "../../types/types";
 import { farmReducer, initialFarmState } from "./reducer";
@@ -19,58 +16,27 @@ import {
   removeFoodAction,
 } from "./actions";
 import { setStorageKey, StorageKeys } from "../../utils/localStorage";
+import { Food, FoodProps } from "../../utils/food";
+import { StaticCanvas } from "../StaticCanvas/StaticCanvas";
+import { Menu } from "../menu/Menu";
+import { DynamicCanvas } from "../dynamicCanvas/DynamicCanvas";
 
 const RESIZE_BY = 2;
 
-interface AddFoodItemOptions {
-  foodImg: HTMLImageElement;
-  addFood: (food: StaticObject) => void;
-  x: number;
-  y: number;
+interface AddFoodItemOptions extends FoodProps {
+  addFood: (food: Food) => void;
 }
 
 const addFoodItem = throttle((
-  { foodImg, x, y, addFood }: AddFoodItemOptions,
-  cb: (food: StaticObject) => void
+  { imgs, left, top, addFood }: AddFoodItemOptions,
 ) => {
-  const food = new StaticObject({
-    img: foodImg,
-    top: Math.round(y / RESIZE_BY),
-    left: Math.round(x / RESIZE_BY),
+  const food = new Food({
+    imgs,
+    top: Math.round(top / RESIZE_BY),
+    left: Math.round(left / RESIZE_BY),
   });
-
   addFood(food);
-  cb(food);
 }, 100, { leading: true, trailing: false });
-
-const getClosestChickenToEat = (
-  food: StaticObject,
-  chickens: Chicken[],
-  removeFood: (id: number) => void,
-) => {
-  let closest = Infinity;
-  let closestChicken: Chicken | undefined;
-
-  chickens.forEach((chicken) => {
-    if (chicken.hasFood()) {
-      return;
-    }
-
-    const distance = Math.sqrt(
-      Math.abs(chicken.left - food.left) ** 2
-      + Math.abs(chicken.top - food.top) ** 2
-    );
-
-    if (distance < closest) {
-      closest = distance
-      closestChicken = chicken;
-    }
-  });
-
-  if (closestChicken) {
-    closestChicken.setFood(food, removeFood);
-  }
-};
 
 const saveChickensToStorage = (chickens: Chicken[]) => {
   if(!chickens.length) {
@@ -86,21 +52,40 @@ const saveChickensToStorage = (chickens: Chicken[]) => {
 }
 
 export const Farm: React.FC = memo(() => {
-  const canvasStaticRef = useRef<HTMLCanvasElement>(null);
-  const canvasDynRef = useRef<HTMLCanvasElement>(null);
-  const animationIdRef = useRef(0);
   const { resizedWidth, resizedHeight } = useWindowDimensions(RESIZE_BY);
   const [
     {
       isDragging,
       isFeeding,
+      isInfoOpen,
       objects,
       chickens,
       food,
     },
     dispatch,
   ] = useReducer(farmReducer, initialFarmState);
-  const [foodImg, setFoodImg] = useState<HTMLImageElement | undefined>(undefined);
+  const [foodImgs, setFoodImgs] = useState<HTMLImageElement[]>([]);
+
+  const addFood = (food: Food) => dispatch(addFoodAction(food));
+  const removeFood = (id: string) => dispatch(removeFoodAction(id));
+  const requestFood = () => food;
+  chickens.forEach(chicken => {
+    chicken.setFoodMethods(removeFood, requestFood);
+  })
+
+  const dropFood = useCallback((e) => {
+    e.persist();
+    if (!isFeeding || !foodImgs.length || !isDragging) {
+      return;
+    }
+
+    addFoodItem({
+      left: e.clientX,
+      top: e.clientY,
+      imgs: foodImgs,
+      addFood,
+    });
+  }, [isFeeding, foodImgs, isDragging]);
 
   useEffect(() => {
     const stopFeedingOnEsc = (e: KeyboardEvent) => {
@@ -119,90 +104,42 @@ export const Farm: React.FC = memo(() => {
     Promise.all([
       getObjects(),
       getChickens(resizedWidth, resizedHeight),
-      loadImage(foodUrl),
-    ]).then(([objects, chickens, foodImg]) => {
+      getFoodImgs(),
+    ]).then(([objects, chickens, foodImgs]) => {
       dispatch(setObjectsAction(objects));
       dispatch(setChickensAction(chickens));
-      setFoodImg(foodImg);
+      setFoodImgs(foodImgs);
     });
   }, [resizedWidth, resizedHeight]);
 
   useEffect(() => {
+    // @todo also save chickens state
     saveChickensToStorage(chickens);
     return () => { saveChickensToStorage(chickens) };
   }, [chickens])
 
-  useEffect(() => {
-    drawStaticObjects({
-      canvasStaticRef,
-      resizedWidth,
-      resizedHeight,
-      objects,
-      food,
-    })
-  }, [canvasStaticRef, resizedWidth, resizedHeight, objects, food]);
-
-  useEffect(() => {
-    drawDynamicObjects({
-      canvasDynRef,
-      resizedWidth,
-      resizedHeight,
-      animationIdRef,
-      chickens,
-    })
-  }, [canvasDynRef, resizedWidth, resizedHeight, chickens]);
-
-  const toggleFeeding = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    dispatch(toggleFeedingAction());
-  }
-
-  const handleFoodAdd = useCallback((e) => {
-    e.persist();
-    if (!isFeeding || !foodImg || !isDragging) {
-      return;
-    }
-
-    const options = {
-      x: e.clientX,
-      y: e.clientY,
-      foodImg,
-      addFood: (food: StaticObject) => dispatch(addFoodAction(food)),
-    };
-    const cb = (food: StaticObject) => {
-      const removeFood = (id: number) => dispatch(removeFoodAction(id))
-      getClosestChickenToEat(food, chickens, removeFood);
-    };
-
-    addFoodItem(options, cb);
-  }, [isFeeding, foodImg, isDragging, chickens]);
-
   return (
     <div className={cx(styles.wrapper, isFeeding && styles.feeding)}>
       <div className={styles.bg}/>
-      <canvas
-        ref={canvasStaticRef}
-        width={resizedWidth}
-        height={resizedHeight}
-        className={styles.canvas}
-      ></canvas>
-      <canvas
-        ref={canvasDynRef}
-        width={resizedWidth}
-        height={resizedHeight}
-        className={styles.canvas}
-        onMouseDown={() => dispatch(toggleDraggingAction())}
-        onMouseUp={(e) => {
-          handleFoodAdd(e);
-          dispatch(toggleDraggingAction())
-        }}
-        onMouseMove={handleFoodAdd}
-      ></canvas>
-      <div className={styles.toolBar}>
-        <button className={styles.farmButton} onClick={toggleFeeding}>
-          <img src={foodUrl} alt="food"></img>
-        </button>
-      </div>
+      <StaticCanvas
+        resizedWidth={resizedWidth}
+        resizedHeight={resizedHeight}
+        objects={objects}
+        food={food}
+      />
+      <DynamicCanvas
+        resizedWidth={resizedWidth}
+        resizedHeight={resizedHeight}
+        chickens={chickens}
+        toggleDragging={() => dispatch(toggleDraggingAction())}
+        dropFood={dropFood}
+      />
+      <Menu
+        isInfoOpen={isInfoOpen}
+        isFeeding={isFeeding}
+        chickens={chickens}
+        dispatch={dispatch}
+      />
     </div>
   );
 });

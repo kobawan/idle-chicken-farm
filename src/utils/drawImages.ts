@@ -7,6 +7,9 @@ import orangeChicken3 from "../sprites/orange-chicken-3.png";
 import yellowChicken1 from "../sprites/yellow-chicken-1.png";
 import yellowChicken2 from "../sprites/yellow-chicken-2.png";
 import yellowChicken3 from "../sprites/yellow-chicken-3.png";
+import food1 from "../sprites/food1.png";
+import food2 from "../sprites/food2.png";
+import food3 from "../sprites/food3.png";
 import { loadMultipleImages } from "./loadImages";
 import henHouse from "../sprites/hen-house.png";
 import waterHole from "../sprites/water.png";
@@ -15,19 +18,23 @@ import { StaticObject } from "./staticObject";
 import { StaticItems, DynItems, ChickenBreed } from "../types/types";
 import { getStorageKey, StorageKeys } from "./localStorage";
 
-const FRAME_RATE = 15;
+const FRAME_THROTTLE = 15;
 
-interface DrawStaticObjectsProps extends StaticItems {
-  canvasStaticRef: React.RefObject<HTMLCanvasElement>,
+interface DrawProps {
+  canvasRef: React.RefObject<HTMLCanvasElement>,
   resizedWidth: number,
   resizedHeight: number,
 }
 
-interface DrawDynamicObjectsProps extends DynItems {
-  canvasDynRef: React.RefObject<HTMLCanvasElement>,
-  resizedWidth: number,
-  resizedHeight: number,
-  animationIdRef: React.MutableRefObject<number>
+type DrawStaticObjectsProps = StaticItems & DrawProps;
+type DrawDynamicObjectsProps = DynItems & DrawProps & { animationIdRef: React.MutableRefObject<number> };
+
+export const getFoodImgs = async () => {
+  return await loadMultipleImages([
+    food1,
+    food2,
+    food3,
+  ]);
 }
 
 export const getObjects = async () => {
@@ -55,7 +62,7 @@ const createChicken = (
   breed: ChickenBreed,
   amount: number | null,
 ) => {
-  const count = amount || Math.ceil(Math.random() * 15);
+  const count = amount || 1;
   const chickens: Chicken[] = [];
 
   for(let i = 0; i < count; i++) {
@@ -80,16 +87,16 @@ export const getChickens = async (width: number, height: number) => {
 }
 
 export const drawStaticObjects = ({
-  canvasStaticRef,
+  canvasRef,
   objects,
   food,
   resizedWidth,
   resizedHeight,
 }: DrawStaticObjectsProps) => {
-  if(!canvasStaticRef.current || !objects.length) {
+  if(!canvasRef.current) {
     return;
   }
-  const ctx = canvasStaticRef.current.getContext('2d');
+  const ctx = canvasRef.current.getContext('2d');
   if(!ctx) {
     return;
   }
@@ -102,16 +109,16 @@ export const drawStaticObjects = ({
 }
 
 export const drawDynamicObjects = ({
-  canvasDynRef,
+  canvasRef,
   resizedWidth,
   resizedHeight,
   chickens,
   animationIdRef,
 }: DrawDynamicObjectsProps) => {
-  if(!canvasDynRef.current || !chickens.length) {
+  if(!canvasRef.current) {
     return;
   }
-  const ctx = canvasDynRef.current.getContext('2d');
+  const ctx = canvasRef.current.getContext('2d');
   if(!ctx) {
     return;
   }
@@ -122,14 +129,17 @@ export const drawDynamicObjects = ({
   const loop = () => {
     window.cancelAnimationFrame(animationIdRef.current);
     frameCount++;
-    if(frameCount < FRAME_RATE) {
+
+    if(frameCount < FRAME_THROTTLE) {
       animationIdRef.current = window.requestAnimationFrame(loop);
       return;
     }
     frameCount = 0;
     ctx.clearRect(0, 0, resizedWidth, resizedHeight);
 
-    chickens.forEach(chicken => chicken.update(ctx));
+    chickens.forEach(chicken => {
+      chicken.update(ctx);
+    });
 
     animationIdRef.current = window.requestAnimationFrame(loop)
   }

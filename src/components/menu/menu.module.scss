@@ -1,0 +1,43 @@
+.menu {
+  display: flex;
+  align-items: flex-start;
+  position: absolute;
+  top: 0;
+  right: 0;
+  transition: 0.2s ease-in-out;
+  transform: translateX(11.1em);
+  height: 100%;
+
+  &.visible {
+    transform: initial;
+  }
+
+  .toolBar {
+    .farmButton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4em;
+      margin-bottom: 0.5em;
+      border: 1px solid #1F2D3D;
+      background-color: #C6CBBB;
+      transition: 0.3s;
+      height: 2em;
+      width: 2em;
+      position: relative;
+      top: 1em;
+      opacity: 0.5;
+  
+      &.active {
+        background-color: #8fab49;
+        opacity: 1;
+      }
+  
+      @media (hover) {
+        &:hover:not(.active) {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}

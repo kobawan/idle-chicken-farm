@@ -1,10 +1,18 @@
 import { ChickenBreed } from "../types/types";
-import { StaticObject } from "./staticObject";
+import { Food } from "./food";
+import { getClosest } from "./getClosest";
+import { generateId } from "./idGenerator";
 
 const MOVEMENT_PX = 2;
-const RESTING_TURNS = 15;
-const RESTING_PROBABILITY = 10;
-const EATING_TURNS = 10;
+// @todo test this
+const FPS = 4;
+const HUNGER_MIN = 30;
+
+const setTurnsFromSec = (sec: number) => sec * FPS;
+
+const RESTING_TURNS = setTurnsFromSec(10);
+const RESTING_PROBABILITY = 20 / FPS;
+const HUNGER_THROTTLE = setTurnsFromSec((2 * 60 * 60)/100); // every 1 min 12 sec hunger will increase
 
 interface ChickenProps {
   imgs: HTMLImageElement[];
@@ -13,20 +21,31 @@ interface ChickenProps {
   breed: ChickenBreed;
 }
 
+enum ChickenState {
+  eating,
+  walkingToFood,
+  walking,
+  resting,
+}
+
 export class Chicken {
-  imgs: HTMLImageElement[];
-  width: number;
-  height: number;
-  imgIndex = 0;
-  top: number;
-  left: number;
-  currentImg: HTMLImageElement;
-  restingTurns = 0;
-  eatingTurns = 0;
-  food: StaticObject | undefined;
-  breed: ChickenBreed;
-  removeFood: ((id: number) => void) | undefined;
-  id = 0;
+  private imgs: HTMLImageElement[];
+  private width: number;
+  private height: number;
+  private imgIndex = 0;
+  private top: number;
+  private left: number;
+  private currentImg: HTMLImageElement;
+  private frames = 0;
+  private breed: ChickenBreed;
+  private state = ChickenState.walking;
+  private restingTurns = 0;
+  private food: Food | undefined;
+  private hungerMeter = 0;
+  private hasRequestedFood = false;
+  private removeFood: ((id: string) => void) | undefined;
+  private requestFood: (() => Food[]) | undefined;
+  public id = generateId();
 
   constructor({ imgs, width, height, breed }: ChickenProps) {
     this.imgs = imgs;
@@ -36,22 +55,29 @@ export class Chicken {
     this.top = Math.round(Math.random() * (this.height - this.imgs[0].naturalHeight));
     this.left = Math.round(Math.random() * (this.width - this.imgs[0].naturalWidth));
     this.breed = breed;
-    this.id = Date.now();
   }
 
   public update(ctx: CanvasRenderingContext2D) {
     if(this.hasFood()) {
       if(this.hasReachedFood()) {
+        this.updateState(ChickenState.eating);
         this.eat();
       } else {
+        this.updateState(ChickenState.walkingToFood);
         this.walkToFood();
       }
     } else if(this.shouldRest()) {
+      this.updateState(ChickenState.resting);
       this.rest()
     } else {
+      this.updateState(ChickenState.walking);
       this.walkRandomly();
     }
 
+    this.frames++
+    if(this.state !== ChickenState.eating) {
+      this.updateFoodMeter();
+    }
     this.draw(ctx);
   }
 
@@ -59,23 +85,60 @@ export class Chicken {
     return this.breed;
   }
 
-  public hasFood() {
+  public getHungerMeter() {
+    return this.hungerMeter;
+  }
+
+  public setFoodMethods(
+    removeFood: (id: string) => void,
+    requestFood: () => Food[],
+  ) {
+    this.removeFood = removeFood;
+    this.requestFood = requestFood;
+  }
+
+  private hasFood() {
     return !!this.food;
   }
 
-  public setFood(food: StaticObject, removeFood: (id: number) => void) {
-    this.food = food;
-    this.eatingTurns = EATING_TURNS;
-    this.removeFood = removeFood;
+  private isHungry() {
+    return this.hungerMeter > HUNGER_MIN;
   }
 
-  private clearFood() {
-    if(this.removeFood && this.food) {
-      this.removeFood(this.food.id)
+  private searchForFood() {
+    if(!this.requestFood) {
+      return;
     }
-    this.removeFood = undefined;
+    const allAvailableFood = this.requestFood().filter(food => food.isAvailable);
+    if(!allAvailableFood.length) {
+      return;
+    }
+    this.food = getClosest(allAvailableFood, this.left, this.top);
+    if(this.food) {
+      this.hasRequestedFood = true;
+    }
+  }
+
+  private clearFood(reachedFood = true) {
+    this.hasRequestedFood = false;
+    if(!this.food || !this.removeFood) {
+      return;
+    }
+    if(this.food.hasFinished()) {
+      this.removeFood(this.food.id);
+    } else if(reachedFood) {
+      this.food.stopEating(this.id);
+    }
     this.food = undefined;
-    this.eatingTurns = 0;
+  }
+
+  private updateFoodMeter() {
+    if((this.frames / HUNGER_THROTTLE) % 1 === 0) {
+      this.hungerMeter = Math.min(this.hungerMeter + 1, 100);
+    }
+    if(this.isHungry() && !this.hasRequestedFood) {
+      this.searchForFood();
+    }
   }
 
   private draw(ctx: CanvasRenderingContext2D) {
@@ -101,7 +164,8 @@ export class Chicken {
   }
 
   private walkToFood() {
-    if(!this.food) {
+    if(!this.food || !this.food.isAvailable() || this.food.hasFinished()) {
+      this.clearFood(false);
       return;
     }
     const dx = this.food.left - this.left;
@@ -123,9 +187,18 @@ export class Chicken {
     ;
   }
 
+  private updateState(state: ChickenState) {
+    this.state = state;
+  }
+
   private eat() {
-    this.eatingTurns--;
-    if(this.eatingTurns < 0) {
+    if(!this.food) {
+      return;
+    }
+    this.food.startEating(this.id);
+    this.hungerMeter = Math.max(this.hungerMeter - 1, 0);
+    this.food.updateFoodMeter();
+    if(!this.hungerMeter || this.food.hasFinished()) {
       this.clearFood();
     }
   }
