@@ -15,7 +15,7 @@ import henHouse from "../sprites/hen-house.png";
 import waterHole from "../sprites/water.png";
 import { Chicken } from "./chicken";
 import { StaticObject } from "./staticObject";
-import { StaticItems, DynItems, ChickenBreed } from "../types/types";
+import { StaticItems, DynItems, ChickenBreed, Coordinates } from "../types/types";
 import { getStorageKey, StorageKeys } from "./localStorage";
 
 const FRAME_THROTTLE = 15;
@@ -42,7 +42,7 @@ export const getObjects = async () => {
     henHouse,
     waterHole,
   ]);
-  const positions = [
+  const positions: Coordinates[] = [
     { top: 100, left: 100 },
     { top: 120, left: 170 },
   ]

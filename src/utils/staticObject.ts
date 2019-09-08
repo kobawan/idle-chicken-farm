@@ -1,9 +1,8 @@
 import { generateId } from "./idGenerator";
+import { Coordinates } from "../types/types";
 
-interface StaticObjectProps {
+interface StaticObjectProps extends Coordinates {
   img: HTMLImageElement;
-  top: number;
-  left: number;
 }
 
 export class StaticObject {

@@ -1,16 +1,16 @@
 import { generateId } from "./idGenerator";
+import { Coordinates } from "../types/types";
 
 const MAX_EATERS = 3;
+const MAX_FOOD = 30;
 
-export interface FoodProps {
+export interface FoodProps extends Coordinates{
   imgs: HTMLImageElement[];
-  top: number;
-  left: number;
 }
 
 export class Food {
   private imgs: HTMLImageElement[];
-  private foodMeter = 30;
+  private foodMeter = MAX_FOOD;
   private animalsEating: string[] = [];
   public top: number;
   public left: number;

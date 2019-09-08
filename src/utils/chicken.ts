@@ -1,6 +1,5 @@
-import { ChickenBreed } from "../types/types";
+import { ChickenBreed, Coordinates } from "../types/types";
 import { Food } from "./food";
-import { getClosest } from "./getClosest";
 import { generateId } from "./idGenerator";
 
 const MOVEMENT_PX = 2;
@@ -44,7 +43,7 @@ export class Chicken {
   private hungerMeter = 0;
   private hasRequestedFood = false;
   private removeFood: ((id: string) => void) | undefined;
-  private requestFood: (() => Food[]) | undefined;
+  private requestFood: ((props: Coordinates) => Food | undefined) | undefined;
   public id = generateId();
 
   constructor({ imgs, width, height, breed }: ChickenProps) {
@@ -91,7 +90,7 @@ export class Chicken {
 
   public setFoodMethods(
     removeFood: (id: string) => void,
-    requestFood: () => Food[],
+    requestFood: (props: Coordinates) => Food | undefined,
   ) {
     this.removeFood = removeFood;
     this.requestFood = requestFood;
@@ -109,11 +108,7 @@ export class Chicken {
     if(!this.requestFood) {
       return;
     }
-    const allAvailableFood = this.requestFood().filter(food => food.isAvailable);
-    if(!allAvailableFood.length) {
-      return;
-    }
-    this.food = getClosest(allAvailableFood, this.left, this.top);
+    this.food = this.requestFood({ left: this.left, top: this.top });
     if(this.food) {
       this.hasRequestedFood = true;
     }
@@ -166,6 +161,7 @@ export class Chicken {
   private walkToFood() {
     if(!this.food || !this.food.isAvailable() || this.food.hasFinished()) {
       this.clearFood(false);
+      this.walkRandomly();
       return;
     }
     const dx = this.food.left - this.left;

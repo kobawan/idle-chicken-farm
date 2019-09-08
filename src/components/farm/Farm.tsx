@@ -5,7 +5,7 @@ import styles from "./farm.module.scss";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
 import { getObjects, getChickens, getFoodImgs } from "../../utils/drawImages";
 import { Chicken } from "../../utils/chicken";
-import { ChickenBreed } from "../../types/types";
+import { ChickenBreed, Coordinates } from "../../types/types";
 import { farmReducer, initialFarmState } from "./reducer";
 import {
   setObjectsAction,
@@ -20,8 +20,10 @@ import { Food, FoodProps } from "../../utils/food";
 import { StaticCanvas } from "../StaticCanvas/StaticCanvas";
 import { Menu } from "../menu/Menu";
 import { DynamicCanvas } from "../dynamicCanvas/DynamicCanvas";
+import { getClosest, getDistance } from "../../utils/distance";
 
 const RESIZE_BY = 2;
+const MAX_FOOD_DISTANCE = 300 / RESIZE_BY; // in px
 
 interface AddFoodItemOptions extends FoodProps {
   addFood: (food: Food) => void;
@@ -68,7 +70,19 @@ export const Farm: React.FC = memo(() => {
 
   const addFood = (food: Food) => dispatch(addFoodAction(food));
   const removeFood = (id: string) => dispatch(removeFoodAction(id));
-  const requestFood = () => food;
+  const requestFood = (coord: Coordinates) => {
+    const allAvailableFood = food.filter(item => (
+      item.isAvailable()
+      && getDistance(coord, item) < MAX_FOOD_DISTANCE
+    ));
+    if(!allAvailableFood.length) {
+      return undefined;
+    }
+    return getClosest({
+      items: allAvailableFood,
+      ...coord,
+    });
+  };
   chickens.forEach(chicken => {
     chicken.setFoodMethods(removeFood, requestFood);
   })
