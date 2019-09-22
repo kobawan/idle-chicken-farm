@@ -1,7 +1,7 @@
 .info {
   margin-left: 1em;
   padding: 1em;
-  background-color: #C6CBBB;
+  background-color: #c6cbbb75;
   border: 1px solid #1F2D3D;
   border-top: none;
   border-right: none;
@@ -10,4 +10,8 @@
   height: 100%;
   overflow-y: scroll;
   text-align: center;
+
+  .title {
+    margin-top: 0;
+  }
 }

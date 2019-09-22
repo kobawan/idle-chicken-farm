@@ -7,6 +7,7 @@
   transition: 0.2s ease-in-out;
   transform: translateX(11.1em);
   height: 100%;
+  pointer-events: none;
 
   &.visible {
     transform: initial;
@@ -27,6 +28,7 @@
       position: relative;
       top: 1em;
       opacity: 0.5;
+      pointer-events: all;
   
       &.active {
         background-color: #8fab49;

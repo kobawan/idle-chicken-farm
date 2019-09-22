@@ -44,7 +44,7 @@ export const Menu: React.FC<MenuProps> = ({
           <img src={foodUrl} alt="food"></img>
         </button>
       </div>
-      <Info chickens={chickens}/>
+      <Info chickens={chickens} isOpen={isInfoOpen}/>
     </div>
   );
 };

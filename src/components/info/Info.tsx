@@ -4,28 +4,32 @@ import { Chicken } from "../../utils/chicken";
 
 interface InfoProps {
   chickens: Chicken[];
+  isOpen: boolean;
 }
 
-export const Info: React.FC<InfoProps> = ({ chickens }) => {
+const renderChickensHunger = (chickens: Chicken[]) => {
+  return chickens
+    .sort((a, b) => b.getHungerMeter() - a.getHungerMeter())
+    .map((chicken, i) => (
+      <p key={i}>{chicken.getBreed()} chicken: {chicken.getHungerMeter()}</p>
+    ))
+}
+
+export const Info: React.FC<InfoProps> = ({ chickens, isOpen }) => {
   const [, setTime] = useState(0);
 
   useEffect(() => {
-    const id = window.setInterval(() => setTime(Date.now()), 1000);
+    let id = 0;
+    if(isOpen) {
+      id = window.setInterval(() => setTime(Date.now()), 1000);
+    }
     return () => window.clearInterval(id);
-  }, []);
+  }, [isOpen]);
 
   return (
     <div className={styles.info}>
-      {chickens
-        .map(chicken => ({
-          breed: chicken.getBreed(),
-          hunger: chicken.getHungerMeter(),
-        }))
-        .sort((a, b) => a.hunger - b.hunger)
-        .map(({ breed, hunger }, i) => (
-          <p key={i}>{breed} chicken: {hunger}</p>
-        ))
-      }
+      <h3 className={styles.title}>Hunger</h3>
+      {renderChickensHunger(chickens)}
     </div>
   );
 }
