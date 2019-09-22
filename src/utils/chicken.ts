@@ -13,11 +13,14 @@ const RESTING_TURNS = setTurnsFromSec(10);
 const RESTING_PROBABILITY = 20 / FPS;
 const HUNGER_THROTTLE = setTurnsFromSec((2 * 60 * 60)/100); // every 1 min 12 sec hunger will increase
 
-interface ChickenProps {
+export interface ChickenProps {
   imgs: HTMLImageElement[];
   width: number;
   height: number;
   breed: ChickenBreed;
+  top?: number;
+  left?: number;
+  hungerMeter?: number;
 }
 
 enum ChickenState {
@@ -40,20 +43,21 @@ export class Chicken {
   private state = ChickenState.walking;
   private restingTurns = 0;
   private food: Food | undefined;
-  private hungerMeter = 0;
+  private hungerMeter: number;
   private hasRequestedFood = false;
   private removeFood: ((id: string) => void) | undefined;
   private requestFood: ((props: Coordinates) => Food | undefined) | undefined;
   public id = generateId();
 
-  constructor({ imgs, width, height, breed }: ChickenProps) {
+  constructor({ imgs, width, height, breed, top, left, hungerMeter }: ChickenProps) {
     this.imgs = imgs;
     this.width = width;
     this.height = height;
     this.currentImg = this.imgs[this.imgIndex];
-    this.top = Math.round(Math.random() * (this.height - this.imgs[0].naturalHeight));
-    this.left = Math.round(Math.random() * (this.width - this.imgs[0].naturalWidth));
+    this.top = top || Math.round(Math.random() * (this.height - this.imgs[0].naturalHeight));
+    this.left = left || Math.round(Math.random() * (this.width - this.imgs[0].naturalWidth));
     this.breed = breed;
+    this.hungerMeter = hungerMeter || 0;
   }
 
   public update(ctx: CanvasRenderingContext2D) {
@@ -94,6 +98,15 @@ export class Chicken {
   ) {
     this.removeFood = removeFood;
     this.requestFood = requestFood;
+  }
+
+  public getSavingState() {
+    return {
+      left: this.left,
+      top: this.top,
+      breed: this.breed,
+      hungerMeter: this.hungerMeter,
+    }
   }
 
   private hasFood() {

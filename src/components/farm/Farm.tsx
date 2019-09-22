@@ -5,7 +5,7 @@ import styles from "./farm.module.scss";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
 import { getObjects, getChickens, getFoodImgs } from "../../utils/drawImages";
 import { Chicken } from "../../utils/chicken";
-import { ChickenBreed, Coordinates } from "../../types/types";
+import { Coordinates } from "../../types/types";
 import { farmReducer, initialFarmState } from "./reducer";
 import {
   setObjectsAction,
@@ -44,13 +44,8 @@ const saveChickensToStorage = (chickens: Chicken[]) => {
   if(!chickens.length) {
     return;
   }
-  const total: Record<ChickenBreed, number> = {
-    brown: 0,
-    orange: 0,
-    yellow: 0,
-  }
-  chickens.forEach(chicken => total[chicken.getBreed()]++);
-  setStorageKey(StorageKeys.chickens, total);
+  const savedChickenStates = chickens.map(chicken => chicken.getSavingState());
+  setStorageKey(StorageKeys.chickens, savedChickenStates);
 }
 
 export const Farm: React.FC = memo(() => {
@@ -127,9 +122,11 @@ export const Farm: React.FC = memo(() => {
   }, [resizedWidth, resizedHeight]);
 
   useEffect(() => {
-    // @todo also save chickens state
-    saveChickensToStorage(chickens);
-    return () => { saveChickensToStorage(chickens) };
+    const id = setInterval(() => saveChickensToStorage(chickens), 5000);
+    return () => {
+      saveChickensToStorage(chickens);
+      clearInterval(id);
+    };
   }, [chickens])
 
   return (

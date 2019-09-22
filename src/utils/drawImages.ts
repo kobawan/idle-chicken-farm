@@ -55,35 +55,33 @@ export const getObjects = async () => {
   })
 }
 
-const createChicken = (
-  width: number,
-  height: number,
-  imgs: HTMLImageElement[],
-  breed: ChickenBreed,
-  amount: number | null,
-) => {
-  const count = amount || 1;
-  const chickens: Chicken[] = [];
-
-  for(let i = 0; i < count; i++) {
-    chickens.push(new Chicken({ width, height, imgs, breed }));
-  }
-  return chickens;
-}
-
 export const getChickens = async (width: number, height: number) => {
   const images = await Promise.all([
     loadMultipleImages([brownChicken1, brownChicken2, brownChicken3]),
     loadMultipleImages([orangeChicken1, orangeChicken2, orangeChicken3]),
     loadMultipleImages([yellowChicken1, yellowChicken2, yellowChicken3]),
   ]);
-  const total = getStorageKey(StorageKeys.chickens);
+  const imagesBreedMap = {
+    [ChickenBreed.brown]: images[0],
+    [ChickenBreed.orange]: images[1],
+    [ChickenBreed.yellow]: images[2],
+  }
+  const savedChickens = getStorageKey(StorageKeys.chickens);
+  if(!savedChickens) {
+    return Object.keys(ChickenBreed).map(breed => new Chicken({
+      width,
+      height,
+      imgs: imagesBreedMap[breed as ChickenBreed],
+      breed: breed as ChickenBreed,
+    }))
+  }
 
-  return [
-    ...createChicken(width, height, images[0], ChickenBreed.brown, total && total.brown),
-    ...createChicken(width, height, images[1], ChickenBreed.orange, total && total.orange),
-    ...createChicken(width, height, images[2], ChickenBreed.yellow, total && total.yellow),
-  ];
+  return savedChickens.map(props => new Chicken({
+    width,
+    height,
+    imgs: imagesBreedMap[props.breed],
+    ...props,
+  }));
 }
 
 export const drawStaticObjects = ({

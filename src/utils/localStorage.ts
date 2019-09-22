@@ -1,11 +1,11 @@
-import { ChickenBreed } from "../types/types";
+import { ChickenProps } from "./chicken";
 
 export enum StorageKeys {
   chickens = "chickens",
 }
 
 interface StorageKeysType {
-  [StorageKeys.chickens]: Record<ChickenBreed, number> | null;
+  [StorageKeys.chickens]: Pick<ChickenProps, "breed"|"top"|"left"|"hungerMeter">[] | null;
 }
 
 const storageKeysToDefaultMap: { [key in StorageKeys]: StorageKeysType[key] } = {
