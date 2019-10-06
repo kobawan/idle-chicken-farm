@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/static/css/main.199e2d7f.chunk.css",
-    "main.js": "/static/js/main.68ffebda.chunk.js",
-    "main.js.map": "/static/js/main.68ffebda.chunk.js.map",
-    "runtime~main.js": "/static/js/runtime~main.7328c33a.js",
-    "runtime~main.js.map": "/static/js/runtime~main.7328c33a.js.map",
-    "static/js/2.88de0774.chunk.js": "/static/js/2.88de0774.chunk.js",
-    "static/js/2.88de0774.chunk.js.map": "/static/js/2.88de0774.chunk.js.map",
-    "index.html": "/index.html",
-    "precache-manifest.105d425b3feccced66e56bf0c2065819.js": "/precache-manifest.105d425b3feccced66e56bf0c2065819.js",
-    "service-worker.js": "/service-worker.js",
-    "static/css/main.199e2d7f.chunk.css.map": "/static/css/main.199e2d7f.chunk.css.map",
-    "static/media/farm.module.scss": "/static/media/farmBg.507ab01a.png"
+    "main.css": "/idle-chicken-farm/static/css/main.e08f393f.chunk.css",
+    "main.js": "/idle-chicken-farm/static/js/main.e9c07bd0.chunk.js",
+    "main.js.map": "/idle-chicken-farm/static/js/main.e9c07bd0.chunk.js.map",
+    "runtime~main.js": "/idle-chicken-farm/static/js/runtime~main.0cbb5281.js",
+    "runtime~main.js.map": "/idle-chicken-farm/static/js/runtime~main.0cbb5281.js.map",
+    "static/js/2.88de0774.chunk.js": "/idle-chicken-farm/static/js/2.88de0774.chunk.js",
+    "static/js/2.88de0774.chunk.js.map": "/idle-chicken-farm/static/js/2.88de0774.chunk.js.map",
+    "index.html": "/idle-chicken-farm/index.html",
+    "precache-manifest.3d9a53d7d9cd42bb3c6f79463e14b1e6.js": "/idle-chicken-farm/precache-manifest.3d9a53d7d9cd42bb3c6f79463e14b1e6.js",
+    "service-worker.js": "/idle-chicken-farm/service-worker.js",
+    "static/css/main.e08f393f.chunk.css.map": "/idle-chicken-farm/static/css/main.e08f393f.chunk.css.map",
+    "static/media/farm.module.scss": "/idle-chicken-farm/static/media/farmBg.507ab01a.png"
   }
 }
