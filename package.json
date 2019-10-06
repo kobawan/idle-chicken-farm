@@ -1,5 +1,6 @@
 {
   "name": "idle-chicken-farm",
+  "homepage": "https://kobawan.github.io/idle-chicken-farm/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -21,7 +22,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "deploy": "gh-pages -d build",
+    "predeploy": "npm run build",
+    "deploy": "NODE_DEBUG=gh-pages gh-pages -d build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
