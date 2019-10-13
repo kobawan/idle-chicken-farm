@@ -134,7 +134,7 @@ export const drawDynamicObjects = ({
   let frameCount = 0;
   ctx.imageSmoothingEnabled = false;
   window.cancelAnimationFrame(animationIdRef.current);
-  const loop = () => {
+  const loop = (timestamp: number) => {
     window.cancelAnimationFrame(animationIdRef.current);
     frameCount++;
 
@@ -146,11 +146,11 @@ export const drawDynamicObjects = ({
     ctx.clearRect(0, 0, resizedWidth, resizedHeight);
 
     chickens.forEach(chicken => {
-      chicken.update(ctx);
+      chicken.update(ctx, timestamp);
     });
 
     animationIdRef.current = window.requestAnimationFrame(loop)
   }
 
-  loop();
+  loop(performance.now());
 };

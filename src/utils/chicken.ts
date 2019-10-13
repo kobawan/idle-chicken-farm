@@ -3,15 +3,14 @@ import { Food } from "./food";
 import { generateId } from "./idGenerator";
 
 const MOVEMENT_PX = 2;
-// @todo test this
-const FPS = 4;
 const HUNGER_MIN = 30;
 
-const setTurnsFromSec = (sec: number) => sec * FPS;
+const RESTING_TURNS_PER_SEC = 10;
+const RESTING_PROBABILITY_PER_SEC = 20;
+const HUNGER_THRESHOLD = 60; // every 1 min hunger will increase
 
-const RESTING_TURNS = setTurnsFromSec(10);
-const RESTING_PROBABILITY = 20 / FPS;
-const HUNGER_THROTTLE = setTurnsFromSec((2 * 60 * 60)/100); // every 1 min 12 sec hunger will increase
+const setTurnsFromSec = (sec: number, fps: number) => Math.round(sec * fps);
+const getProbabilityFromSec = (sec: number, fps: number) => Math.round(sec / fps);
 
 export interface ChickenProps {
   imgs: HTMLImageElement[];
@@ -40,15 +39,17 @@ export class Chicken {
   private top: number;
   private left: number;
   private currentImg: HTMLImageElement;
-  private frames = 0;
   private breed: ChickenBreed;
   private state = ChickenState.walking;
   private restingTurns = 0;
   private food: Food | undefined;
   private hungerMeter: number;
+  private lastHungerIncrease = 0;
   private hasRequestedFood = false;
   private removeFood: ((id: string) => void) | undefined;
   private requestFood: ((props: Coordinates) => Food | undefined) | undefined;
+  private timestamp = 0;
+  private fps = 0;
   public id = generateId();
 
   constructor({ imgs, width, height, breed, top, left, hungerMeter }: ChickenProps) {
@@ -62,7 +63,11 @@ export class Chicken {
     this.hungerMeter = hungerMeter || 0;
   }
 
-  public update(ctx: CanvasRenderingContext2D) {
+  public update(ctx: CanvasRenderingContext2D, timestamp: number) {
+    this.fps = 1000 / (timestamp - this.timestamp)
+    this.timestamp = timestamp;
+    this.updateFoodMeter();
+
     if(this.hasFood()) {
       if(this.hasReachedFood()) {
         this.updateState(ChickenState.eating);
@@ -79,10 +84,6 @@ export class Chicken {
       this.walkRandomly();
     }
 
-    this.frames++
-    if(this.state !== ChickenState.eating) {
-      this.updateFoodMeter();
-    }
     this.draw(ctx);
   }
 
@@ -143,9 +144,16 @@ export class Chicken {
   }
 
   private updateFoodMeter() {
-    if((this.frames / HUNGER_THROTTLE) % 1 === 0) {
-      this.hungerMeter = Math.min(this.hungerMeter + 1, 100);
+    if(this.state === ChickenState.eating) {
+      this.lastHungerIncrease = 0;
+      return;
     }
+
+    if(this.timestamp - this.lastHungerIncrease >= HUNGER_THRESHOLD * 1000) {
+      this.hungerMeter = Math.min(this.hungerMeter + 1, 100);
+      this.lastHungerIncrease = this.timestamp;
+    }
+
     if(this.isHungry() && !this.hasRequestedFood) {
       this.searchForFood();
     }
@@ -223,11 +231,17 @@ export class Chicken {
     this.currentImg = this.imgs[this.imgs.length - 1];
     this.restingTurns = this.restingTurns
       ? Math.max(this.restingTurns - 1, 0)
-      : RESTING_TURNS;
+      : setTurnsFromSec(RESTING_TURNS_PER_SEC, this.fps);
   }
 
   private shouldRest() {
-    return this.restingTurns || (!this.restingTurns && (Math.random() * 100) < RESTING_PROBABILITY);
+    return (
+      this.restingTurns
+      || (
+        !this.restingTurns
+        && (Math.random() * 100) < getProbabilityFromSec(RESTING_PROBABILITY_PER_SEC, this.fps)
+      )
+    );
   }
 
   private hasReachedFood() {
