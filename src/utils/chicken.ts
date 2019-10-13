@@ -7,7 +7,7 @@ const HUNGER_MIN = 30;
 
 const RESTING_TURNS_PER_SEC = 10;
 const RESTING_PROBABILITY_PER_SEC = 20;
-const HUNGER_THRESHOLD = 60; // every 1 min hunger will increase
+const HUNGER_THRESHOLD = process.env.NODE_ENV === "development" ? 2 : 60; // every 1 min hunger will increase
 
 const setTurnsFromSec = (sec: number, fps: number) => Math.round(sec * fps);
 const getProbabilityFromSec = (sec: number, fps: number) => Math.round(sec / fps);
