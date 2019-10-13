@@ -1,6 +1,6 @@
-import { StaticObject } from "../../utils/staticObject";
-import { Chicken } from "../../utils/chicken";
-import { Food } from "../../utils/food";
+import { StaticObject } from "../../models/staticObject";
+import { Chicken } from "../../models/chicken";
+import { Food } from "../../models/food";
 
 export enum FarmActions {
   setObjects,

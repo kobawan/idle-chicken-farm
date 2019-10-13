@@ -4,7 +4,7 @@ import cx from "classnames";
 import styles from "./farm.module.scss";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
 import { getObjects, getChickens, getFoodImgs, getFood } from "../../utils/drawImages";
-import { Chicken } from "../../utils/chicken";
+import { Chicken } from "../../models/chicken";
 import { Coordinates } from "../../types/types";
 import { farmReducer, initialFarmState } from "./reducer";
 import {
@@ -16,12 +16,12 @@ import {
   removeFoodAction,
 } from "./actions";
 import { setStorageKey, StorageKeys } from "../../utils/localStorage";
-import { Food, FoodProps } from "../../utils/food";
+import { Food, FoodProps } from "../../models/food";
 import { StaticCanvas } from "../StaticCanvas/StaticCanvas";
 import { Menu } from "../menu/Menu";
 import { DynamicCanvas } from "../dynamicCanvas/DynamicCanvas";
 import { getClosest, getDistance } from "../../utils/distance";
-import { StaticObject } from "../../utils/staticObject";
+import { StaticObject } from "../../models/staticObject";
 
 const RESIZE_BY = 2;
 const MAX_FOOD_DISTANCE = 300 / RESIZE_BY; // in px

@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import styles from "./staticCanvas.module.scss";
 import { drawStaticObjects } from "../../utils/drawImages";
-import { Food } from "../../utils/food";
-import { StaticObject } from "../../utils/staticObject";
+import { Food } from "../../models/food";
+import { StaticObject } from "../../models/staticObject";
 
 interface StaticCanvasProps {
   food: Food[];

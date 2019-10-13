@@ -4,7 +4,7 @@ import styles from "./menu.module.scss";
 import foodUrl from "../../sprites/food1.png";
 import chickenUrl from "../../sprites/yellow-chicken-1.png";
 import { Info } from "../info/Info";
-import { Chicken } from "../../utils/chicken";
+import { Chicken } from "../../models/chicken";
 import {
   toggleFeedingAction,
   toggleInfoAction,

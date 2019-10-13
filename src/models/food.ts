@@ -1,4 +1,4 @@
-import { generateId } from "./idGenerator";
+import { generateId } from "../utils/idGenerator";
 import { Coordinates } from "../types/types";
 
 const MAX_EATERS = 3;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./info.module.scss";
-import { Chicken } from "../../utils/chicken";
+import { Chicken } from "../../models/chicken";
 
 interface InfoProps {
   chickens: Chicken[];

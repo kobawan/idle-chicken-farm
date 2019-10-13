@@ -1,6 +1,6 @@
 import { ChickenBreed, Coordinates } from "../types/types";
-import { Food } from "./food";
-import { generateId } from "./idGenerator";
+import { Food } from "../models/food";
+import { generateId } from "../utils/idGenerator";
 
 const MOVEMENT_PX = 2;
 const HUNGER_MIN = 30;

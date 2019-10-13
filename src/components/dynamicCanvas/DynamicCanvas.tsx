@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import styles from "./dynamicCanvas.module.scss";
 import { drawDynamicObjects } from "../../utils/drawImages";
-import { Chicken } from "../../utils/chicken";
+import { Chicken } from "../../models/chicken";
 
 interface DynamicCanvasProps {
   resizedWidth: number;

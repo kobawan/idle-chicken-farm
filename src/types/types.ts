@@ -1,6 +1,6 @@
-import { Chicken } from "../utils/chicken";
-import { StaticObject } from "../utils/staticObject";
-import { Food } from "../utils/food";
+import { Chicken } from "../models/chicken";
+import { StaticObject } from "../models/staticObject";
+import { Food } from "../models/food";
 
 export interface Coordinates {
   left: number;

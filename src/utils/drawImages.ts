@@ -13,11 +13,11 @@ import food3 from "../sprites/food3.png";
 import { loadMultipleImages } from "./loadImages";
 import henHouse from "../sprites/hen-house.png";
 import waterHole from "../sprites/water.png";
-import { Chicken, SavedChickenState } from "./chicken";
-import { StaticObject } from "./staticObject";
+import { Chicken, SavedChickenState } from "../models/chicken";
+import { StaticObject } from "../models/staticObject";
 import { StaticItems, DynItems, ChickenBreed, Coordinates } from "../types/types";
 import { getStorageKey, StorageKeys } from "./localStorage";
-import { Food, SavedFoodState } from "./food";
+import { Food, SavedFoodState } from "../models/food";
 
 const FRAME_THROTTLE = 15;
 
