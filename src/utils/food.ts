@@ -4,26 +4,38 @@ import { Coordinates } from "../types/types";
 const MAX_EATERS = 3;
 const MAX_FOOD = 30;
 
-export interface FoodProps extends Coordinates{
+export interface FoodProps extends Coordinates {
   imgs: HTMLImageElement[];
+  foodMeter?: number;
 }
+
+export type SavedFoodState = Pick<FoodProps, "top"|"left"|"foodMeter">; 
 
 export class Food {
   private imgs: HTMLImageElement[];
-  private foodMeter = MAX_FOOD;
+  private foodMeter: number;
   private animalsEating: string[] = [];
   public top: number;
   public left: number;
   public id = generateId();
 
-  constructor({ imgs, top, left }: FoodProps) {
+  constructor({ imgs, top, left, foodMeter }: FoodProps) {
     this.imgs = imgs;
     this.top = top;
     this.left = left;
+    this.foodMeter = foodMeter || foodMeter === 0 ? foodMeter : MAX_FOOD;
   }
 
   public update(ctx: CanvasRenderingContext2D) {
     this.draw(ctx, this.getImg());
+  }
+
+  public getSavingState() {
+    return {
+      top: this.top,
+      left: this.left,
+      foodMeter: this.foodMeter,
+    }
   }
 
   public updateFoodMeter() {

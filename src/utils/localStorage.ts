@@ -1,18 +1,14 @@
-import { ChickenProps } from "./chicken";
-
 export enum StorageKeys {
   chickens = "chickens",
+  food = "food",
 }
 
-interface StorageKeysType {
-  [StorageKeys.chickens]: Pick<ChickenProps, "breed"|"top"|"left"|"hungerMeter">[] | null;
-}
-
-const storageKeysToDefaultMap: { [key in StorageKeys]: StorageKeysType[key] } = {
+const storageKeysToDefaultMap: { [key in StorageKeys]: any } = {
   [StorageKeys.chickens]: null,
+  [StorageKeys.food]: null,
 };
 
-export const getStorageKey = (key: StorageKeys): StorageKeysType[StorageKeys] => {
+export const getStorageKey = (key: StorageKeys): any => {
   try {
     const value = window.localStorage.getItem(key);
     if (value === null) {
@@ -24,7 +20,7 @@ export const getStorageKey = (key: StorageKeys): StorageKeysType[StorageKeys] =>
   }
 };
 
-export const setStorageKey = (key: StorageKeys, value: StorageKeysType[StorageKeys]) => {
+export const setStorageKey = (key: StorageKeys, value: any) => {
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
   } catch {

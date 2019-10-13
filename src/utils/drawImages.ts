@@ -13,10 +13,11 @@ import food3 from "../sprites/food3.png";
 import { loadMultipleImages } from "./loadImages";
 import henHouse from "../sprites/hen-house.png";
 import waterHole from "../sprites/water.png";
-import { Chicken } from "./chicken";
+import { Chicken, SavedChickenState } from "./chicken";
 import { StaticObject } from "./staticObject";
 import { StaticItems, DynItems, ChickenBreed, Coordinates } from "../types/types";
 import { getStorageKey, StorageKeys } from "./localStorage";
+import { Food, SavedFoodState } from "./food";
 
 const FRAME_THROTTLE = 15;
 
@@ -36,6 +37,15 @@ export const getFoodImgs = async () => {
     food3,
   ]);
 }
+
+export const getFood = (imgs: HTMLImageElement[]) => {
+  const savedFood = getStorageKey(StorageKeys.food);
+  if(!savedFood) {
+    return [];
+  }
+
+  return savedFood.map((food: SavedFoodState) => new Food({ ...food, imgs }));
+};
 
 export const getObjects = async () => {
   const images = await loadMultipleImages([
@@ -76,7 +86,7 @@ export const getChickens = async (width: number, height: number) => {
     }))
   }
 
-  return savedChickens.map(props => new Chicken({
+  return savedChickens.map((props: SavedChickenState) => new Chicken({
     width,
     height,
     imgs: imagesBreedMap[props.breed],

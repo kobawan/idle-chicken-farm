@@ -46,11 +46,14 @@ export const farmReducer: FarmReducerType = (state, action) => {
         chickens: action.payload.chickens,
       }
     case FarmActions.addFood:
+      const food = Array.isArray(action.payload.food)
+        ? action.payload.food
+        : [action.payload.food]
       return {
         ...state,
         food: [
           ...state.food,
-          action.payload.food,
+          ...food,
         ],
       }
     case FarmActions.removeFood:

@@ -23,6 +23,8 @@ export interface ChickenProps {
   hungerMeter?: number;
 }
 
+export type SavedChickenState = Pick<ChickenProps, "breed"|"top"|"left"|"hungerMeter">;
+
 enum ChickenState {
   eating,
   walkingToFood,
