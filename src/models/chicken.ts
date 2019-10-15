@@ -273,7 +273,8 @@ export class Chicken {
   private hasReachedFood() {
     const distance = this.getFoodDistance();
     return (
-      distance && Math.abs(distance.dx) <= MIN_DISTANCE_TO_EAT
+      distance
+      && Math.abs(distance.dx) <= MIN_DISTANCE_TO_EAT
       && Math.abs(distance.dy) <= MIN_DISTANCE_TO_EAT
     );
   }
