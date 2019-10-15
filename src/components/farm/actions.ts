@@ -5,6 +5,7 @@ import { Food } from "../../models/food";
 export enum FarmActions {
   setObjects,
   addFood,
+  setFood,
   removeFood,
   setChickens,
   toggleFeeding,
@@ -21,7 +22,8 @@ interface ActionWithPayloadType<T, P> extends ActionType<T> {
 }
 
 export type SetObjectsAction = ActionWithPayloadType<FarmActions.setObjects, { objects: StaticObject[] }>;
-export type AddFoodAction = ActionWithPayloadType<FarmActions.addFood, { food: Food | Food[] }>;
+export type AddFoodAction = ActionWithPayloadType<FarmActions.addFood, { food: Food }>;
+export type SetFoodAction = ActionWithPayloadType<FarmActions.setFood, { food: Food[] }>;
 export type RemoveFoodAction = ActionWithPayloadType<FarmActions.removeFood, { id: string }>;
 export type SetChickensAction = ActionWithPayloadType<FarmActions.setChickens, { chickens: Chicken[] }>;
 export type ToggleFeedingAction = ActionType<FarmActions.toggleFeeding>;
@@ -33,8 +35,13 @@ export const setObjectsAction = (objects: StaticObject[]): SetObjectsAction => (
   payload: { objects },
 });
 
-export const addFoodAction = (food: Food | Food[]): AddFoodAction => ({
+export const addFoodAction = (food: Food): AddFoodAction => ({
   type: FarmActions.addFood,
+  payload: { food },
+});
+
+export const setFoodAction = (food: Food[]): SetFoodAction => ({
+  type: FarmActions.setFood,
   payload: { food },
 });
 

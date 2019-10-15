@@ -16,13 +16,16 @@ export interface ChickenProps {
   imgs: HTMLImageElement[];
   width: number;
   height: number;
+  prevWidth?: number;
+  prevHeight?: number;
+  id?: string;
   breed: ChickenBreed;
   top?: number;
   left?: number;
   hungerMeter?: number;
 }
 
-export type SavedChickenState = Pick<ChickenProps, "breed"|"top"|"left"|"hungerMeter">;
+export type SavedChickenState = Pick<ChickenProps, "breed"|"id"|"top"|"left"|"hungerMeter"|"prevHeight"|"prevWidth">;
 
 enum ChickenState {
   eating,
@@ -35,6 +38,10 @@ export class Chicken {
   private imgs: HTMLImageElement[];
   private width: number;
   private height: number;
+  private prevWidth: number;
+  private prevHeight: number;
+  private widthChangeRatio: number;
+  private heightChangeRatio: number;
   private imgIndex = 0;
   private top: number;
   private left: number;
@@ -50,17 +57,22 @@ export class Chicken {
   private requestFood: ((props: Coordinates) => Food | undefined) | undefined;
   private timestamp = 0;
   private fps = 0;
-  public id = generateId();
+  public id: string;
 
-  constructor({ imgs, width, height, breed, top, left, hungerMeter }: ChickenProps) {
+  constructor({ imgs, id, width, height, prevWidth, prevHeight, breed, top, left, hungerMeter }: ChickenProps) {
     this.imgs = imgs;
+    this.currentImg = this.imgs[this.imgIndex];
     this.width = width;
     this.height = height;
-    this.currentImg = this.imgs[this.imgIndex];
-    this.top = top || Math.round(Math.random() * (this.height - this.imgs[0].naturalHeight));
-    this.left = left || Math.round(Math.random() * (this.width - this.imgs[0].naturalWidth));
+    this.prevWidth = prevWidth || this.width;
+    this.prevHeight = prevHeight || this.height;
+    this.heightChangeRatio = height / this.prevHeight;
+    this.widthChangeRatio = width / this.prevWidth;
+    this.top = top || Math.round(Math.random() * (this.height - this.imgs[0].naturalHeight))
+    this.left = left || Math.round(Math.random() * (this.width - this.imgs[0].naturalWidth))
     this.breed = breed;
     this.hungerMeter = hungerMeter || 0;
+    this.id = id || generateId();
   }
 
   public update(ctx: CanvasRenderingContext2D, timestamp: number) {
@@ -109,6 +121,9 @@ export class Chicken {
       top: this.top,
       breed: this.breed,
       hungerMeter: this.hungerMeter,
+      prevHeight: this.prevHeight,
+      prevWidth: this.prevWidth,
+      id: this.id,
     }
   }
 
@@ -166,8 +181,8 @@ export class Chicken {
       0,
       this.currentImg.naturalWidth,
       this.currentImg.naturalHeight,
-      this.left,
-      this.top,
+      (this.left * this.widthChangeRatio),
+      (this.top * this.heightChangeRatio),
       this.currentImg.naturalWidth,
       this.currentImg.naturalHeight
     );
@@ -181,16 +196,26 @@ export class Chicken {
     this.walk();
   }
 
+  private getFoodDistance() {
+    if(!this.food) {
+      return;
+    }
+
+    return {
+      dx: this.food.left - (this.left * this.widthChangeRatio),
+      dy: this.food.top - (this.top * this.heightChangeRatio),
+    }
+  }
+
   private walkToFood() {
-    if(!this.food || !this.food.isAvailable() || this.food.hasFinished()) {
+    const distance = this.getFoodDistance();
+    if(!this.food || !this.food.isAvailable() || this.food.hasFinished() || !distance) {
       this.clearFood(false);
       this.walkRandomly();
       return;
     }
-    const dx = this.food.left - this.left;
-    const dy = this.food.top - this.top;
 
-    this.goToCoordinates(dx, dy);
+    this.goToCoordinates(distance.dx, distance.dy);
     this.walk();
   }
 
@@ -245,11 +270,7 @@ export class Chicken {
   }
 
   private hasReachedFood() {
-    if(!this.food) {
-      return false;
-    }
-    const dx = this.food.left - this.left;
-    const dy = this.food.top - this.top;
-    return Math.abs(dx) <= 2 && Math.abs(dy) <= 2;
+    const distance = this.getFoodDistance();
+    return distance && Math.abs(distance.dx) <= 2 && Math.abs(distance.dy) <= 2;
   }
 }

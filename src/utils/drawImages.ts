@@ -38,23 +38,28 @@ export const getFoodImgs = async () => {
   ]);
 }
 
-export const getFood = (imgs: HTMLImageElement[]) => {
+export const getFood = (imgs: HTMLImageElement[], width: number, height: number) => {
   const savedFood = getStorageKey(StorageKeys.food);
   if(!savedFood) {
     return [];
   }
 
-  return savedFood.map((food: SavedFoodState) => new Food({ ...food, imgs }));
+  return savedFood.map((food: SavedFoodState) => {
+    return new Food({ ...food, imgs, width, height });
+  });
 };
 
-export const getObjects = async () => {
+export const getObjects = async (width: number, height: number) => {
   const images = await loadMultipleImages([
     henHouse,
     waterHole,
   ]);
+  const housePos = { top: height * 0.2, left: width * 0.2 };
+  const waterPos = { top: housePos.top + 30, left: housePos.left + 70 };
+
   const positions: Coordinates[] = [
-    { top: 100, left: 100 },
-    { top: 120, left: 170 },
+    housePos,
+    waterPos,
   ]
   return images.map((img, i) => {
     return new StaticObject({

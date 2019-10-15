@@ -9,11 +9,13 @@ import {
   FarmActions,
   RemoveFoodAction,
   ToggleInfoAction,
+  SetFoodAction,
 } from "./actions";
 
 export type AllFarmActions = (
   SetObjectsAction
   | AddFoodAction
+  | SetFoodAction
   | RemoveFoodAction
   | SetChickensAction
   | ToggleFeedingAction
@@ -45,15 +47,18 @@ export const farmReducer: FarmReducerType = (state, action) => {
         ...state,
         chickens: action.payload.chickens,
       }
+    case FarmActions.setFood: {
+      return {
+        ...state,
+        food: action.payload.food,
+      }
+    }
     case FarmActions.addFood:
-      const food = Array.isArray(action.payload.food)
-        ? action.payload.food
-        : [action.payload.food]
       return {
         ...state,
         food: [
           ...state.food,
-          ...food,
+          action.payload.food,
         ],
       }
     case FarmActions.removeFood:

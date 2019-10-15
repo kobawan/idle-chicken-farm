@@ -5,25 +5,39 @@ const MAX_EATERS = 3;
 const MAX_FOOD = 30;
 
 export interface FoodProps extends Coordinates {
+  width: number;
+  height: number;
+  prevWidth?: number;
+  prevHeight?: number;
   imgs: HTMLImageElement[];
+  id?: string;
   foodMeter?: number;
 }
 
-export type SavedFoodState = Pick<FoodProps, "top"|"left"|"foodMeter">; 
+export type SavedFoodState = Pick<FoodProps, "top"|"left"|"foodMeter"|"id"|"prevHeight"|"prevWidth">; 
 
 export class Food {
+  private prevWidth: number;
+  private prevHeight: number;
   private imgs: HTMLImageElement[];
   private foodMeter: number;
   private animalsEating: string[] = [];
+  private originalTop: number;
+  private originalLeft: number;
   public top: number;
   public left: number;
-  public id = generateId();
+  public id: string;
 
-  constructor({ imgs, top, left, foodMeter }: FoodProps) {
+  constructor({ imgs, top, left, foodMeter, id, width, height, prevHeight, prevWidth }: FoodProps) {
     this.imgs = imgs;
-    this.top = top;
-    this.left = left;
+    this.prevWidth = prevWidth || width;
+    this.prevHeight = prevHeight || height;
+    this.originalTop = top;
+    this.originalLeft = left;
+    this.top = Math.round(top * height / this.prevHeight);
+    this.left = Math.round(left * width / this.prevWidth);
     this.foodMeter = foodMeter || foodMeter === 0 ? foodMeter : MAX_FOOD;
+    this.id = id || generateId();
   }
 
   public update(ctx: CanvasRenderingContext2D) {
@@ -32,9 +46,12 @@ export class Food {
 
   public getSavingState() {
     return {
-      top: this.top,
-      left: this.left,
+      top: this.originalTop,
+      left: this.originalLeft,
       foodMeter: this.foodMeter,
+      id: this.id,
+      prevHeight: this.prevHeight,
+      prevWidth: this.prevWidth,
     }
   }
 

@@ -14,6 +14,7 @@ import {
   toggleDraggingAction,
   addFoodAction,
   removeFoodAction,
+  setFoodAction,
 } from "./actions";
 import { setStorageKey, StorageKeys } from "../../utils/localStorage";
 import { Food, FoodProps } from "../../models/food";
@@ -25,6 +26,7 @@ import { StaticObject } from "../../models/staticObject";
 
 const RESIZE_BY = 2;
 const MAX_FOOD_DISTANCE = 300 / RESIZE_BY; // in px
+const SAVING_INTERVAL = 5000;
 
 const initChickens = (
   chickens: Chicken[],
@@ -45,24 +47,26 @@ const setGameItems = (
   setFood: (food: Food[]) => void,
 ) => {
   Promise.all([
-    getObjects(),
+    getObjects(resizedWidth, resizedHeight),
     getChickens(resizedWidth, resizedHeight),
     getFoodImgs(),
   ]).then(([objects, chickens, foodImgs]) => {
     setObjects(objects);
     setChickens(chickens);
     setFoodImgs(foodImgs);
-    setFood(getFood(foodImgs));
+    setFood(getFood(foodImgs, resizedWidth, resizedHeight));
   });
 }
 
 const throtteFoodDrop = throttle((
-  { imgs, left, top, addFood }: FoodProps & { addFood: (food: Food) => void },
+  { imgs, left, top, addFood, width, height }: FoodProps & { addFood: (food: Food) => void },
 ) => {
   const food = new Food({
     imgs,
     top: Math.round(top / RESIZE_BY),
     left: Math.round(left / RESIZE_BY),
+    width,
+    height,
   });
   addFood(food);
 }, 100, { leading: true, trailing: false });
@@ -95,14 +99,15 @@ const disableFeedingOnEsc = (toggleFeeding: () => void, isFeeding: boolean) => {
 }
 
 const saveItemsToStorage = (storageKey: StorageKeys, items: { getSavingState: () => any }[]) => {
-  if(!items.length) {
+  const storage = items.map(item => item.getSavingState());
+  if (!storage.length) {
     return;
   }
-  setStorageKey(storageKey, items.map(item => item.getSavingState()))
+  setStorageKey(storageKey, storage);
 }
 
 const saveItemsOnInterval = (storageKey: StorageKeys, items: { getSavingState: () => any }[]) => {
-  const id = setInterval(() => saveItemsToStorage(storageKey, items), 5000);
+  const id = setInterval(() => saveItemsToStorage(storageKey, items), SAVING_INTERVAL);
   return () => {
     saveItemsToStorage(storageKey, items);
     clearInterval(id);
@@ -124,7 +129,8 @@ export const Farm: React.FC = memo(() => {
   ] = useReducer(farmReducer, initialFarmState);
   const [foodImgs, setFoodImgs] = useState<HTMLImageElement[]>([]);
 
-  const addFood = useCallback((food: Food | Food[]) => dispatch(addFoodAction(food)), [dispatch]);
+  const addFood = useCallback((food: Food) => dispatch(addFoodAction(food)), [dispatch]);
+  const setFood = useCallback((food: Food[]) => dispatch(setFoodAction(food)), [dispatch]);
   const removeFood = useCallback((id: string) => dispatch(removeFoodAction(id)), [dispatch]);
   const requestFood = useCallback((coord: Coordinates) => getClosestFood(coord, food), [food]);
   const handleFoodDrop = useCallback((e) => {
@@ -138,8 +144,10 @@ export const Farm: React.FC = memo(() => {
       top: e.clientY,
       imgs: foodImgs,
       addFood,
+      width: resizedWidth,
+      height: resizedHeight,
     });
-  }, [isFeeding, foodImgs, isDragging, addFood]);
+  }, [isFeeding, foodImgs, isDragging, addFood, resizedHeight, resizedWidth]);
   const toggleFoodDragging = useCallback(() => dispatch(toggleDraggingAction()), [dispatch])
 
   useEffect(() => initChickens(chickens, removeFood, requestFood), [chickens, removeFood, requestFood])
@@ -153,10 +161,16 @@ export const Farm: React.FC = memo(() => {
     (objects: StaticObject[]) => dispatch(setObjectsAction(objects)),
     (chickens: Chicken[]) => dispatch(setChickensAction(chickens)),
     setFoodImgs,
-    addFood,
-  ), [dispatch, resizedWidth, resizedHeight, setFoodImgs, addFood]);
-  useEffect(() => saveItemsOnInterval(StorageKeys.chickens, chickens), [chickens])
-  useEffect(() => saveItemsOnInterval(StorageKeys.food, food), [food])
+    setFood,
+  ), [dispatch, resizedWidth, resizedHeight, setFoodImgs, setFood]);
+  useEffect(
+    () => saveItemsOnInterval(StorageKeys.chickens, chickens),
+    [chickens, resizedHeight, resizedWidth]
+  )
+  useEffect(
+    () => saveItemsOnInterval(StorageKeys.food, food),
+    [food, resizedHeight, resizedWidth]
+  )
 
   return (
     <div className={cx(styles.wrapper, isFeeding && styles.feeding)}>
