@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/idle-chicken-farm/precache-manifest.3d9a53d7d9cd42bb3c6f79463e14b1e6.js"
+  "/idle-chicken-farm/precache-manifest.22e41d8b788f289ac8d9eeb9567d7886.js"
 );
 
 self.addEventListener('message', (event) => {
