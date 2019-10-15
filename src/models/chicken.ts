@@ -4,6 +4,7 @@ import { generateId } from "../utils/idGenerator";
 
 const MOVEMENT_PX = 2;
 const HUNGER_MIN = 30;
+const MIN_DISTANCE_TO_EAT = 5;
 
 const RESTING_TURNS_PER_SEC = 10;
 const RESTING_PROBABILITY_PER_SEC = 20;
@@ -271,6 +272,9 @@ export class Chicken {
 
   private hasReachedFood() {
     const distance = this.getFoodDistance();
-    return distance && Math.abs(distance.dx) <= 2 && Math.abs(distance.dy) <= 2;
+    return (
+      distance && Math.abs(distance.dx) <= MIN_DISTANCE_TO_EAT
+      && Math.abs(distance.dy) <= MIN_DISTANCE_TO_EAT
+    );
   }
 }
