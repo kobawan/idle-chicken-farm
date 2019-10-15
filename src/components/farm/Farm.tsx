@@ -5,7 +5,7 @@ import styles from "./farm.module.scss";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
 import { getObjects, getChickens, getFoodImgs, getFood } from "../../utils/drawImages";
 import { Chicken } from "../../models/chicken";
-import { Coordinates } from "../../types/types";
+import { Coordinates, InteractEvent } from "../../types/types";
 import { farmReducer, initialFarmState } from "./reducer";
 import {
   setObjectsAction,
@@ -114,6 +114,10 @@ const saveItemsOnInterval = (storageKey: StorageKeys, items: { getSavingState: (
   };
 }
 
+const isTouchEvent = (e: InteractEvent<HTMLCanvasElement>): e is React.TouchEvent<HTMLCanvasElement> => {
+  return (e as React.TouchEvent<HTMLCanvasElement>).type.includes("touch");
+}
+
 export const Farm: React.FC = memo(() => {
   const { resizedWidth, resizedHeight } = useWindowDimensions(RESIZE_BY);
   const [
@@ -133,22 +137,46 @@ export const Farm: React.FC = memo(() => {
   const setFood = useCallback((food: Food[]) => dispatch(setFoodAction(food)), [dispatch]);
   const removeFood = useCallback((id: string) => dispatch(removeFoodAction(id)), [dispatch]);
   const requestFood = useCallback((coord: Coordinates) => getClosestFood(coord, food), [food]);
-  const handleFoodDrop = useCallback((e) => {
+  const handleFoodDrop = useCallback((e: InteractEvent<HTMLCanvasElement>) => {
     e.persist();
+    e.stopPropagation();
+
     if (!isFeeding || !foodImgs.length || !isDragging) {
       return;
     }
 
+    let left: number;
+    let top: number;
+
+    if(isTouchEvent(e)) {
+      if(e.touches.length !== 1) {
+        return;
+      }
+      left = e.touches[0].clientX;
+      top = e.touches[0].clientY;
+    } else {
+      e.preventDefault();
+      left = e.clientX;
+      top = e.clientY;
+    }
+
     throtteFoodDrop({
-      left: e.clientX,
-      top: e.clientY,
+      left,
+      top,
       imgs: foodImgs,
       addFood,
       width: resizedWidth,
       height: resizedHeight,
     });
   }, [isFeeding, foodImgs, isDragging, addFood, resizedHeight, resizedWidth]);
-  const toggleFoodDragging = useCallback(() => dispatch(toggleDraggingAction()), [dispatch])
+  const toggleFoodDragging = useCallback((e: InteractEvent<HTMLCanvasElement>) => {
+    e.stopPropagation();
+    if(!isTouchEvent(e)) {
+      e.preventDefault();
+    }
+
+    dispatch(toggleDraggingAction())
+  }, [dispatch]);
 
   useEffect(() => initChickens(chickens, removeFood, requestFood), [chickens, removeFood, requestFood])
   useEffect(() => disableFeedingOnEsc(

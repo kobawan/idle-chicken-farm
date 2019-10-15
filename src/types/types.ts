@@ -23,3 +23,5 @@ export enum ChickenBreed {
   orange = "orange",
   yellow = "yellow",
 }
+
+export type InteractEvent<E> = React.MouseEvent<E> | React.TouchEvent<E>;
