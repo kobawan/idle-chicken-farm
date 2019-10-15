@@ -1,21 +1,17 @@
 import React, { useRef, useEffect } from "react";
 import styles from "./staticCanvas.module.scss";
 import { drawStaticObjects } from "../../utils/drawImages";
-import { Food } from "../../models/food";
-import { StaticObject } from "../../models/staticObject";
+import { StaticItems } from "../../types/types";
 
-interface StaticCanvasProps {
-  food: Food[];
+interface StaticCanvasProps extends StaticItems {
   resizedWidth: number;
   resizedHeight: number;
-  objects: StaticObject[];
 }
 
 export const StaticCanvas: React.FC<StaticCanvasProps> = ({
   resizedWidth,
   resizedHeight,
   objects,
-  food,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -25,9 +21,8 @@ export const StaticCanvas: React.FC<StaticCanvasProps> = ({
       resizedWidth,
       resizedHeight,
       objects,
-      food,
     })
-  }, [resizedWidth, resizedHeight, objects, food])
+  }, [resizedWidth, resizedHeight, objects])
 
   return (
     <canvas

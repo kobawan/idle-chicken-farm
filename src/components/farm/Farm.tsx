@@ -23,6 +23,7 @@ import { Menu } from "../menu/Menu";
 import { DynamicCanvas } from "../dynamicCanvas/DynamicCanvas";
 import { getClosest, getDistance } from "../../utils/distance";
 import { StaticObject } from "../../models/staticObject";
+import { FoodCanvas } from "../foodCanvas/FoodCanvas";
 
 const RESIZE_BY = 2;
 const MAX_FOOD_DISTANCE = 300 / RESIZE_BY; // in px
@@ -132,6 +133,7 @@ export const Farm: React.FC = memo(() => {
     dispatch,
   ] = useReducer(farmReducer, initialFarmState);
   const [foodImgs, setFoodImgs] = useState<HTMLImageElement[]>([]);
+  const isDraggingFood = isFeeding && !!foodImgs.length && isDragging;
 
   const addFood = useCallback((food: Food) => dispatch(addFoodAction(food)), [dispatch]);
   const setFood = useCallback((food: Food[]) => dispatch(setFoodAction(food)), [dispatch]);
@@ -141,7 +143,7 @@ export const Farm: React.FC = memo(() => {
     e.persist();
     e.stopPropagation();
 
-    if (!isFeeding || !foodImgs.length || !isDragging) {
+    if (!isDraggingFood) {
       return;
     }
 
@@ -168,7 +170,7 @@ export const Farm: React.FC = memo(() => {
       width: resizedWidth,
       height: resizedHeight,
     });
-  }, [isFeeding, foodImgs, isDragging, addFood, resizedHeight, resizedWidth]);
+  }, [isDraggingFood, foodImgs, addFood, resizedHeight, resizedWidth]);
   const toggleFoodDragging = useCallback((e: InteractEvent<HTMLCanvasElement>) => {
     e.stopPropagation();
     if(!isTouchEvent(e)) {
@@ -207,14 +209,19 @@ export const Farm: React.FC = memo(() => {
         resizedWidth={resizedWidth}
         resizedHeight={resizedHeight}
         objects={objects}
+      />
+      <FoodCanvas
+        resizedWidth={resizedWidth}
+        resizedHeight={resizedHeight}
+        toggleDragging={toggleFoodDragging}
+        dropFood={handleFoodDrop}
         food={food}
+        isDraggingFood={isDraggingFood}
       />
       <DynamicCanvas
         resizedWidth={resizedWidth}
         resizedHeight={resizedHeight}
         chickens={chickens}
-        toggleDragging={toggleFoodDragging}
-        dropFood={handleFoodDrop}
       />
       <Menu
         isInfoOpen={isInfoOpen}

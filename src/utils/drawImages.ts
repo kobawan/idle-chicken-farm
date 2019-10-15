@@ -15,11 +15,12 @@ import henHouse from "../sprites/hen-house.png";
 import waterHole from "../sprites/water.png";
 import { Chicken, SavedChickenState } from "../models/chicken";
 import { StaticObject } from "../models/staticObject";
-import { StaticItems, DynItems, ChickenBreed, Coordinates } from "../types/types";
+import { StaticItems, DynItems, ChickenBreed, Coordinates, FoodItems } from "../types/types";
 import { getStorageKey, StorageKeys } from "./localStorage";
 import { Food, SavedFoodState } from "../models/food";
 
-const FRAME_THROTTLE = 15;
+const DYNAMIC_CANVAS_FRAME_THROTTLE = 15;
+const FOOD_CANVAS_FRAME_THROTTLE = 30;
 
 interface DrawProps {
   canvasRef: React.RefObject<HTMLCanvasElement>,
@@ -29,6 +30,7 @@ interface DrawProps {
 
 type DrawStaticObjectsProps = StaticItems & DrawProps;
 type DrawDynamicObjectsProps = DynItems & DrawProps & { animationIdRef: React.MutableRefObject<number> };
+type DrawFoodObjectsProps = FoodItems & DrawProps & { animationIdRef: React.MutableRefObject<number>; isDraggingFood: boolean };
 
 export const getFoodImgs = async () => {
   return await loadMultipleImages([
@@ -102,7 +104,6 @@ export const getChickens = async (width: number, height: number) => {
 export const drawStaticObjects = ({
   canvasRef,
   objects,
-  food,
   resizedWidth,
   resizedHeight,
 }: DrawStaticObjectsProps) => {
@@ -118,7 +119,6 @@ export const drawStaticObjects = ({
   ctx.clearRect(0, 0, resizedWidth, resizedHeight);
 
   objects.forEach(object => object.update(ctx));
-  food.forEach(food => food.update(ctx));
 }
 
 export const drawDynamicObjects = ({
@@ -143,19 +143,55 @@ export const drawDynamicObjects = ({
     window.cancelAnimationFrame(animationIdRef.current);
     frameCount++;
 
-    if(frameCount < FRAME_THROTTLE) {
+    if(frameCount < DYNAMIC_CANVAS_FRAME_THROTTLE) {
       animationIdRef.current = window.requestAnimationFrame(loop);
       return;
     }
     frameCount = 0;
     ctx.clearRect(0, 0, resizedWidth, resizedHeight);
 
-    chickens.forEach(chicken => {
-      chicken.update(ctx, timestamp);
-    });
+    chickens.forEach(chicken => chicken.update(ctx, timestamp));
 
     animationIdRef.current = window.requestAnimationFrame(loop)
   }
 
   loop(performance.now());
+};
+
+export const drawFoodObjects = ({
+  canvasRef,
+  resizedWidth,
+  resizedHeight,
+  food,
+  animationIdRef,
+  isDraggingFood,
+}: DrawFoodObjectsProps) => {
+  if(!canvasRef.current) {
+    return;
+  }
+  const ctx = canvasRef.current.getContext('2d');
+  if(!ctx) {
+    return;
+  }
+
+  let frameCount = 0;
+  ctx.imageSmoothingEnabled = false;
+  window.cancelAnimationFrame(animationIdRef.current);
+  const loop = () => {
+    window.cancelAnimationFrame(animationIdRef.current);
+    frameCount++;
+
+    if(!isDraggingFood && frameCount < FOOD_CANVAS_FRAME_THROTTLE) {
+      animationIdRef.current = window.requestAnimationFrame(loop);
+      return;
+    }
+    frameCount = 0;
+    ctx.clearRect(0, 0, resizedWidth, resizedHeight);
+
+    food.forEach(singleFood => singleFood.update(ctx));
+
+    animationIdRef.current = window.requestAnimationFrame(loop)
+  }
+
+  loop();
 };

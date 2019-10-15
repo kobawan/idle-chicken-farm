@@ -9,6 +9,9 @@ export interface Coordinates {
 
 export interface StaticItems {
   objects: StaticObject[];
+}
+
+export interface FoodItems {
   food: Food[];
 }
 
@@ -16,7 +19,7 @@ export interface DynItems {
   chickens: Chicken[];
 }
 
-export type FarmItems = StaticItems & DynItems;
+export type FarmItems = StaticItems & DynItems & FoodItems;
 
 export enum ChickenBreed {
   brown = "brown",
