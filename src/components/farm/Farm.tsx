@@ -3,7 +3,9 @@ import throttle from "lodash.throttle";
 import cx from "classnames";
 import styles from "./farm.module.scss";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
-import { getObjects, getChickens, getFoodImgs, getFood } from "../../utils/drawImages";
+import { getChickens } from "../../utils/drawChickens";
+import { createObjects } from "../../utils/drawObjects";
+import { getFoodImgs, getFood } from "../../utils/drawFood";
 import { Chicken } from "../../models/chicken";
 import { Coordinates, InteractEvent } from "../../types/types";
 import { farmReducer, initialFarmState } from "./reducer";
@@ -29,26 +31,37 @@ const RESIZE_BY = 2;
 const MAX_FOOD_DISTANCE = 300 / RESIZE_BY; // in px
 const SAVING_INTERVAL = 5000;
 
-const initChickens = (
-  chickens: Chicken[],
-  removeFood: (id: string) => void,
+const initChickens = ({
+  chickens,
+  removeFood,
+  requestFood,
+}: {
+  chickens: Chicken[]
+  removeFood: (id: string) => void
   requestFood: (coord: Coordinates) => Food | undefined
-) => {
+}) => {
   chickens.forEach(chicken => {
     chicken.setFoodMethods(removeFood, requestFood);
   })
 }
 
-const setGameItems = (
+const setGameItems = ({
+  resizedWidth,
+  resizedHeight,
+  setObjects,
+  setChickens,
+  setFoodImgs,
+  setFood,
+}: {
   resizedWidth: number,
   resizedHeight: number,
   setObjects: (objects: StaticObject[]) => void,
   setChickens: (chickens: Chicken[]) => void,
   setFoodImgs: (imgs: HTMLImageElement[]) => void,
   setFood: (food: Food[]) => void,
-) => {
+}) => {
   Promise.all([
-    getObjects(resizedWidth, resizedHeight),
+    createObjects(resizedWidth, resizedHeight),
     getChickens(resizedWidth, resizedHeight),
     getFoodImgs(),
   ]).then(([objects, chickens, foodImgs]) => {
@@ -86,7 +99,10 @@ const getClosestFood = (coord: Coordinates, food: Food[]) => {
   });
 }
 
-const disableFeedingOnEsc = (toggleFeeding: () => void, isFeeding: boolean) => {
+const disableFeedingOnEsc = ({ toggleFeeding, isFeeding }: {
+  toggleFeeding: () => void,
+  isFeeding: boolean,
+}) => {
   const stopFeedingOnEsc = (e: KeyboardEvent) => {
     if (e.code === "Escape" && isFeeding) {
       toggleFeeding();
@@ -135,10 +151,6 @@ export const Farm: React.FC = memo(() => {
   const [foodImgs, setFoodImgs] = useState<HTMLImageElement[]>([]);
   const isDraggingFood = isFeeding && !!foodImgs.length && isDragging;
 
-  const addFood = useCallback((food: Food) => dispatch(addFoodAction(food)), [dispatch]);
-  const setFood = useCallback((food: Food[]) => dispatch(setFoodAction(food)), [dispatch]);
-  const removeFood = useCallback((id: string) => dispatch(removeFoodAction(id)), [dispatch]);
-  const requestFood = useCallback((coord: Coordinates) => getClosestFood(coord, food), [food]);
   const handleFoodDrop = useCallback((e: InteractEvent<HTMLCanvasElement>) => {
     e.persist();
     e.stopPropagation();
@@ -166,11 +178,11 @@ export const Farm: React.FC = memo(() => {
       left,
       top,
       imgs: foodImgs,
-      addFood,
+      addFood: (food: Food) => dispatch(addFoodAction(food)),
       width: resizedWidth,
       height: resizedHeight,
     });
-  }, [isDraggingFood, foodImgs, addFood, resizedHeight, resizedWidth]);
+  }, [isDraggingFood, foodImgs, resizedHeight, resizedWidth]);
   const toggleFoodDragging = useCallback((e: InteractEvent<HTMLCanvasElement>) => {
     e.stopPropagation();
     if(!isTouchEvent(e)) {
@@ -178,21 +190,30 @@ export const Farm: React.FC = memo(() => {
     }
 
     dispatch(toggleDraggingAction())
-  }, [dispatch]);
+  }, []);
 
-  useEffect(() => initChickens(chickens, removeFood, requestFood), [chickens, removeFood, requestFood])
-  useEffect(() => disableFeedingOnEsc(
-    () => dispatch(toggleFeedingAction()),
+  useEffect(() => initChickens({
+    chickens,
+    removeFood: (id: string) => dispatch(removeFoodAction(id)),
+    requestFood: (coord: Coordinates) => getClosestFood(coord, food),
+  }), [chickens, food])
+  useEffect(() => disableFeedingOnEsc({
+    toggleFeeding: () => dispatch(toggleFeedingAction()),
     isFeeding
-  ), [dispatch, isFeeding]);
-  useEffect(() => setGameItems(
-    resizedWidth,
-    resizedHeight,
-    (objects: StaticObject[]) => dispatch(setObjectsAction(objects)),
-    (chickens: Chicken[]) => dispatch(setChickensAction(chickens)),
-    setFoodImgs,
-    setFood,
-  ), [dispatch, resizedWidth, resizedHeight, setFoodImgs, setFood]);
+  }), [isFeeding]);
+  useEffect(() => {
+    // It should only run on mount
+    if(!chickens.length) {
+      setGameItems({
+        resizedWidth,
+        resizedHeight,
+        setObjects: (objects: StaticObject[]) => dispatch(setObjectsAction(objects)),
+        setChickens: (chickens: Chicken[]) => dispatch(setChickensAction(chickens)),
+        setFoodImgs,
+        setFood: (food: Food[]) => dispatch(setFoodAction(food)),
+      })
+    }
+  }, [resizedWidth, resizedHeight, chickens]);
   useEffect(
     () => saveItemsOnInterval(StorageKeys.chickens, chickens),
     [chickens, resizedHeight, resizedWidth]

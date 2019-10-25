@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import styles from "./foodCanvas.module.scss";
-import { drawFoodObjects } from "../../utils/drawImages";
+import { drawFoodObjects } from "../../utils/drawFood";
 import { InteractEvent, FoodItems } from "../../types/types";
 
 interface FoodCanvasProps extends FoodItems {
@@ -35,7 +35,7 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
       food,
       isDraggingFood,
     })
-  }, [resizedWidth, resizedHeight, animationIdRef, food, isDraggingFood]);
+  }, [resizedWidth, resizedHeight, food, isDraggingFood]);
 
   return (
     <canvas

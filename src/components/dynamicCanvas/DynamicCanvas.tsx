@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import styles from "./dynamicCanvas.module.scss";
-import { drawDynamicObjects } from "../../utils/drawImages";
+import { drawDynamicObjects } from "../../utils/drawChickens";
 import { DynItems } from "../../types/types";
 
 interface DynamicCanvasProps extends DynItems {
