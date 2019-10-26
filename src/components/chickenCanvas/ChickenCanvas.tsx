@@ -2,6 +2,8 @@ import React, { useRef, useEffect } from "react";
 import styles from "./chickenCanvas.module.scss";
 import { ChickenItems } from "../../types/types";
 import { drawChickens } from "../../utils/drawChickens";
+import { StorageKeys } from "../../utils/localStorage";
+import { saveItemsOnInterval } from "../../utils/saveItems";
 
 interface ChickenCanvasProps extends ChickenItems {
   resizedWidth: number;
@@ -25,6 +27,10 @@ export const ChickenCanvas: React.FC<ChickenCanvasProps> = ({
       chickens,	
     })
   }, [resizedWidth, resizedHeight, animationIdRef, chickens]);
+  useEffect(
+    () => saveItemsOnInterval(StorageKeys.chickens, chickens),
+    [chickens, resizedHeight, resizedWidth]
+  )
 
   return (
     <canvas

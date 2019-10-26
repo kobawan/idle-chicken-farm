@@ -1,5 +1,4 @@
-import React, { useEffect, memo, useState, useCallback, useReducer } from "react";
-import throttle from "lodash.throttle";
+import React, { useEffect, memo, useState, useReducer, useCallback } from "react";
 import cx from "classnames";
 import styles from "./farm.module.scss";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
@@ -7,7 +6,7 @@ import { getChickens } from "../../utils/drawChickens";
 import { createObjects } from "../../utils/drawObjects";
 import { getFoodImgs, getFood } from "../../utils/drawFood";
 import { Chicken } from "../../models/chicken";
-import { Coordinates, InteractEvent } from "../../types/types";
+import { Coordinates } from "../../types/types";
 import { farmReducer, initialFarmState } from "./reducer";
 import {
   setObjectsAction,
@@ -18,32 +17,16 @@ import {
   removeFoodAction,
   setFoodAction,
 } from "./actions";
-import { setStorageKey, StorageKeys } from "../../utils/localStorage";
-import { Food, FoodProps } from "../../models/food";
+import { Food } from "../../models/food";
 import { StaticCanvas } from "../StaticCanvas/StaticCanvas";
 import { Menu } from "../menu/Menu";
 import { ChickenCanvas } from "../chickenCanvas/ChickenCanvas";
 import { getClosest, getDistance } from "../../utils/distance";
 import { StaticObject } from "../../models/staticObject";
 import { FoodCanvas } from "../foodCanvas/FoodCanvas";
+import { RESIZE_CANVAS_BY } from "../../gameConsts";
 
-const RESIZE_BY = 2;
-const MAX_FOOD_DISTANCE = 300 / RESIZE_BY; // in px
-const SAVING_INTERVAL = 5000;
-
-const initChickens = ({
-  chickens,
-  removeFood,
-  requestFood,
-}: {
-  chickens: Chicken[]
-  removeFood: (id: string) => void
-  requestFood: (coord: Coordinates) => Food | undefined
-}) => {
-  chickens.forEach(chicken => {
-    chicken.setFoodMethods(removeFood, requestFood);
-  })
-}
+const MAX_FOOD_DISTANCE = 300 / RESIZE_CANVAS_BY; // in px
 
 const setGameItems = ({
   resizedWidth,
@@ -72,19 +55,6 @@ const setGameItems = ({
   });
 }
 
-const throtteFoodDrop = throttle((
-  { imgs, left, top, addFood, width, height }: FoodProps & { addFood: (food: Food) => void },
-) => {
-  const food = new Food({
-    imgs,
-    top: Math.round(top / RESIZE_BY),
-    left: Math.round(left / RESIZE_BY),
-    width,
-    height,
-  });
-  addFood(food);
-}, 100, { leading: true, trailing: false });
-
 const getClosestFood = (coord: Coordinates, food: Food[]) => {
   const allAvailableFood = food.filter(item => (
     item.isAvailable()
@@ -99,44 +69,22 @@ const getClosestFood = (coord: Coordinates, food: Food[]) => {
   });
 }
 
-const disableFeedingOnEsc = ({ toggleFeeding, isFeeding }: {
-  toggleFeeding: () => void,
-  isFeeding: boolean,
+const linkFoodToChickens = ({
+  chickens,
+  removeFood,
+  requestFood,
+}: {
+  chickens: Chicken[]
+  removeFood: (id: string) => void
+  requestFood: (coord: Coordinates) => Food | undefined
 }) => {
-  const stopFeedingOnEsc = (e: KeyboardEvent) => {
-    if (e.code === "Escape" && isFeeding) {
-      toggleFeeding();
-    }
-  };
-  document.addEventListener("keydown", stopFeedingOnEsc);
-
-  return () => {
-    document.removeEventListener("keydown", stopFeedingOnEsc);
-  };
-}
-
-const saveItemsToStorage = (storageKey: StorageKeys, items: { getSavingState: () => any }[]) => {
-  const storage = items.map(item => item.getSavingState());
-  if (!storage.length) {
-    return;
-  }
-  setStorageKey(storageKey, storage);
-}
-
-const saveItemsOnInterval = (storageKey: StorageKeys, items: { getSavingState: () => any }[]) => {
-  const id = setInterval(() => saveItemsToStorage(storageKey, items), SAVING_INTERVAL);
-  return () => {
-    saveItemsToStorage(storageKey, items);
-    clearInterval(id);
-  };
-}
-
-const isTouchEvent = (e: InteractEvent<HTMLCanvasElement>): e is React.TouchEvent<HTMLCanvasElement> => {
-  return (e as React.TouchEvent<HTMLCanvasElement>).type.includes("touch");
+  chickens.forEach(chicken => {
+    chicken.setFoodMethods(removeFood, requestFood);
+  })
 }
 
 export const Farm: React.FC = memo(() => {
-  const { resizedWidth, resizedHeight } = useWindowDimensions(RESIZE_BY);
+  const { resizedWidth, resizedHeight } = useWindowDimensions(RESIZE_CANVAS_BY);
   const [
     {
       isDragging,
@@ -149,58 +97,10 @@ export const Farm: React.FC = memo(() => {
     dispatch,
   ] = useReducer(farmReducer, initialFarmState);
   const [foodImgs, setFoodImgs] = useState<HTMLImageElement[]>([]);
-  const isDraggingFood = isFeeding && !!foodImgs.length && isDragging;
+  const addFood = useCallback((food: Food) => dispatch(addFoodAction(food)), [])
+  const toggleFeeding = useCallback(() => dispatch(toggleFeedingAction()), [])
+  const toggleDragging = useCallback(() => dispatch(toggleDraggingAction()), [])
 
-  const handleFoodDrop = useCallback((e: InteractEvent<HTMLCanvasElement>) => {
-    if (!isDraggingFood) {
-      return;
-    }
-
-    e.persist();
-    e.stopPropagation();
-
-    let left: number;
-    let top: number;
-
-    if(isTouchEvent(e)) {
-      if(e.touches.length !== 1) {
-        return;
-      }
-      left = e.touches[0].clientX;
-      top = e.touches[0].clientY;
-    } else {
-      e.preventDefault();
-      left = e.clientX;
-      top = e.clientY;
-    }
-
-    throtteFoodDrop({
-      left,
-      top,
-      imgs: foodImgs,
-      addFood: (food: Food) => dispatch(addFoodAction(food)),
-      width: resizedWidth,
-      height: resizedHeight,
-    });
-  }, [isDraggingFood, foodImgs, resizedHeight, resizedWidth]);
-  const toggleFoodDragging = useCallback((e: InteractEvent<HTMLCanvasElement>) => {
-    e.stopPropagation();
-    if(!isTouchEvent(e)) {
-      e.preventDefault();
-    }
-
-    dispatch(toggleDraggingAction())
-  }, []);
-
-  useEffect(() => initChickens({
-    chickens,
-    removeFood: (id: string) => dispatch(removeFoodAction(id)),
-    requestFood: (coord: Coordinates) => getClosestFood(coord, food),
-  }), [chickens, food])
-  useEffect(() => disableFeedingOnEsc({
-    toggleFeeding: () => dispatch(toggleFeedingAction()),
-    isFeeding
-  }), [isFeeding]);
   useEffect(() => {
     // It should only run on mount
     if(!chickens.length) {
@@ -214,14 +114,12 @@ export const Farm: React.FC = memo(() => {
       })
     }
   }, [resizedWidth, resizedHeight, chickens]);
-  useEffect(
-    () => saveItemsOnInterval(StorageKeys.chickens, chickens),
-    [chickens, resizedHeight, resizedWidth]
-  )
-  useEffect(
-    () => saveItemsOnInterval(StorageKeys.food, food),
-    [food, resizedHeight, resizedWidth]
-  )
+
+  useEffect(() => linkFoodToChickens({
+    chickens,
+    removeFood: (id: string) => dispatch(removeFoodAction(id)),
+    requestFood: (coord: Coordinates) => getClosestFood(coord, food),
+  }), [chickens, food])
 
   return (
     <div className={cx(styles.wrapper, isFeeding && styles.feeding)}>
@@ -234,10 +132,13 @@ export const Farm: React.FC = memo(() => {
       <FoodCanvas
         resizedWidth={resizedWidth}
         resizedHeight={resizedHeight}
-        toggleDragging={toggleFoodDragging}
-        dropFood={handleFoodDrop}
+        toggleDragging={toggleDragging}
         food={food}
-        isDraggingFood={isDraggingFood}
+        isDragging={isDragging}
+        isFeeding={isFeeding}
+        toggleFeeding={toggleFeeding}
+        addFood={addFood}
+        foodImages={foodImgs}
       />
       <ChickenCanvas
         resizedWidth={resizedWidth}

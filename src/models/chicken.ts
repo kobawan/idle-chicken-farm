@@ -216,26 +216,22 @@ export class Chicken {
     this.walk();
   }
 
-  private getFoodDistance() {
-    if(!this.food) {
-      return;
-    }
-
+  private getFoodDistance({ left, top }: Coordinates) {
     return {
-      dx: this.food.left - this.left,
-      dy: this.food.top - this.top,
+      dx: left - this.left,
+      dy: top - this.top,
     }
   }
 
   private walkToFood() {
-    const distance = this.getFoodDistance();
-    if(!this.food || !this.food.isAvailable() || this.food.hasFinished() || !distance) {
+    if(!this.food || !this.food.isAvailable() || this.food.hasFinished()) {
       this.clearFood(false);
       this.walkRandomly();
       return;
     }
 
-    this.goToCoordinates(distance.dx, distance.dy);
+    const { dx, dy } = this.getFoodDistance(this.food);
+    this.goToCoordinates(dx, dy);
     this.walk();
   }
 
@@ -290,11 +286,10 @@ export class Chicken {
   }
 
   private hasReachedFood() {
-    const distance = this.getFoodDistance();
-    return (
-      distance
-      && Math.abs(distance.dx) <= MIN_DISTANCE_TO_EAT
-      && Math.abs(distance.dy) <= MIN_DISTANCE_TO_EAT
-    );
+    if(!this.food) {
+      return false;
+    }
+    const { dx, dy } = this.getFoodDistance(this.food);
+    return Math.abs(dx) <= MIN_DISTANCE_TO_EAT && Math.abs(dy) <= MIN_DISTANCE_TO_EAT;
   }
 }
