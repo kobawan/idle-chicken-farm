@@ -35,7 +35,7 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
       food,
       isDraggingFood,
     })
-  }, [resizedWidth, resizedHeight, food, isDraggingFood]);
+  }, [resizedWidth, resizedHeight, food, isDraggingFood, animationIdRef]);
 
   return (
     <canvas

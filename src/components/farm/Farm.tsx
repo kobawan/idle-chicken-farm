@@ -152,12 +152,12 @@ export const Farm: React.FC = memo(() => {
   const isDraggingFood = isFeeding && !!foodImgs.length && isDragging;
 
   const handleFoodDrop = useCallback((e: InteractEvent<HTMLCanvasElement>) => {
-    e.persist();
-    e.stopPropagation();
-
     if (!isDraggingFood) {
       return;
     }
+
+    e.persist();
+    e.stopPropagation();
 
     let left: number;
     let top: number;

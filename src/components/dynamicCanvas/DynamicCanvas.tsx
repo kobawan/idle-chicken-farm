@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import styles from "./dynamicCanvas.module.scss";
-import { drawDynamicObjects } from "../../utils/drawChickens";
+import { drawChickens } from "../../utils/drawChickens";
 import { DynItems } from "../../types/types";
 
 interface DynamicCanvasProps extends DynItems {
@@ -17,7 +17,7 @@ export const DynamicCanvas: React.FC<DynamicCanvasProps> = ({
   const animationIdRef = useRef(0);
 
   useEffect(() => {
-    drawDynamicObjects({
+    drawChickens({
       canvasRef,
       resizedWidth,
       resizedHeight,

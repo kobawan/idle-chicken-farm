@@ -17,8 +17,8 @@ export interface ChickenProps {
   imgs: HTMLImageElement[];
   width: number;
   height: number;
-  prevWidth?: number;
-  prevHeight?: number;
+  originalWidth?: number;
+  originalHeight?: number;
   id?: string;
   breed: ChickenBreed;
   top?: number;
@@ -26,7 +26,7 @@ export interface ChickenProps {
   hungerMeter?: number;
 }
 
-export type SavedChickenState = Pick<ChickenProps, "breed"|"id"|"top"|"left"|"hungerMeter"|"prevHeight"|"prevWidth">;
+export type SavedChickenState = Pick<ChickenProps, "breed"|"id"|"top"|"left"|"hungerMeter"|"originalHeight"|"originalWidth">;
 
 enum ChickenState {
   eating,
@@ -39,8 +39,8 @@ export class Chicken {
   private imgs: HTMLImageElement[];
   private width: number;
   private height: number;
-  private prevWidth: number;
-  private prevHeight: number;
+  private originalWidth: number;
+  private originalHeight: number;
   private widthChangeRatio: number;
   private heightChangeRatio: number;
   private imgIndex = 0;
@@ -60,17 +60,19 @@ export class Chicken {
   private fps = 0;
   public id: string;
 
-  constructor({ imgs, id, width, height, prevWidth, prevHeight, breed, top, left, hungerMeter }: ChickenProps) {
+  constructor({ imgs, id, width, height, originalWidth, originalHeight, breed, top, left, hungerMeter }: ChickenProps) {
     this.imgs = imgs;
     this.currentImg = this.imgs[this.imgIndex];
     this.width = width;
     this.height = height;
-    this.prevWidth = prevWidth || this.width;
-    this.prevHeight = prevHeight || this.height;
-    this.heightChangeRatio = height / this.prevHeight;
-    this.widthChangeRatio = width / this.prevWidth;
-    this.top = top || Math.round(Math.random() * (this.height - this.imgs[0].naturalHeight))
-    this.left = left || Math.round(Math.random() * (this.width - this.imgs[0].naturalWidth))
+    this.originalWidth = originalWidth || this.width;
+    this.originalHeight = originalHeight || this.height;
+    this.heightChangeRatio = height / this.originalHeight;
+    this.widthChangeRatio = width / this.originalWidth;
+    const originalTop = top || Math.round(Math.random() * (this.height - this.imgs[0].naturalHeight));
+    const originalLeft = left || Math.round(Math.random() * (this.width - this.imgs[0].naturalWidth));
+    this.top = originalTop * this.heightChangeRatio;
+    this.left = originalLeft * this.widthChangeRatio;
     this.breed = breed;
     this.hungerMeter = hungerMeter || 0;
     this.id = id || generateId();
@@ -78,9 +80,11 @@ export class Chicken {
     this.initFoodMeter();
   }
 
-  public update(ctx: CanvasRenderingContext2D, timestamp: number) {
+  public update(ctx: CanvasRenderingContext2D, timestamp: number, resizedWidth: number, resizedHeight: number) {
     this.fps = 1000 / (timestamp - this.timestamp)
     this.timestamp = timestamp;
+
+    this.updateToResizedPosition(resizedWidth, resizedHeight);
 
     if(this.hasFood()) {
       if(this.hasReachedFood()) {
@@ -119,18 +123,28 @@ export class Chicken {
 
   public getSavingState() {
     return {
-      left: this.left,
-      top: this.top,
+      left: this.left / this.widthChangeRatio,
+      top: this.top / this.heightChangeRatio,
       breed: this.breed,
       hungerMeter: this.hungerMeter,
-      prevHeight: this.prevHeight,
-      prevWidth: this.prevWidth,
+      originalHeight: this.originalHeight,
+      originalWidth: this.originalWidth,
       id: this.id,
     }
   }
 
   public clean() {
     window.clearInterval(this.hungerIntervalId);
+  }
+
+  private updateToResizedPosition(resizedWidth: number, resizedHeight: number) {
+    if(resizedWidth !== this.width || resizedHeight !== this.height) {
+      this.left = this.left * (resizedWidth / this.width);
+      this.top = this.top * (resizedHeight / this.height);
+
+      this.width = resizedWidth;
+      this.height = resizedHeight;
+    }
   }
 
   private hasFood() {
@@ -184,8 +198,8 @@ export class Chicken {
       0,
       this.currentImg.naturalWidth,
       this.currentImg.naturalHeight,
-      (this.left * this.widthChangeRatio),
-      (this.top * this.heightChangeRatio),
+      this.left,
+      this.top,
       this.currentImg.naturalWidth,
       this.currentImg.naturalHeight
     );
@@ -205,8 +219,8 @@ export class Chicken {
     }
 
     return {
-      dx: this.food.left - (this.left * this.widthChangeRatio),
-      dy: this.food.top - (this.top * this.heightChangeRatio),
+      dx: this.food.left - this.left,
+      dy: this.food.top - this.top,
     }
   }
 

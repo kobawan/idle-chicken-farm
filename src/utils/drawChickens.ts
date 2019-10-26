@@ -46,7 +46,7 @@ export const getChickens = async (width: number, height: number) => {
   }));
 }
 
-export const drawDynamicObjects = ({
+export const drawChickens = ({
   canvasRef,
   resizedWidth,
   resizedHeight,
@@ -75,7 +75,7 @@ export const drawDynamicObjects = ({
     frameCount = 0;
     ctx.clearRect(0, 0, resizedWidth, resizedHeight);
 
-    chickens.forEach(chicken => chicken.update(ctx, timestamp));
+    chickens.forEach(chicken => chicken.update(ctx, timestamp, resizedWidth, resizedHeight));
 
     animationIdRef.current = window.requestAnimationFrame(loop)
   }
