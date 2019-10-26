@@ -9,13 +9,12 @@ import yellowChicken2 from "../sprites/yellow-chicken-2.png";
 import yellowChicken3 from "../sprites/yellow-chicken-3.png";
 import { loadMultipleImages } from "./loadImages";
 import { Chicken, SavedChickenState } from "../models/chicken";
-import { DynItems, ChickenBreed } from "../types/types";
+import { ChickenBreed, ChickenItems, DrawProps } from "../types/types";
 import { getStorageKey, StorageKeys } from "./localStorage";
-import { DrawProps } from "../types/types";
 
-const DYNAMIC_CANVAS_FRAME_THROTTLE = 15;
+const CHICKEN_REFRESH_RATE = 500;
 
-type DrawDynamicObjectsProps = DynItems & DrawProps & { animationIdRef: React.MutableRefObject<number> };
+type DrawDynamicObjectsProps = ChickenItems & DrawProps & { animationIdRef: React.MutableRefObject<number> };
 
 export const getChickens = async (width: number, height: number) => {
   const images = await Promise.all([
@@ -46,13 +45,13 @@ export const getChickens = async (width: number, height: number) => {
   }));
 }
 
-export const drawChickens = ({
-  canvasRef,
-  resizedWidth,
-  resizedHeight,
-  chickens,
-  animationIdRef,
-}: DrawDynamicObjectsProps) => {
+export const drawChickens = ({	
+  canvasRef,	
+  resizedWidth,	
+  resizedHeight,	
+  chickens,	
+  animationIdRef,	
+}: DrawDynamicObjectsProps) => {	
   if(!canvasRef.current) {
     return;
   }
@@ -61,24 +60,16 @@ export const drawChickens = ({
     return;
   }
 
-  let frameCount = 0;
   ctx.imageSmoothingEnabled = false;
-  window.cancelAnimationFrame(animationIdRef.current);
-  const loop = (timestamp: number) => {
-    window.cancelAnimationFrame(animationIdRef.current);
-    frameCount++;
-
-    if(frameCount < DYNAMIC_CANVAS_FRAME_THROTTLE) {
-      animationIdRef.current = window.requestAnimationFrame(loop);
-      return;
-    }
-    frameCount = 0;
+  window.clearInterval(animationIdRef.current);
+  animationIdRef.current = window.setInterval(() => {
     ctx.clearRect(0, 0, resizedWidth, resizedHeight);
 
-    chickens.forEach(chicken => chicken.update(ctx, timestamp, resizedWidth, resizedHeight));
-
-    animationIdRef.current = window.requestAnimationFrame(loop)
-  }
-
-  loop(performance.now());
+    chickens.forEach(chicken => chicken.update({
+      ctx,
+      timestamp: performance.now(),
+      resizedWidth,
+      resizedHeight
+    }));
+  }, CHICKEN_REFRESH_RATE)
 };

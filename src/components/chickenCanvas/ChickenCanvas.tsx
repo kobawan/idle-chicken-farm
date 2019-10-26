@@ -1,14 +1,14 @@
 import React, { useRef, useEffect } from "react";
-import styles from "./dynamicCanvas.module.scss";
+import styles from "./chickenCanvas.module.scss";
+import { ChickenItems } from "../../types/types";
 import { drawChickens } from "../../utils/drawChickens";
-import { DynItems } from "../../types/types";
 
-interface DynamicCanvasProps extends DynItems {
+interface ChickenCanvasProps extends ChickenItems {
   resizedWidth: number;
   resizedHeight: number;
 }
 
-export const DynamicCanvas: React.FC<DynamicCanvasProps> = ({
+export const ChickenCanvas: React.FC<ChickenCanvasProps> = ({
   resizedWidth,
   resizedHeight,
   chickens,
@@ -17,12 +17,12 @@ export const DynamicCanvas: React.FC<DynamicCanvasProps> = ({
   const animationIdRef = useRef(0);
 
   useEffect(() => {
-    drawChickens({
-      canvasRef,
-      resizedWidth,
-      resizedHeight,
-      animationIdRef,
-      chickens,
+    drawChickens({	
+      canvasRef,	
+      resizedWidth,	
+      resizedHeight,	
+      animationIdRef,	
+      chickens,	
     })
   }, [resizedWidth, resizedHeight, animationIdRef, chickens]);
 

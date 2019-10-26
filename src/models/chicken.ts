@@ -52,7 +52,7 @@ export class Chicken {
   private restingTurns = 0;
   private food: Food | undefined;
   private hungerMeter: number;
-  private hungerIntervalId = 0;
+  private lastHungerIncrease = 0;
   private hasRequestedFood = false;
   private removeFood: ((id: string) => void) | undefined;
   private requestFood: ((props: Coordinates) => Food | undefined) | undefined;
@@ -76,15 +76,19 @@ export class Chicken {
     this.breed = breed;
     this.hungerMeter = hungerMeter || 0;
     this.id = id || generateId();
-
-    this.initFoodMeter();
   }
 
-  public update(ctx: CanvasRenderingContext2D, timestamp: number, resizedWidth: number, resizedHeight: number) {
+  public update({ ctx, timestamp, resizedHeight, resizedWidth }: {
+    ctx: CanvasRenderingContext2D,
+    timestamp: number,
+    resizedWidth: number,
+    resizedHeight: number
+  }) {
     this.fps = 1000 / (timestamp - this.timestamp)
     this.timestamp = timestamp;
 
     this.updateToResizedPosition(resizedWidth, resizedHeight);
+    this.updateFoodMeter();
 
     if(this.hasFood()) {
       if(this.hasReachedFood()) {
@@ -133,10 +137,6 @@ export class Chicken {
     }
   }
 
-  public clean() {
-    window.clearInterval(this.hungerIntervalId);
-  }
-
   private updateToResizedPosition(resizedWidth: number, resizedHeight: number) {
     if(resizedWidth !== this.width || resizedHeight !== this.height) {
       this.left = this.left * (resizedWidth / this.width);
@@ -178,17 +178,20 @@ export class Chicken {
     this.food = undefined;
   }
 
-  private initFoodMeter() {
-    this.hungerIntervalId = window.setInterval(() => {
-      if(this.state === ChickenState.eating) {
-        return;
-      }
+  private updateFoodMeter() {
+    if(this.state === ChickenState.eating) {
+      this.lastHungerIncrease = 0;
+      return;
+    }
+
+    if(this.timestamp - this.lastHungerIncrease >= HUNGER_THRESHOLD) {
       this.hungerMeter = Math.min(this.hungerMeter + 1, 100);
-  
-      if(this.isHungry() && !this.hasRequestedFood) {
-        this.searchForFood();
-      }
-    }, HUNGER_THRESHOLD)
+      this.lastHungerIncrease = this.timestamp;
+    }
+
+    if(this.isHungry() && !this.hasRequestedFood) {
+      this.searchForFood();
+    }
   }
 
   private draw(ctx: CanvasRenderingContext2D) {

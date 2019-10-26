@@ -22,7 +22,7 @@ import { setStorageKey, StorageKeys } from "../../utils/localStorage";
 import { Food, FoodProps } from "../../models/food";
 import { StaticCanvas } from "../StaticCanvas/StaticCanvas";
 import { Menu } from "../menu/Menu";
-import { DynamicCanvas } from "../dynamicCanvas/DynamicCanvas";
+import { ChickenCanvas } from "../chickenCanvas/ChickenCanvas";
 import { getClosest, getDistance } from "../../utils/distance";
 import { StaticObject } from "../../models/staticObject";
 import { FoodCanvas } from "../foodCanvas/FoodCanvas";
@@ -239,7 +239,7 @@ export const Farm: React.FC = memo(() => {
         food={food}
         isDraggingFood={isDraggingFood}
       />
-      <DynamicCanvas
+      <ChickenCanvas
         resizedWidth={resizedWidth}
         resizedHeight={resizedHeight}
         chickens={chickens}

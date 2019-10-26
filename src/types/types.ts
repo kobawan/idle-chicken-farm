@@ -15,11 +15,11 @@ export interface FoodItems {
   food: Food[];
 }
 
-export interface DynItems {
+export interface ChickenItems {
   chickens: Chicken[];
 }
 
-export type FarmItems = StaticItems & DynItems & FoodItems;
+export type FarmItems = StaticItems & ChickenItems & FoodItems;
 
 export enum ChickenBreed {
   brown = "brown",
