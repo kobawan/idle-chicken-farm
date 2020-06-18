@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./info.module.scss";
 import { Chicken } from "../../models/chicken";
+import { HungerMeter } from "../hungerMeter/HungerMeter";
 
 interface InfoProps {
   chickens: Chicken[];
@@ -9,10 +10,14 @@ interface InfoProps {
 
 const renderChickensHunger = (chickens: Chicken[]) => {
   return chickens
-    .sort((a, b) => b.getHungerMeter() - a.getHungerMeter())
     .map((chicken, i) => (
-      <p key={i}>{chicken.getBreed()} chicken: {chicken.getHungerMeter()}</p>
-    ))
+      <HungerMeter
+        key={i}
+        name={chicken.name}
+        gender={chicken.gender}
+        hunger={chicken.getHungerMeter()}
+      />
+    ));
 }
 
 export const Info: React.FC<InfoProps> = ({ chickens, isOpen }) => {
@@ -29,6 +34,7 @@ export const Info: React.FC<InfoProps> = ({ chickens, isOpen }) => {
   return (
     <div className={styles.info}>
       <h3 className={styles.title}>Hunger</h3>
+      <hr className={styles.hr}/>
       {renderChickensHunger(chickens)}
     </div>
   );

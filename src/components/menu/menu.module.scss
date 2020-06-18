@@ -5,7 +5,7 @@
   top: 0;
   right: 0;
   transition: 0.2s ease-in-out;
-  transform: translateX(11.1em);
+  transform: translateX(calc(10em + 2.125em));
   height: 100%;
   pointer-events: none;
 
@@ -29,12 +29,12 @@
       top: 1em;
       opacity: 0.5;
       pointer-events: all;
-  
+
       &.active {
         background-color: #8fab49;
         opacity: 1;
       }
-  
+
       @media (hover) {
         &:hover:not(.active) {
           opacity: 1;

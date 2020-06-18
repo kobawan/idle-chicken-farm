@@ -34,3 +34,7 @@ export interface DrawProps {
   resizedWidth: number,
   resizedHeight: number,
 }
+
+export type Gender = 'female' | 'male';
+
+export type ChickenNames = Record<Gender, string[]>;

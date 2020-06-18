@@ -6,12 +6,16 @@
   border-top: none;
   border-right: none;
   box-shadow: 1px 1px 5px 0 #00000070;
-  width: 9em;
+  width: 10em;
   height: 100%;
   overflow-y: scroll;
-  text-align: center;
 
   .title {
     margin-top: 0;
+  }
+
+  .hr {
+    border: 1px solid black;
+    border-bottom: 0;
   }
 }

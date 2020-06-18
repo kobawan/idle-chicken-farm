@@ -11,6 +11,7 @@ import { loadMultipleImages } from "./loadImages";
 import { Chicken, SavedChickenState } from "../models/chicken";
 import { ChickenBreed, ChickenItems, DrawProps } from "../types/types";
 import { getStorageKey, StorageKeys } from "./localStorage";
+import { getAvailableNames, generateName } from "./chickenNameUtils";
 
 const CHICKEN_REFRESH_RATE = 500;
 
@@ -29,12 +30,19 @@ export const getChickens = async (width: number, height: number) => {
   }
   const savedChickens = getStorageKey(StorageKeys.chickens);
   if(!savedChickens) {
-    return Object.keys(ChickenBreed).map(breed => new Chicken({
-      width,
-      height,
-      imgs: imagesBreedMap[breed as ChickenBreed],
-      breed: breed as ChickenBreed,
-    }))
+    return Object.keys(ChickenBreed).reduce<Chicken[]>((chickens, breed, index) => {
+      const gender = index === 0 ? 'male' : 'female';
+      const chicken = new Chicken({
+        width,
+        height,
+        imgs: imagesBreedMap[breed as ChickenBreed],
+        breed: breed as ChickenBreed,
+        gender,
+        name: generateName(gender, getAvailableNames(chickens))
+      })
+      chickens.push(chicken);
+      return chickens;
+    }, []);
   }
 
   return savedChickens.map((props: SavedChickenState) => new Chicken({
@@ -45,13 +53,13 @@ export const getChickens = async (width: number, height: number) => {
   }));
 }
 
-export const drawChickens = ({	
-  canvasRef,	
-  resizedWidth,	
-  resizedHeight,	
-  chickens,	
-  animationIdRef,	
-}: DrawDynamicObjectsProps) => {	
+export const drawChickens = ({
+  canvasRef,
+  resizedWidth,
+  resizedHeight,
+  chickens,
+  animationIdRef,
+}: DrawDynamicObjectsProps) => {
   if(!canvasRef.current) {
     return;
   }

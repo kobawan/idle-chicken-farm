@@ -1,9 +1,9 @@
-import { ChickenBreed, Coordinates } from "../types/types";
+import { ChickenBreed, Coordinates, Gender } from "../types/types";
 import { Food } from "../models/food";
 import { generateId } from "../utils/idGenerator";
 
 const MOVEMENT_PX = 2;
-const HUNGER_MIN = 30;
+export const HUNGER_MIN = 30;
 const MIN_DISTANCE_TO_EAT = 5;
 
 const RESTING_TURNS_PER_SEC = 10;
@@ -15,6 +15,8 @@ const getProbabilityFromSec = (sec: number, fps: number) => Math.round(sec / fps
 
 export interface ChickenProps {
   imgs: HTMLImageElement[];
+  name: string;
+  gender: Gender;
   width: number;
   height: number;
   originalWidth?: number;
@@ -26,7 +28,7 @@ export interface ChickenProps {
   hungerMeter?: number;
 }
 
-export type SavedChickenState = Pick<ChickenProps, "breed"|"id"|"top"|"left"|"hungerMeter"|"originalHeight"|"originalWidth">;
+export type SavedChickenState = Pick<ChickenProps, "breed"|"id"|"top"|"left"|"hungerMeter"|"originalHeight"|"originalWidth"|"gender"|"name">;
 
 enum ChickenState {
   eating,
@@ -59,8 +61,10 @@ export class Chicken {
   private timestamp = 0;
   private fps = 0;
   public id: string;
+  public name: string;
+  public gender: Gender;
 
-  constructor({ imgs, id, width, height, originalWidth, originalHeight, breed, top, left, hungerMeter }: ChickenProps) {
+  constructor({ imgs, id, width, height, originalWidth, originalHeight, breed, top, left, hungerMeter, name, gender }: ChickenProps) {
     this.imgs = imgs;
     this.currentImg = this.imgs[this.imgIndex];
     this.width = width;
@@ -76,6 +80,8 @@ export class Chicken {
     this.breed = breed;
     this.hungerMeter = hungerMeter || 0;
     this.id = id || generateId();
+    this.name = name;
+    this.gender = gender;
   }
 
   public update({ ctx, timestamp, resizedHeight, resizedWidth }: {
@@ -134,6 +140,8 @@ export class Chicken {
       originalHeight: this.originalHeight,
       originalWidth: this.originalWidth,
       id: this.id,
+      name: this.name,
+      gender: this.gender,
     }
   }
 
