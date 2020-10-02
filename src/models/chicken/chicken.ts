@@ -2,9 +2,9 @@ import { ChickenBreed, Coordinates, Gender } from "../../types/types";
 import { Food } from "../food";
 import { generateId } from "../../utils/idGenerator";
 import { RestingManager } from "./RestingManager";
-import { ChickenImage, ChickenState, ChickenProps } from "./types";
+import { ChickenImage, ChickenState, ChickenProps, SavedChickenState } from "./types";
+import { PositionManager } from './PositionManager'
 
-const MOVEMENT_PX = 2;
 export const HUNGER_MIN = 30;
 const MIN_DISTANCE_TO_EAT = 5;
 
@@ -12,14 +12,6 @@ const HUNGER_THRESHOLD = process.env.NODE_ENV === "development" ? 2000 : 60000; 
 
 export class Chicken {
   private imgs: Record<ChickenImage, HTMLImageElement>;
-  private width: number;
-  private height: number;
-  private originalWidth: number;
-  private originalHeight: number;
-  private widthChangeRatio: number;
-  private heightChangeRatio: number;
-  private top: number;
-  private left: number;
   private currentAnimation = ChickenImage.default;
   private breed: ChickenBreed;
   private state = ChickenState.walking;
@@ -31,33 +23,47 @@ export class Chicken {
   private requestFood: ((props: Coordinates) => Food | undefined) | undefined;
   private timestamp = 0;
   private fps = 0;
-  private RestingManager = new RestingManager();
+  private RestingManager: RestingManager;
+  private PositionManager: PositionManager;
   public id: string;
   public name: string;
   public gender: Gender;
 
-  constructor({ imgs, id, width, height, originalWidth, originalHeight, breed, top, left, hungerMeter, name, gender }: ChickenProps) {
+  constructor({
+    imgs,
+    id,
+    width,
+    height,
+    originalWidth,
+    originalHeight,
+    breed,
+    top,
+    left,
+    hungerMeter,
+    name,
+    gender
+  }: ChickenProps) {
     this.imgs = {
       [ChickenImage.default]: imgs[0],
       [ChickenImage.walking]: imgs[1],
       [ChickenImage.resting]: imgs[2],
     }
-    this.width = width;
-    this.height = height;
-    this.originalWidth = originalWidth || this.width;
-    this.originalHeight = originalHeight || this.height;
-    this.heightChangeRatio = height / this.originalHeight;
-    this.widthChangeRatio = width / this.originalWidth;
-    const defaultImage = this.imgs[ChickenImage.default];
-    const originalTop = top || Math.round(Math.random() * (this.height - defaultImage.naturalHeight));
-    const originalLeft = left || Math.round(Math.random() * (this.width - defaultImage.naturalWidth));
-    this.top = originalTop * this.heightChangeRatio;
-    this.left = originalLeft * this.widthChangeRatio;
     this.breed = breed;
     this.hungerMeter = hungerMeter || 0;
     this.id = id || generateId();
     this.name = name;
     this.gender = gender;
+
+    this.RestingManager = new RestingManager()
+    this.PositionManager = new PositionManager({
+      width,
+      height,
+      originalWidth,
+      originalHeight,
+      top,
+      left,
+      image: this.imgs[this.currentAnimation]
+    })
   }
 
   public update({ ctx, timestamp, resizedHeight, resizedWidth }: {
@@ -69,26 +75,25 @@ export class Chicken {
     this.fps = 1000 / (timestamp - this.timestamp)
     this.timestamp = timestamp;
 
-    this.updateToResizedPosition(resizedWidth, resizedHeight);
-    this.updateFoodMeter();
+    this.PositionManager.updateToResizedPosition(resizedWidth, resizedHeight);
+    this.updateHungerState();
 
     if(this.hasFood()) {
       if(this.hasReachedFood()) {
-        this.updateState(ChickenState.eating);
+        this.updateStateAndAnimation(ChickenState.eating);
         this.eat();
       } else {
-        this.updateState(ChickenState.walkingToFood);
+        this.updateStateAndAnimation(ChickenState.walkingToFood);
         this.walkToFood();
       }
     } else if(this.RestingManager.shouldRest(this.fps)) {
-      this.updateState(ChickenState.resting);
+      this.updateStateAndAnimation(ChickenState.resting);
       this.RestingManager.rest(this.fps)
     } else {
-      this.updateState(ChickenState.walking);
-      this.walkRandomly();
+      this.updateStateAndAnimation(ChickenState.walking);
+      this.PositionManager.walkRandomly(this.imgs[this.currentAnimation]);
     }
 
-    this.updateAnimation();
     this.draw(ctx);
   }
 
@@ -104,27 +109,14 @@ export class Chicken {
     this.requestFood = requestFood;
   }
 
-  public getSavingState() {
+  public getSavingState(): SavedChickenState {
     return {
-      left: this.left / this.widthChangeRatio,
-      top: this.top / this.heightChangeRatio,
-      breed: this.breed,
-      hungerMeter: this.hungerMeter,
-      originalHeight: this.originalHeight,
-      originalWidth: this.originalWidth,
+      ...this.PositionManager.getSavingState(),
       id: this.id,
       name: this.name,
       gender: this.gender,
-    }
-  }
-
-  private updateToResizedPosition(resizedWidth: number, resizedHeight: number) {
-    if(resizedWidth !== this.width || resizedHeight !== this.height) {
-      this.left = this.left * (resizedWidth / this.width);
-      this.top = this.top * (resizedHeight / this.height);
-
-      this.width = resizedWidth;
-      this.height = resizedHeight;
+      breed: this.breed,
+      hungerMeter: this.hungerMeter,
     }
   }
 
@@ -134,16 +126,6 @@ export class Chicken {
 
   private isHungry() {
     return this.hungerMeter > HUNGER_MIN;
-  }
-
-  private searchForFood() {
-    if(!this.requestFood) {
-      return;
-    }
-    this.food = this.requestFood({ left: this.left, top: this.top });
-    if(this.food) {
-      this.hasRequestedFood = true;
-    }
   }
 
   private clearFood(reachedFood = true) {
@@ -159,7 +141,7 @@ export class Chicken {
     this.food = undefined;
   }
 
-  private updateFoodMeter() {
+  private updateHungerState() {
     if(this.state === ChickenState.eating) {
       this.lastHungerIncrease = 0;
       return;
@@ -170,12 +152,51 @@ export class Chicken {
       this.lastHungerIncrease = this.timestamp;
     }
 
-    if(this.isHungry() && !this.hasRequestedFood) {
-      this.searchForFood();
+    if(this.isHungry() && !this.hasRequestedFood && this.requestFood) {
+      this.food = this.requestFood(this.PositionManager.getPosition());
+      if(this.food) {
+        this.hasRequestedFood = true;
+      }
     }
   }
 
-  private updateAnimation() {
+  private draw(ctx: CanvasRenderingContext2D) {
+    const currentImage = this.imgs[this.currentAnimation];
+    const { left, top } = this.PositionManager.getPosition();
+    ctx.drawImage(
+      currentImage,
+      0,
+      0,
+      currentImage.naturalWidth,
+      currentImage.naturalHeight,
+      left,
+      top,
+      currentImage.naturalWidth,
+      currentImage.naturalHeight
+    );
+  }
+
+  private getFoodDistance({ left, top }: Coordinates) {
+    const currentPos = this.PositionManager.getPosition();
+    return {
+      dx: left - currentPos.left,
+      dy: top - currentPos.top,
+    }
+  }
+
+  private walkToFood() {
+    if(!this.food || !this.food.isAvailable() || this.food.hasFinished()) {
+      this.clearFood(false);
+      return;
+    }
+
+    const { dx, dy } = this.getFoodDistance(this.food);
+    this.PositionManager.goToCoordinates(dx, dy, this.imgs[this.currentAnimation]);
+  }
+
+  private updateStateAndAnimation(state: ChickenState) {
+    this.state = state;
+
     switch(this.state) {
       case ChickenState.walking:
       case ChickenState.walkingToFood:
@@ -191,63 +212,6 @@ export class Chicken {
       default:
         this.currentAnimation = ChickenImage.default;
     }
-  }
-
-  private draw(ctx: CanvasRenderingContext2D) {
-    const currentImage = this.imgs[this.currentAnimation];
-    ctx.drawImage(
-      currentImage,
-      0,
-      0,
-      currentImage.naturalWidth,
-      currentImage.naturalHeight,
-      this.left,
-      this.top,
-      currentImage.naturalWidth,
-      currentImage.naturalHeight
-    );
-  }
-
-  private walkRandomly() {
-    const dx = Math.round(Math.random() * 1);
-    const dy = Math.round(Math.random() * 1);
-
-    this.goToCoordinates(dx, dy);
-  }
-
-  private getFoodDistance({ left, top }: Coordinates) {
-    return {
-      dx: left - this.left,
-      dy: top - this.top,
-    }
-  }
-
-  private walkToFood() {
-    if(!this.food || !this.food.isAvailable() || this.food.hasFinished()) {
-      this.clearFood(false);
-      return;
-    }
-
-    const { dx, dy } = this.getFoodDistance(this.food);
-    this.goToCoordinates(dx, dy);
-  }
-
-  private goToCoordinates(dx: number, dy: number) {
-    const { naturalHeight, naturalWidth } = this.imgs[this.currentAnimation];
-
-    this.top = dy > 0
-      ? Math.min(this.top + MOVEMENT_PX, this.height - naturalHeight)
-      : Math.max(this.top - MOVEMENT_PX, 0)
-    ;
-
-    this.left = dx > 0
-      ? Math.min(this.left + MOVEMENT_PX, this.width - naturalWidth)
-      : Math.max(this.left - MOVEMENT_PX, 0)
-    ;
-  }
-
-  private updateState(state: ChickenState) {
-    this.state = state;
   }
 
   private eat() {
