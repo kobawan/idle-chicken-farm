@@ -8,10 +8,11 @@ import yellowChicken1 from "../sprites/yellow-chicken-1.png";
 import yellowChicken2 from "../sprites/yellow-chicken-2.png";
 import yellowChicken3 from "../sprites/yellow-chicken-3.png";
 import { loadMultipleImages } from "./loadImages";
-import { Chicken, SavedChickenState } from "../models/chicken";
+import { Chicken } from "../models/chicken/Chicken";
 import { ChickenBreed, ChickenItems, DrawProps } from "../types/types";
 import { getStorageKey, StorageKeys } from "./localStorage";
 import { getAvailableNames, generateName } from "./chickenNameUtils";
+import { SavedChickenState } from "../models/chicken/types";
 
 const CHICKEN_REFRESH_RATE = 500;
 

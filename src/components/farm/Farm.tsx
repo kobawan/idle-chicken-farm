@@ -5,7 +5,7 @@ import { useWindowDimensions } from "../../utils/useWindowDimensions";
 import { getChickens } from "../../utils/drawChickens";
 import { createObjects } from "../../utils/drawObjects";
 import { getFoodImgs, getFood } from "../../utils/drawFood";
-import { Chicken } from "../../models/chicken";
+import { Chicken } from "../../models/chicken/Chicken";
 import { Coordinates } from "../../types/types";
 import { farmReducer, initialFarmState } from "./reducer";
 import {

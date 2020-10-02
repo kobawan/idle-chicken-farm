@@ -1,6 +1,6 @@
 import chickenNames from '../data/chickenNames.json'
 import { Gender, ChickenNames } from "../types/types"
-import { Chicken } from "../models/chicken";
+import { Chicken } from "../models/chicken/Chicken";
 
 export const getAvailableNames = (chickens: Chicken[]): ChickenNames => {
   const usedNames = chickens.map(({ name }) => name);
