@@ -1,3 +1,5 @@
+import { Coordinates } from "../../types/types";
+
 const MOVEMENT_PX = 2;
 
 interface PositionManagerProps {
@@ -38,7 +40,7 @@ export class PositionManager {
     this.left = originalLeft * this.widthChangeRatio;
   }
 
-  public getPosition() {
+  public getPosition(): Coordinates {
     return { top: this.top, left: this.left };
   }
 
