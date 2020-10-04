@@ -19,12 +19,12 @@ export const ChickenCanvas: React.FC<ChickenCanvasProps> = ({
   const animationIdRef = useRef(0);
 
   useEffect(() => {
-    drawChickens({	
-      canvasRef,	
-      resizedWidth,	
-      resizedHeight,	
-      animationIdRef,	
-      chickens,	
+    drawChickens({
+      canvasRef,
+      resizedWidth,
+      resizedHeight,
+      animationIdRef,
+      chickens,
     })
   }, [resizedWidth, resizedHeight, animationIdRef, chickens]);
   useEffect(

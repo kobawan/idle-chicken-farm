@@ -79,7 +79,7 @@ export class Chicken {
         this.HungerManager.walkToFood(
           currentPosition,
           this.imgs[this.currentAnimation],
-          this.PositionManager.goToCoordinates.bind(this)
+          this.PositionManager.goToCoordinates.bind(this.PositionManager)
         );
       }
     } else if(this.RestingManager.shouldRest(this.fps)) {
@@ -91,6 +91,10 @@ export class Chicken {
     }
 
     this.draw(ctx);
+  }
+
+  public getBoundaries() {
+    return this.PositionManager.getBoundaries(this.imgs[this.currentAnimation]);
   }
 
   public getHungerMeter() {

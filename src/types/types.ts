@@ -1,4 +1,4 @@
-import { Chicken } from "../models/chicken/Chicken";
+import { Chicken } from "../models/chicken/chicken";
 import { StaticObject } from "../models/staticObject";
 import { Food } from "../models/food";
 

@@ -8,7 +8,7 @@ import yellowChicken1 from "../sprites/yellow-chicken-1.png";
 import yellowChicken2 from "../sprites/yellow-chicken-2.png";
 import yellowChicken3 from "../sprites/yellow-chicken-3.png";
 import { loadMultipleImages } from "./loadImages";
-import { Chicken } from "../models/chicken/Chicken";
+import { Chicken } from "../models/chicken/chicken";
 import { ChickenBreed, ChickenItems, DrawProps } from "../types/types";
 import { getStorageKey, StorageKeys } from "./localStorage";
 import { getAvailableNames, generateName } from "./chickenNameUtils";
@@ -24,20 +24,20 @@ export const getChickens = async (width: number, height: number) => {
     loadMultipleImages([orangeChicken1, orangeChicken2, orangeChicken3]),
     loadMultipleImages([yellowChicken1, yellowChicken2, yellowChicken3]),
   ]);
-  const imagesBreedMap = {
+  const imagesBreedMap: Record<ChickenBreed, HTMLImageElement[]> = {
     [ChickenBreed.brown]: images[0],
     [ChickenBreed.orange]: images[1],
     [ChickenBreed.yellow]: images[2],
   }
   const savedChickens = getStorageKey(StorageKeys.chickens);
   if(!savedChickens) {
-    return Object.keys(ChickenBreed).reduce<Chicken[]>((chickens, breed, index) => {
+    return Object.values(ChickenBreed).reduce<Chicken[]>((chickens, breed, index) => {
       const gender = index === 0 ? 'male' : 'female';
       const chicken = new Chicken({
         width,
         height,
-        imgs: imagesBreedMap[breed as ChickenBreed],
-        breed: breed as ChickenBreed,
+        imgs: imagesBreedMap[breed],
+        breed: breed,
         gender,
         name: generateName(gender, getAvailableNames(chickens))
       })

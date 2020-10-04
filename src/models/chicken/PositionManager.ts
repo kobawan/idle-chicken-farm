@@ -1,3 +1,4 @@
+import { RESIZE_CANVAS_BY } from "../../gameConsts";
 import { Coordinates } from "../../types/types";
 
 const MOVEMENT_PX = 2;
@@ -42,6 +43,15 @@ export class PositionManager {
 
   public getPosition(): Coordinates {
     return { top: this.top, left: this.left };
+  }
+
+  public getBoundaries(currentImg: HTMLImageElement) {
+    return {
+      minX: this.left * RESIZE_CANVAS_BY,
+      maxX: (this.left + currentImg.naturalWidth) * RESIZE_CANVAS_BY,
+      minY: this.top * RESIZE_CANVAS_BY,
+      maxY: (this.top + currentImg.naturalHeight) * RESIZE_CANVAS_BY,
+    };
   }
 
   public getSavingState() {

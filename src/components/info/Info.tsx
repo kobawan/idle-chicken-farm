@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./info.module.scss";
-import { Chicken } from "../../models/chicken/Chicken";
+import { Chicken } from "../../models/chicken/chicken";
 import { HungerMeter } from "../hungerMeter/HungerMeter";
 
 interface InfoProps {

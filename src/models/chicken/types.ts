@@ -21,10 +21,10 @@ export type SavedChickenState = Required<Pick<
 >;
 
 export enum ChickenState {
-  eating,
-  walkingToFood,
-  walking,
-  resting,
+  eating = 'eating',
+  walkingToFood = 'walkingToFood',
+  walking = 'walking',
+  resting = 'resting',
 }
 
 export enum ChickenImage {
