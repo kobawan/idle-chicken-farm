@@ -6,9 +6,10 @@
   border-top: none;
   border-right: none;
   box-shadow: 1px 1px 5px 0 #00000070;
-  width: 10em;
+  width: 14em;
   height: 100%;
   overflow-y: scroll;
+  box-sizing: border-box;
 
   .title {
     margin-top: 0;

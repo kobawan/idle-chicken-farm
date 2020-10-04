@@ -1,10 +1,10 @@
 import { InteractEvent } from "../types/types";
 
-export const isTouchEvent = (e: InteractEvent<HTMLCanvasElement>): e is React.TouchEvent<HTMLCanvasElement> => {
-  return (e as React.TouchEvent<HTMLCanvasElement>).type.includes("touch");
+export const isTouchEvent = (e: InteractEvent<HTMLElement>): e is React.TouchEvent<HTMLElement> => {
+  return (e as React.TouchEvent<HTMLElement>).type.includes("touch");
 }
 
-export const getInteractionPos = (e: InteractEvent<HTMLCanvasElement>) => {
+export const getInteractionPos = (e: InteractEvent<HTMLElement>) => {
   let left: number;
   let top: number;
 

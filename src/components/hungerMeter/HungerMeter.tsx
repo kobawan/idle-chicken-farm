@@ -11,7 +11,7 @@ interface HungerMeterProps {
 export const HungerMeter = ({ name, gender, hunger }: HungerMeterProps) => {
   return (
     <div>
-      <h4>{name} {gender === 'male' ? '♂' : '♀' }</h4>
+      <h4 className={styles.name}>{name} {gender === 'male' ? '♂' : '♀' }</h4>
       <div className={styles.hungerRow}>
         <span className={styles.hungerLabel}>Hunger:</span>
         <div className={styles.hungerMeter}>

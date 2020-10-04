@@ -5,12 +5,13 @@
   top: 0;
   right: 0;
   transition: 0.2s ease-in-out;
-  transform: translateX(calc(10em + 2.125em));
+  transform: translateX(calc(12em + 2.125em));
   height: 100%;
   pointer-events: none;
 
   &.visible {
     transform: initial;
+    pointer-events: auto;
   }
 
   .toolBar {

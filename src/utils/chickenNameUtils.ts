@@ -12,7 +12,7 @@ export const getAvailableNames = (chickens: Chicken[]): ChickenNames => {
 }
 
 export const generateName = (gender: Gender, availableNames: ChickenNames) => {
-  const names = availableNames[gender];
+  const names = availableNames[gender].length ? availableNames[gender] : chickenNames[gender];
   const randomIndex = Math.min(Math.floor(Math.random() * names.length), names.length - 1);
 
   return names[randomIndex];

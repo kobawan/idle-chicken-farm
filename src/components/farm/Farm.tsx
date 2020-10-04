@@ -11,9 +11,6 @@ import { farmReducer, initialFarmState } from "./reducer";
 import {
   setObjectsAction,
   setChickensAction,
-  toggleFeedingAction,
-  toggleDraggingAction,
-  addFoodAction,
   removeFoodAction,
   setFoodAction,
 } from "./actions";
@@ -24,7 +21,8 @@ import { ChickenCanvas } from "../chickenCanvas/ChickenCanvas";
 import { getClosest, getDistance } from "../../utils/distance";
 import { FoodCanvas } from "../foodCanvas/FoodCanvas";
 import { RESIZE_CANVAS_BY } from "../../gameConsts";
-import { TooltipOverlay, TooltipProps } from "../tooltipOverlay/TooltipOverlay";
+import { OnDetectTooltipCbProps, TooltipOverlay, TooltipProps } from "../tooltipOverlay/TooltipOverlay";
+import { InteractionLayer } from "../interactionLayer/InteractionLayer";
 
 const MAX_FOOD_DISTANCE = 300 / RESIZE_CANVAS_BY; // in px
 
@@ -57,13 +55,15 @@ const linkFoodToChickens = ({
 }
 
 const handleChickenHover = (
-  e: React.MouseEvent<HTMLDivElement>,
   chickens: Chicken[],
-  addTooltip: (props: TooltipProps) => void,
-  removeTooltip: (id: string) => void,
-  hasTooltip: (id: string) => boolean,
+  {
+    event,
+    addTooltip,
+    removeTooltip,
+    hasTooltip,
+  }: OnDetectTooltipCbProps,
 ) => {
-  const { clientX, clientY } = e;
+  const { clientX, clientY } = event;
   chickens.forEach(chicken => {
     const { id, name, gender } = chicken;
     const { minX, minY, maxX, maxY } = chicken.getBoundaries();
@@ -101,25 +101,10 @@ export const Farm: React.FC = memo(() => {
     dispatch,
   ] = useReducer(farmReducer, initialFarmState);
   const [foodImgs, setFoodImgs] = useState<HTMLImageElement[]>([]);
-  const addFood = useCallback((food: Food) => dispatch(addFoodAction(food)), [])
-  const toggleFeeding = useCallback(() => dispatch(toggleFeedingAction()), [])
-  const toggleDragging = useCallback(() => dispatch(toggleDraggingAction()), [])
-  const [tooltipProps, setTooltipProps] = useState<TooltipProps[]>([]);
-  const addTooltip = useCallback(
-    (tProps: TooltipProps) => setTooltipProps([tProps, ...tooltipProps]),
-    [tooltipProps]
+  const onDetectTooltipCb = useCallback(
+    (args: OnDetectTooltipCbProps) => handleChickenHover(chickens, args),
+    [chickens]
   )
-  const removeTooltip = useCallback(
-    (id: string) => setTooltipProps(tooltipProps.filter(p => p.id !== id)),
-    [tooltipProps]
-  )
-  const hasTooltip = useCallback(
-    (id: string) => tooltipProps.some(p => p.id === id)
-  , [tooltipProps])
-
-  const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    handleChickenHover(e, chickens, addTooltip, removeTooltip, hasTooltip);
-  }, [chickens, addTooltip, removeTooltip, hasTooltip])
 
   useEffect(() => {
     // It should only run on mount
@@ -144,39 +129,36 @@ export const Farm: React.FC = memo(() => {
   }), [chickens, food])
 
   return (
-    <div
-      className={cx(styles.wrapper, isFeeding && styles.feeding)}
-      onMouseMove={onMouseMove}
-    >
-      <div className={styles.bg}/>
-      <StaticCanvas
-        resizedWidth={resizedWidth}
-        resizedHeight={resizedHeight}
-        objects={objects}
-      />
-      <FoodCanvas
-        resizedWidth={resizedWidth}
-        resizedHeight={resizedHeight}
-        toggleDragging={toggleDragging}
-        food={food}
-        isDragging={isDragging}
-        isFeeding={isFeeding}
-        toggleFeeding={toggleFeeding}
-        addFood={addFood}
-        foodImages={foodImgs}
-      />
-      <ChickenCanvas
-        resizedWidth={resizedWidth}
-        resizedHeight={resizedHeight}
-        chickens={chickens}
-      />
-      {/* <TooltipOverlay tooltips={tooltipProps} /> */}
-      <Menu
-        isInfoOpen={isInfoOpen}
-        isFeeding={isFeeding}
-        chickens={chickens}
-        dispatch={dispatch}
-      />
+    <div className={cx(styles.wrapper, isFeeding && styles.feeding)}>
+      <InteractionLayer>
+        <div className={styles.bg}/>
+        <StaticCanvas
+          resizedWidth={resizedWidth}
+          resizedHeight={resizedHeight}
+          objects={objects}
+        />
+        <FoodCanvas
+          resizedWidth={resizedWidth}
+          resizedHeight={resizedHeight}
+          food={food}
+          isDragging={isDragging}
+          isFeeding={isFeeding}
+          foodImages={foodImgs}
+          dispatch={dispatch}
+        />
+        <ChickenCanvas
+          resizedWidth={resizedWidth}
+          resizedHeight={resizedHeight}
+          chickens={chickens}
+        />
+        <TooltipOverlay onDetectTooltipCb={onDetectTooltipCb} />
+        <Menu
+          isInfoOpen={isInfoOpen}
+          isFeeding={isFeeding}
+          chickens={chickens}
+          dispatch={dispatch}
+        />
+      </InteractionLayer>
     </div>
   );
 });

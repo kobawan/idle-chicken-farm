@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import ReactTooltip from "react-tooltip";
+import { EventName } from "../../utils/events";
+import { useEventEffect } from "../../utils/useEventEffect";
 import styles from './TooltipOverlay.module.scss'
 
 export interface TooltipProps {
@@ -11,15 +13,45 @@ export interface TooltipProps {
   maxY: number;
 }
 
-interface TooltipOverlayProps {
-  tooltips: TooltipProps[];
+type AddTooltip = (tProps: TooltipProps) => void;
+type RemoveTooltip = (id: string) => void;
+type HasTooltip = (id: string) => boolean;
+
+export interface OnDetectTooltipCbProps {
+  event: React.MouseEvent<HTMLDivElement>;
+  addTooltip: AddTooltip;
+  removeTooltip: RemoveTooltip;
+  hasTooltip: HasTooltip;
 }
 
-export const TooltipOverlay: React.FC<TooltipOverlayProps> = ({ tooltips }) => {
+interface TooltipOverlayProps {
+  onDetectTooltipCb: (props: OnDetectTooltipCbProps) => void;
+}
+
+export const TooltipOverlay: React.FC<TooltipOverlayProps> = ({ onDetectTooltipCb }) => {
+  const [tooltips, setTooltips] = useState<TooltipProps[]>([]);
+  const addTooltip = useCallback<AddTooltip>(
+    (tProps) => setTooltips([tProps, ...tooltips]),
+    [tooltips]
+  )
+  const removeTooltip = useCallback<RemoveTooltip>(
+    (id) => setTooltips(tooltips.filter(p => p.id !== id)),
+    [tooltips]
+  )
+  const hasTooltip = useCallback<HasTooltip>(
+    (id) => tooltips.some(p => p.id === id)
+  , [tooltips])
+
+  const onDetectTooltip = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+    onDetectTooltipCb({ event, addTooltip, removeTooltip, hasTooltip })
+  }, [onDetectTooltipCb, addTooltip, removeTooltip, hasTooltip])
+
+  useEventEffect(EventName.DetectTooltip, onDetectTooltip);
+
   return(
     <div className={styles.container}>
       {tooltips.map(({ id, text, minX, maxY, maxX, minY }) => (
-        <>
+        <React.Fragment key={id}>
         <div
           data-for={id}
           data-tip={text}
@@ -39,7 +71,7 @@ export const TooltipOverlay: React.FC<TooltipOverlayProps> = ({ tooltips }) => {
           effect="solid"
           multiline={true}
         />
-        </>
+        </React.Fragment>
       ))}
     </div>
   )

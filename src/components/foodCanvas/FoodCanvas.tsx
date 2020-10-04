@@ -8,32 +8,18 @@ import { saveItemsOnInterval } from "../../utils/saveItems";
 import { isTouchEvent, getInteractionPos } from "../../utils/devices";
 import { Food, FoodProps } from "../../models/food";
 import { RESIZE_CANVAS_BY } from "../../gameConsts";
+import { EventName } from "../../utils/events";
+import { AllFarmActions } from "../farm/reducer";
+import { addFoodAction, toggleDraggingAction, toggleFeedingAction } from "../farm/actions";
+import { useEventEffect } from "../../utils/useEventEffect";
 
 interface FoodCanvasProps extends FoodItems {
   resizedWidth: number;
   resizedHeight: number;
-  toggleDragging: () => void;
   isDragging: boolean;
   isFeeding: boolean;
-  toggleFeeding: () => void;
-  addFood: (food: Food) => void;
   foodImages: HTMLImageElement[];
-}
-
-const disableFeedingOnEsc = ({ toggleFeeding, isFeeding }: {
-  toggleFeeding: () => void,
-  isFeeding: boolean,
-}) => {
-  const stopFeedingOnEsc = (e: KeyboardEvent) => {
-    if (e.code === "Escape" && isFeeding) {
-      toggleFeeding();
-    }
-  };
-  document.addEventListener("keydown", stopFeedingOnEsc);
-
-  return () => {
-    document.removeEventListener("keydown", stopFeedingOnEsc);
-  };
+  dispatch: React.Dispatch<AllFarmActions>;
 }
 
 const throtteFoodDrop = throttle((
@@ -53,12 +39,10 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
   resizedWidth,
   resizedHeight,
   food,
-  toggleDragging,
   isDragging,
   isFeeding,
-  toggleFeeding,
-  addFood,
   foodImages,
+  dispatch,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationIdRef = useRef(0);
@@ -70,8 +54,9 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
       e.preventDefault();
     }
 
-    toggleDragging();
-  }, [toggleDragging]);
+    dispatch(toggleDraggingAction());
+  }, [dispatch]);
+
   const dropFood = useCallback((e: InteractEvent<HTMLCanvasElement>) => {
     if (!isDraggingFood) {
       return;
@@ -91,11 +76,12 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
     throtteFoodDrop({
       ...pos,
       imgs: foodImages,
-      addFood,
+      addFood: (food: Food) => dispatch(addFoodAction(food)),
       width: resizedWidth,
       height: resizedHeight,
     });
-  }, [isDraggingFood, addFood, foodImages, resizedHeight, resizedWidth]);
+  }, [isDraggingFood, foodImages, resizedHeight, resizedWidth, dispatch]);
+
   const onDragFinished = useCallback((e: InteractEvent<HTMLCanvasElement>) => {
     dropFood(e);
     toggleFoodDragging(e);
@@ -115,7 +101,22 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
     () => saveItemsOnInterval(StorageKeys.food, food),
     [food, resizedHeight, resizedWidth]
   )
-  useEffect(() => disableFeedingOnEsc({ toggleFeeding, isFeeding }), [isFeeding, toggleFeeding]);
+  useEffect(() => {
+    const stopFeedingOnEsc = (e: KeyboardEvent) => {
+      if (e.code === "Escape" && isFeeding) {
+        dispatch(toggleFeedingAction());
+      }
+    };
+    document.addEventListener("keydown", stopFeedingOnEsc);
+
+    return () => {
+      document.removeEventListener("keydown", stopFeedingOnEsc);
+    };
+  }, [isFeeding, dispatch]);
+
+  useEventEffect(EventName.StartDraggingFood, toggleFoodDragging);
+  useEventEffect(EventName.StopDraggingFood, onDragFinished);
+  useEventEffect(EventName.DropFood, dropFood);
 
   return (
     <canvas
@@ -123,12 +124,6 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
       width={resizedWidth}
       height={resizedHeight}
       className={styles.canvas}
-      onTouchStart={toggleFoodDragging}
-      onTouchEnd={onDragFinished}
-      onTouchMove={dropFood}
-      onMouseDown={toggleFoodDragging}
-      onMouseUp={onDragFinished}
-      onMouseMove={dropFood}
     ></canvas>
   );
 };
