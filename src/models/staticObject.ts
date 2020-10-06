@@ -21,15 +21,7 @@ export class StaticObject {
   private deviationY: number;
   public id = generateId();
 
-  constructor({
-    img,
-    top,
-    left,
-    width,
-    height,
-    deviationX,
-    deviationY,
-  }: StaticObjectProps) {
+  constructor({ img, top, left, width, height, deviationX, deviationY }: StaticObjectProps) {
     this.img = img;
     this.top = top;
     this.left = left;
@@ -71,7 +63,7 @@ export class StaticObject {
       this.left + this.deviationX,
       this.top + this.deviationY,
       this.img.naturalWidth,
-      this.img.naturalHeight
+      this.img.naturalHeight,
     );
   }
 }

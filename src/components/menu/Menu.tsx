@@ -15,12 +15,7 @@ interface MenuProps {
   dispatch: React.Dispatch<AllFarmActions>;
 }
 
-export const Menu: React.FC<MenuProps> = ({
-  isInfoOpen,
-  isFeeding,
-  chickens,
-  dispatch,
-}) => {
+export const Menu: React.FC<MenuProps> = ({ isInfoOpen, isFeeding, chickens, dispatch }) => {
   const toggleInfo = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     dispatch(toggleInfoAction());
@@ -34,10 +29,7 @@ export const Menu: React.FC<MenuProps> = ({
   return (
     <div className={cx(styles.menu, isInfoOpen && styles.visible)}>
       <div className={styles.toolBar}>
-        <button
-          className={cx(styles.farmButton, isInfoOpen && styles.active)}
-          onClick={toggleInfo}
-        >
+        <button className={cx(styles.farmButton, isInfoOpen && styles.active)} onClick={toggleInfo}>
           <img src={chickenUrl} alt="info"></img>
         </button>
         <button

@@ -62,9 +62,7 @@ export class HungerManager {
       return false;
     }
     const { dx, dy } = this.getFoodDistance(this.food, currentPos);
-    return (
-      Math.abs(dx) <= MIN_DISTANCE_TO_EAT && Math.abs(dy) <= MIN_DISTANCE_TO_EAT
-    );
+    return Math.abs(dx) <= MIN_DISTANCE_TO_EAT && Math.abs(dy) <= MIN_DISTANCE_TO_EAT;
   }
 
   public startEating(position: Coordinates) {
@@ -96,7 +94,7 @@ export class HungerManager {
   public walkToFood(
     currentPos: Coordinates,
     currentImage: HTMLImageElement,
-    goToCoordinates: (dx: number, dy: number, image: HTMLImageElement) => void
+    goToCoordinates: (dx: number, dy: number, image: HTMLImageElement) => void,
   ) {
     if (!this.food) {
       console.error("Chicken needs food in order to walk towards it!");
@@ -143,25 +141,13 @@ export class HungerManager {
   }
 
   private startFoodListener() {
-    CustomEventEmitter.on(
-      EventName.FoundRequestedFood,
-      this.addFood.bind(this)
-    );
-    CustomEventEmitter.on(
-      EventName.NotFoundRequestedFood,
-      this.stopSearching.bind(this)
-    );
+    CustomEventEmitter.on(EventName.FoundRequestedFood, this.addFood.bind(this));
+    CustomEventEmitter.on(EventName.NotFoundRequestedFood, this.stopSearching.bind(this));
   }
 
   private stopFoodListener() {
-    CustomEventEmitter.off(
-      EventName.FoundRequestedFood,
-      this.addFood.bind(this)
-    );
-    CustomEventEmitter.off(
-      EventName.NotFoundRequestedFood,
-      this.stopSearching.bind(this)
-    );
+    CustomEventEmitter.off(EventName.FoundRequestedFood, this.addFood.bind(this));
+    CustomEventEmitter.off(EventName.NotFoundRequestedFood, this.stopSearching.bind(this));
   }
 
   private isFull() {

@@ -1,12 +1,7 @@
 import { ChickenBreed, Gender } from "../../types/types";
 import { generateId } from "../../utils/idGenerator";
 import { RestingManager } from "./RestingManager";
-import {
-  ChickenImage,
-  ChickenState,
-  ChickenProps,
-  SavedChickenState,
-} from "./types";
+import { ChickenImage, ChickenState, ChickenProps, SavedChickenState } from "./types";
 import { PositionManager } from "./PositionManager";
 import { HungerManager } from "./HungerManager";
 import { Logger } from "../../utils/Logger";
@@ -135,7 +130,7 @@ export class Chicken {
       this.HungerManager.walkToFood(
         currentPosition,
         this.imgs[this.currentAnimation],
-        this.PositionManager.goToCoordinates.bind(this.PositionManager)
+        this.PositionManager.goToCoordinates.bind(this.PositionManager),
       );
       return;
     }
@@ -171,7 +166,7 @@ export class Chicken {
       left,
       top,
       currentImage.naturalWidth,
-      currentImage.naturalHeight
+      currentImage.naturalHeight,
     );
   }
 

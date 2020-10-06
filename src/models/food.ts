@@ -144,7 +144,7 @@ export class Food {
       this.left,
       this.top,
       img.naturalWidth,
-      img.naturalHeight
+      img.naturalHeight,
     );
   }
 }

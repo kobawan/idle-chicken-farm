@@ -32,22 +32,19 @@ export const getChickens = async (width: number, height: number) => {
   };
   const savedChickens = getStorageKey(StorageKeys.chickens);
   if (!savedChickens) {
-    return Object.values(ChickenBreed).reduce<Chicken[]>(
-      (chickens, breed, index) => {
-        const gender = index === 0 ? "male" : "female";
-        const chicken = new Chicken({
-          width,
-          height,
-          imgs: imagesBreedMap[breed],
-          breed: breed,
-          gender,
-          name: generateName(gender, getAvailableNames(chickens)),
-        });
-        chickens.push(chicken);
-        return chickens;
-      },
-      []
-    );
+    return Object.values(ChickenBreed).reduce<Chicken[]>((chickens, breed, index) => {
+      const gender = index === 0 ? "male" : "female";
+      const chicken = new Chicken({
+        width,
+        height,
+        imgs: imagesBreedMap[breed],
+        breed: breed,
+        gender,
+        name: generateName(gender, getAvailableNames(chickens)),
+      });
+      chickens.push(chicken);
+      return chickens;
+    }, []);
   }
 
   return savedChickens.map(
@@ -57,7 +54,7 @@ export const getChickens = async (width: number, height: number) => {
         height,
         imgs: imagesBreedMap[props.breed],
         ...props,
-      })
+      }),
   );
 };
 
@@ -87,7 +84,7 @@ export const drawChickens = ({
         timestamp: performance.now(),
         resizedWidth,
         resizedHeight,
-      })
+      }),
     );
   }, CHICKEN_REFRESH_RATE);
 };

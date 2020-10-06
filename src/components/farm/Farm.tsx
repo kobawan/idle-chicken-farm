@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  memo,
-  useState,
-  useReducer,
-  useCallback,
-} from "react";
+import React, { useEffect, memo, useState, useReducer, useCallback } from "react";
 import cx from "classnames";
 import styles from "./farm.module.scss";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
@@ -19,16 +13,13 @@ import { Menu } from "../menu/Menu";
 import { ChickenCanvas } from "../chickenCanvas/ChickenCanvas";
 import { FoodCanvas } from "../foodCanvas/FoodCanvas";
 import { RESIZE_CANVAS_BY } from "../../gameConsts";
-import {
-  OnDetectTooltipCbProps,
-  TooltipOverlay,
-} from "../tooltipOverlay/TooltipOverlay";
+import { OnDetectTooltipCbProps, TooltipOverlay } from "../tooltipOverlay/TooltipOverlay";
 import { InteractionLayer } from "../interactionLayer/InteractionLayer";
 import { version } from "../../../package.json";
 
 const handleChickenHover = (
   chickens: Chicken[],
-  { event, addTooltip, removeTooltip, hasTooltip }: OnDetectTooltipCbProps
+  { event, addTooltip, removeTooltip, hasTooltip }: OnDetectTooltipCbProps,
 ) => {
   const { clientX, clientY } = event;
   chickens.forEach((chicken) => {
@@ -57,14 +48,14 @@ const handleChickenHover = (
 
 export const Farm: React.FC = memo(() => {
   const { resizedWidth, resizedHeight } = useWindowDimensions(RESIZE_CANVAS_BY);
-  const [
-    { isDragging, isFeeding, isInfoOpen, objects, chickens, food },
-    dispatch,
-  ] = useReducer(farmReducer, initialFarmState);
+  const [{ isDragging, isFeeding, isInfoOpen, objects, chickens, food }, dispatch] = useReducer(
+    farmReducer,
+    initialFarmState,
+  );
   const [foodImgs, setFoodImgs] = useState<HTMLImageElement[]>([]);
   const onDetectTooltipCb = useCallback(
     (args: OnDetectTooltipCbProps) => handleChickenHover(chickens, args),
-    [chickens]
+    [chickens],
   );
 
   useEffect(() => {
@@ -87,11 +78,7 @@ export const Farm: React.FC = memo(() => {
     <div className={cx(styles.wrapper, isFeeding && styles.feeding)}>
       <InteractionLayer>
         <div className={styles.bg} />
-        <StaticCanvas
-          resizedWidth={resizedWidth}
-          resizedHeight={resizedHeight}
-          objects={objects}
-        />
+        <StaticCanvas resizedWidth={resizedWidth} resizedHeight={resizedHeight} objects={objects} />
         <FoodCanvas
           resizedWidth={resizedWidth}
           resizedHeight={resizedHeight}

@@ -43,10 +43,8 @@ export class PositionManager {
     this.heightChangeRatio = height / this.originalHeight;
     this.widthChangeRatio = width / this.originalWidth;
 
-    const originalTop =
-      top || setRandomPosition(this.height, image.naturalHeight);
-    const originalLeft =
-      left || setRandomPosition(this.width, image.naturalWidth);
+    const originalTop = top || setRandomPosition(this.height, image.naturalHeight);
+    const originalLeft = left || setRandomPosition(this.width, image.naturalWidth);
     this.top = originalTop * this.heightChangeRatio;
     this.left = originalLeft * this.widthChangeRatio;
   }

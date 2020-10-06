@@ -18,11 +18,7 @@ export const getFoodImgs = async () => {
   return await loadMultipleImages([food1, food2, food3]);
 };
 
-export const getFood = (
-  imgs: HTMLImageElement[],
-  width: number,
-  height: number
-) => {
+export const getFood = (imgs: HTMLImageElement[], width: number, height: number) => {
   const savedFood = getStorageKey(StorageKeys.food);
   if (!savedFood) {
     return [];
@@ -63,9 +59,7 @@ export const drawFoodObjects = ({
     frameCount = 0;
     ctx.clearRect(0, 0, resizedWidth, resizedHeight);
 
-    food.forEach((singleFood) =>
-      singleFood.update({ ctx, resizedWidth, resizedHeight })
-    );
+    food.forEach((singleFood) => singleFood.update({ ctx, resizedWidth, resizedHeight }));
 
     animationIdRef.current = window.requestAnimationFrame(loop);
   };

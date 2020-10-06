@@ -28,28 +28,22 @@ interface TooltipOverlayProps {
   onDetectTooltipCb: (props: OnDetectTooltipCbProps) => void;
 }
 
-export const TooltipOverlay: React.FC<TooltipOverlayProps> = ({
-  onDetectTooltipCb,
-}) => {
+export const TooltipOverlay: React.FC<TooltipOverlayProps> = ({ onDetectTooltipCb }) => {
   const [tooltips, setTooltips] = useState<TooltipProps[]>([]);
-  const addTooltip = useCallback<AddTooltip>(
-    (tProps) => setTooltips([tProps, ...tooltips]),
-    [tooltips]
-  );
+  const addTooltip = useCallback<AddTooltip>((tProps) => setTooltips([tProps, ...tooltips]), [
+    tooltips,
+  ]);
   const removeTooltip = useCallback<RemoveTooltip>(
     (id) => setTooltips(tooltips.filter((p) => p.id !== id)),
-    [tooltips]
+    [tooltips],
   );
-  const hasTooltip = useCallback<HasTooltip>(
-    (id) => tooltips.some((p) => p.id === id),
-    [tooltips]
-  );
+  const hasTooltip = useCallback<HasTooltip>((id) => tooltips.some((p) => p.id === id), [tooltips]);
 
   const onDetectTooltip = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       onDetectTooltipCb({ event, addTooltip, removeTooltip, hasTooltip });
     },
-    [onDetectTooltipCb, addTooltip, removeTooltip, hasTooltip]
+    [onDetectTooltipCb, addTooltip, removeTooltip, hasTooltip],
   );
 
   useEventEffect(EventName.DetectTooltip, onDetectTooltip);
@@ -70,13 +64,7 @@ export const TooltipOverlay: React.FC<TooltipOverlayProps> = ({
               height: `${maxY - minY}px`,
             }}
           />
-          <ReactTooltip
-            id={id}
-            place="top"
-            type="dark"
-            effect="solid"
-            multiline={true}
-          />
+          <ReactTooltip id={id} place="top" type="dark" effect="solid" multiline={true} />
         </React.Fragment>
       ))}
     </div>

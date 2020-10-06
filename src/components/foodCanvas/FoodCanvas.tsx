@@ -33,7 +33,7 @@ const MAX_FOOD_DISTANCE = 300 / RESIZE_CANVAS_BY; // in px
 
 const getClosestFood = (coord: Coordinates, food: Food[]) => {
   const allAvailableFood = food.filter(
-    (item) => item.isAvailable() && getDistance(coord, item) < MAX_FOOD_DISTANCE
+    (item) => item.isAvailable() && getDistance(coord, item) < MAX_FOOD_DISTANCE,
   );
   if (!allAvailableFood.length) {
     return undefined;
@@ -45,14 +45,7 @@ const getClosestFood = (coord: Coordinates, food: Food[]) => {
 };
 
 const throtteFoodDrop = throttle(
-  ({
-    imgs,
-    left,
-    top,
-    addFood,
-    width,
-    height,
-  }: FoodProps & { addFood: (food: Food) => void }) => {
+  ({ imgs, left, top, addFood, width, height }: FoodProps & { addFood: (food: Food) => void }) => {
     const food = new Food({
       imgs,
       top: Math.round(top / RESIZE_CANVAS_BY),
@@ -63,7 +56,7 @@ const throtteFoodDrop = throttle(
     addFood(food);
   },
   100,
-  { leading: true, trailing: false }
+  { leading: true, trailing: false },
 );
 
 export const FoodCanvas: React.FC<FoodCanvasProps> = ({
@@ -92,12 +85,9 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
         CustomEventEmitter.emit(EventName.NotFoundRequestedFood, { id });
       }
     },
-    [food]
+    [food],
   );
-  const removeFood = useCallback(
-    (id: string) => dispatch(removeFoodAction(id)),
-    [dispatch]
-  );
+  const removeFood = useCallback((id: string) => dispatch(removeFoodAction(id)), [dispatch]);
 
   const toggleFoodDragging = useCallback(
     (e: InteractEvent<HTMLCanvasElement>) => {
@@ -108,7 +98,7 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
 
       dispatch(toggleDraggingAction());
     },
-    [dispatch]
+    [dispatch],
   );
 
   const dropFood = useCallback(
@@ -136,7 +126,7 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
         height: resizedHeight,
       });
     },
-    [isDraggingFood, foodImages, resizedHeight, resizedWidth, dispatch]
+    [isDraggingFood, foodImages, resizedHeight, resizedWidth, dispatch],
   );
 
   const onDragFinished = useCallback(
@@ -144,7 +134,7 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
       dropFood(e);
       toggleFoodDragging(e);
     },
-    [dropFood, toggleFoodDragging]
+    [dropFood, toggleFoodDragging],
   );
 
   useEffect(() => {
@@ -157,11 +147,7 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
       isDraggingFood,
     });
   }, [resizedWidth, resizedHeight, food, isDraggingFood, animationIdRef]);
-  useEffect(() => saveItemsOnInterval(StorageKeys.food, food), [
-    food,
-    resizedHeight,
-    resizedWidth,
-  ]);
+  useEffect(() => saveItemsOnInterval(StorageKeys.food, food), [food, resizedHeight, resizedWidth]);
   useEffect(() => {
     const stopFeedingOnEsc = (e: KeyboardEvent) => {
       if (e.code === "Escape" && isFeeding) {

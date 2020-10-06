@@ -5,16 +5,10 @@ interface GetClosestOptions<I> extends Coordinates {
 }
 
 export const getDistance = (a: Coordinates, b: Coordinates) => {
-  return Math.sqrt(
-    Math.abs(a.left - b.left) ** 2 + Math.abs(a.top - b.top) ** 2
-  );
+  return Math.sqrt(Math.abs(a.left - b.left) ** 2 + Math.abs(a.top - b.top) ** 2);
 };
 
-export const getClosest = <I extends Coordinates>({
-  items,
-  left,
-  top,
-}: GetClosestOptions<I>) => {
+export const getClosest = <I extends Coordinates>({ items, left, top }: GetClosestOptions<I>) => {
   let closest = Infinity;
   let closestItem: I | undefined;
 

@@ -44,7 +44,5 @@ export const drawStaticObjects = ({
   ctx.imageSmoothingEnabled = false;
   ctx.clearRect(0, 0, resizedWidth, resizedHeight);
 
-  objects.forEach((object) =>
-    object.update({ ctx, resizedWidth, resizedHeight })
-  );
+  objects.forEach((object) => object.update({ ctx, resizedWidth, resizedHeight }));
 };

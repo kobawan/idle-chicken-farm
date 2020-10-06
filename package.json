@@ -28,7 +28,8 @@
     "deploy": "NODE_DEBUG=gh-pages gh-pages -d build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint src/**/*.ts src/**/*.tsx --max-warnings 0"
+    "lint": "eslint src/**/*.ts src/**/*.tsx --max-warnings 0",
+    "prettier:fix": "prettier --write . --config .prettierrc"
   },
   "husky": {
     "hooks": {

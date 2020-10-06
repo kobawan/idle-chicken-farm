@@ -16,7 +16,7 @@ export const useWindowDimensions = (resizeBy = 1) => {
         });
       },
       500,
-      { trailing: true, leading: false }
+      { trailing: true, leading: false },
     );
     window.addEventListener("resize", handleResize);
     return () => {

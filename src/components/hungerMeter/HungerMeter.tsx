@@ -11,12 +11,7 @@ interface HungerMeterProps {
   id: string;
 }
 
-export const HungerMeter: React.FC<HungerMeterProps> = ({
-  name,
-  gender,
-  hunger,
-  id,
-}) => {
+export const HungerMeter: React.FC<HungerMeterProps> = ({ name, gender, hunger, id }) => {
   return (
     <div>
       <h4 className={styles.name}>
