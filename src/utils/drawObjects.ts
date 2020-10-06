@@ -8,10 +8,7 @@ import { DrawProps } from "../types/types";
 type DrawStaticObjectsProps = StaticItems & DrawProps;
 
 export const createObjects = async (width: number, height: number) => {
-  const images = await loadMultipleImages([
-    henHouse,
-    waterHole,
-  ]);
+  const images = await loadMultipleImages([henHouse, waterHole]);
   const houseProps = {
     top: height * 0.2,
     left: width * 0.2,
@@ -26,9 +23,9 @@ export const createObjects = async (width: number, height: number) => {
   };
 
   return [houseProps, waterProps].map((props) => {
-    return new StaticObject({ ...props, width, height })
-  })
-}
+    return new StaticObject({ ...props, width, height });
+  });
+};
 
 export const drawStaticObjects = ({
   canvasRef,
@@ -36,16 +33,18 @@ export const drawStaticObjects = ({
   resizedWidth,
   resizedHeight,
 }: DrawStaticObjectsProps) => {
-  if(!canvasRef.current) {
+  if (!canvasRef.current) {
     return;
   }
-  const ctx = canvasRef.current.getContext('2d');
-  if(!ctx) {
+  const ctx = canvasRef.current.getContext("2d");
+  if (!ctx) {
     return;
   }
 
   ctx.imageSmoothingEnabled = false;
   ctx.clearRect(0, 0, resizedWidth, resizedHeight);
 
-  objects.forEach(object => object.update({ ctx, resizedWidth, resizedHeight }));
-}
+  objects.forEach((object) =>
+    object.update({ ctx, resizedWidth, resizedHeight })
+  );
+};

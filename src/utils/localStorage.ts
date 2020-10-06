@@ -3,12 +3,12 @@ export enum StorageKeys {
   food = "food",
 }
 
-const storageKeysToDefaultMap: { [key in StorageKeys]: any } = {
+const storageKeysToDefaultMap: { [key in StorageKeys]: unknown } = {
   [StorageKeys.chickens]: null,
   [StorageKeys.food]: null,
 };
 
-export const getStorageKey = (key: StorageKeys): any => {
+export const getStorageKey = (key: StorageKeys): unknown => {
   try {
     const value = window.localStorage.getItem(key);
     if (value === null) {
@@ -20,7 +20,7 @@ export const getStorageKey = (key: StorageKeys): any => {
   }
 };
 
-export const setStorageKey = (key: StorageKeys, value: any) => {
+export const setStorageKey = (key: StorageKeys, value: unknown) => {
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
   } catch {

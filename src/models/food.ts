@@ -16,7 +16,10 @@ export interface FoodProps extends Coordinates {
   foodMeter?: number;
 }
 
-export type SavedFoodState = Pick<FoodProps, "top"|"left"|"foodMeter"|"id"|"originalHeight"|"originalWidth">;
+export type SavedFoodState = Pick<
+  FoodProps,
+  "top" | "left" | "foodMeter" | "id" | "originalHeight" | "originalWidth"
+>;
 
 export class Food {
   private originalWidth: number;
@@ -32,7 +35,17 @@ export class Food {
   public left: number;
   public id: string;
 
-  constructor({ imgs, top, left, foodMeter, id, width, height, originalHeight, originalWidth }: FoodProps) {
+  constructor({
+    imgs,
+    top,
+    left,
+    foodMeter,
+    id,
+    width,
+    height,
+    originalHeight,
+    originalWidth,
+  }: FoodProps) {
     this.imgs = imgs;
     this.originalWidth = originalWidth || width;
     this.originalHeight = originalHeight || height;
@@ -46,10 +59,14 @@ export class Food {
     this.id = id || generateId();
   }
 
-  public update({ ctx, resizedHeight, resizedWidth }: {
-    ctx: CanvasRenderingContext2D,
-    resizedWidth: number,
-    resizedHeight: number,
+  public update({
+    ctx,
+    resizedHeight,
+    resizedWidth,
+  }: {
+    ctx: CanvasRenderingContext2D;
+    resizedWidth: number;
+    resizedHeight: number;
   }) {
     this.updateToResizedPosition(resizedWidth, resizedHeight);
     this.draw(ctx, this.getImg());
@@ -63,13 +80,13 @@ export class Food {
       id: this.id,
       originalHeight: this.originalHeight,
       originalWidth: this.originalWidth,
-    }
+    };
   }
 
   public updateFoodMeter() {
     this.foodMeter = Math.max(this.foodMeter - 1, 0);
 
-    if(!this.foodMeter) {
+    if (!this.foodMeter) {
       CustomEventEmitter.emit(EventName.RemoveFood, this.id);
     }
   }
@@ -83,20 +100,20 @@ export class Food {
   }
 
   public startEating(id: string) {
-    if(!this.animalsEating.includes(id)) {
+    if (!this.animalsEating.includes(id)) {
       this.animalsEating.push(id);
     }
   }
 
   public stopEating(id: string) {
     const i = this.animalsEating.indexOf(id);
-    if(i !== -1) {
+    if (i !== -1) {
       this.animalsEating.splice(i, 1);
     }
   }
 
   private updateToResizedPosition(resizedWidth: number, resizedHeight: number) {
-    if(resizedWidth !== this.width || resizedHeight !== this.height) {
+    if (resizedWidth !== this.width || resizedHeight !== this.height) {
       this.left = this.originalLeft * (resizedWidth / this.originalWidth);
       this.top = this.originalTop * (resizedHeight / this.originalHeight);
 
@@ -106,11 +123,11 @@ export class Food {
   }
 
   private getImg() {
-    if(this.foodMeter <= 10) {
+    if (this.foodMeter <= 10) {
       return this.imgs[0];
     }
 
-    if(this.foodMeter <= 20) {
+    if (this.foodMeter <= 20) {
       return this.imgs[1];
     }
 

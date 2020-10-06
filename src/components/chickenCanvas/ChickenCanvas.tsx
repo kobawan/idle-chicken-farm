@@ -25,12 +25,13 @@ export const ChickenCanvas: React.FC<ChickenCanvasProps> = ({
       resizedHeight,
       animationIdRef,
       chickens,
-    })
+    });
   }, [resizedWidth, resizedHeight, animationIdRef, chickens]);
-  useEffect(
-    () => saveItemsOnInterval(StorageKeys.chickens, chickens),
-    [chickens, resizedHeight, resizedWidth]
-  )
+  useEffect(() => saveItemsOnInterval(StorageKeys.chickens, chickens), [
+    chickens,
+    resizedHeight,
+    resizedWidth,
+  ]);
 
   return (
     <canvas

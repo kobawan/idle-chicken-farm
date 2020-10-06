@@ -7,19 +7,19 @@ import styles from "./interactionLayer.module.scss";
 
 const onInteractStart = (e: InteractEvent<HTMLDivElement>) => {
   CustomEventEmitter.emit(EventName.StartDraggingFood, e);
-}
+};
 
 const onInteractEnd = (e: InteractEvent<HTMLDivElement>) => {
   CustomEventEmitter.emit(EventName.StopDraggingFood, e);
-}
+};
 
 const onInteractMove = (e: InteractEvent<HTMLDivElement>) => {
   CustomEventEmitter.emit(EventName.DropFood, e);
 
-  if(!isTouchEvent(e)) {
+  if (!isTouchEvent(e)) {
     CustomEventEmitter.emit(EventName.DetectTooltip, e);
   }
-}
+};
 
 export const InteractionLayer: React.FC = ({ children }) => {
   return (

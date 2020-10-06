@@ -1,4 +1,6 @@
-export const loadImage = (url: string): Promise<HTMLImageElement|undefined> => {
+export const loadImage = (
+  url: string
+): Promise<HTMLImageElement | undefined> => {
   return new Promise((resolve) => {
     const img = new Image();
     img.src = url;
@@ -7,8 +9,10 @@ export const loadImage = (url: string): Promise<HTMLImageElement|undefined> => {
   });
 };
 
-export const loadMultipleImages = (urls: string[]): Promise<HTMLImageElement[]> => {
-  return Promise.all(
-    urls.map(url => loadImage(url))
-  ).then(imgs => imgs.filter(Boolean)) as Promise<HTMLImageElement[]>;
-}
+export const loadMultipleImages = (
+  urls: string[]
+): Promise<HTMLImageElement[]> => {
+  return Promise.all(urls.map((url) => loadImage(url))).then((imgs) =>
+    imgs.filter(Boolean)
+  ) as Promise<HTMLImageElement[]>;
+};

@@ -26,7 +26,7 @@ export class HungerManager {
   constructor({ hungerMeter, id }: HungerManagerProps) {
     this.hungerMeter = hungerMeter || 0;
     this.id = id;
-    this.logger = new Logger('Hunger Manager', this.id);
+    this.logger = new Logger("Hunger Manager", this.id);
 
     this.startFoodListener();
   }
@@ -38,18 +38,16 @@ export class HungerManager {
   public getSavingState() {
     return {
       hungerMeter: this.hungerMeter,
-    }
+    };
   }
 
-  public updateHungerMeter(
-    timestamp: number,
-  ) {
-    if(this.isEating) {
+  public updateHungerMeter(timestamp: number) {
+    if (this.isEating) {
       this.lastHungerIncrease = 0;
       return;
     }
 
-    if(timestamp - this.lastHungerIncrease >= HUNGER_THRESHOLD) {
+    if (timestamp - this.lastHungerIncrease >= HUNGER_THRESHOLD) {
       this.hungerMeter = Math.min(this.hungerMeter + 1, 100);
       this.lastHungerIncrease = timestamp;
     }
@@ -60,16 +58,18 @@ export class HungerManager {
   }
 
   public hasReachedFood(currentPos: Coordinates) {
-    if(!this.food) {
+    if (!this.food) {
       return false;
     }
     const { dx, dy } = this.getFoodDistance(this.food, currentPos);
-    return Math.abs(dx) <= MIN_DISTANCE_TO_EAT && Math.abs(dy) <= MIN_DISTANCE_TO_EAT;
+    return (
+      Math.abs(dx) <= MIN_DISTANCE_TO_EAT && Math.abs(dy) <= MIN_DISTANCE_TO_EAT
+    );
   }
 
   public startEating(position: Coordinates) {
-    if(!this.food) {
-      console.error('Chicken needs food in order to start eating it!');
+    if (!this.food) {
+      console.error("Chicken needs food in order to start eating it!");
       return;
     }
     this.food.startEating(this.id);
@@ -78,16 +78,16 @@ export class HungerManager {
   }
 
   public eat(position: Coordinates) {
-    if(!this.food) {
-      console.error('Chicken needs food in order to eat it!');
+    if (!this.food) {
+      console.error("Chicken needs food in order to eat it!");
       return;
     }
     this.hungerMeter = Math.max(this.hungerMeter - 1, 0);
     this.food.updateFoodMeter();
-    if(this.isFull() || this.food.hasFinished()) {
+    if (this.isFull() || this.food.hasFinished()) {
       this.stopEating();
 
-      if(!this.isFull()) {
+      if (!this.isFull()) {
         this.searchForFood(position);
       }
     }
@@ -98,8 +98,8 @@ export class HungerManager {
     currentImage: HTMLImageElement,
     goToCoordinates: (dx: number, dy: number, image: HTMLImageElement) => void
   ) {
-    if(!this.food) {
-      console.error('Chicken needs food in order to walk towards it!');
+    if (!this.food) {
+      console.error("Chicken needs food in order to walk towards it!");
       return;
     }
 
@@ -120,36 +120,48 @@ export class HungerManager {
   }
 
   public searchForFood(position: Coordinates) {
-    if(!this.isSearchingForFood) {
-      this.logger.log('Start searching for food');
+    if (!this.isSearchingForFood) {
+      this.logger.log("Start searching for food");
       this.isSearchingForFood = true;
       CustomEventEmitter.emit(EventName.RequestFood, { position, id: this.id });
     }
   }
 
-  private addFood({ food, id }: { food: Food, id: string }) {
-    if(this.id === id) {
+  private addFood({ food, id }: { food: Food; id: string }) {
+    if (this.id === id) {
       this.food = food;
       this.isSearchingForFood = false;
-      this.logger.log('Stopped searching for food: found it!');
+      this.logger.log("Stopped searching for food: found it!");
     }
   }
 
   private stopSearching({ id }: { id: string }) {
-    if(this.id === id) {
+    if (this.id === id) {
       this.isSearchingForFood = false;
-      this.logger.log('Stopped searching for food: did not find any!');
+      this.logger.log("Stopped searching for food: did not find any!");
     }
   }
 
   private startFoodListener() {
-    CustomEventEmitter.on(EventName.FoundRequestedFood, this.addFood.bind(this));
-    CustomEventEmitter.on(EventName.NotFoundRequestedFood, this.stopSearching.bind(this));
+    CustomEventEmitter.on(
+      EventName.FoundRequestedFood,
+      this.addFood.bind(this)
+    );
+    CustomEventEmitter.on(
+      EventName.NotFoundRequestedFood,
+      this.stopSearching.bind(this)
+    );
   }
 
   private stopFoodListener() {
-    CustomEventEmitter.off(EventName.FoundRequestedFood, this.addFood.bind(this));
-    CustomEventEmitter.off(EventName.NotFoundRequestedFood, this.stopSearching.bind(this));
+    CustomEventEmitter.off(
+      EventName.FoundRequestedFood,
+      this.addFood.bind(this)
+    );
+    CustomEventEmitter.off(
+      EventName.NotFoundRequestedFood,
+      this.stopSearching.bind(this)
+    );
   }
 
   private isFull() {
@@ -157,7 +169,7 @@ export class HungerManager {
   }
 
   private stopEating() {
-    if(!this.food) {
+    if (!this.food) {
       return;
     }
     this.food.stopEating(this.id);
@@ -173,6 +185,6 @@ export class HungerManager {
     return {
       dx: foodPos.left - currentPos.left,
       dy: foodPos.top - currentPos.top,
-    }
+    };
   }
 }

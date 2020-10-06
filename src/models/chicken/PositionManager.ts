@@ -14,8 +14,8 @@ interface PositionManagerProps {
 }
 
 const setRandomPosition = (totalSize: number, imageSize: number) => {
-  return Math.round(Math.random() * (totalSize - imageSize))
-}
+  return Math.round(Math.random() * (totalSize - imageSize));
+};
 
 export class PositionManager {
   private width: number;
@@ -27,7 +27,15 @@ export class PositionManager {
   private top: number;
   private left: number;
 
-  constructor({ width, height, originalHeight, originalWidth, top, left, image }: PositionManagerProps) {
+  constructor({
+    width,
+    height,
+    originalHeight,
+    originalWidth,
+    top,
+    left,
+    image,
+  }: PositionManagerProps) {
     this.width = width;
     this.height = height;
     this.originalWidth = originalWidth || this.width;
@@ -35,8 +43,10 @@ export class PositionManager {
     this.heightChangeRatio = height / this.originalHeight;
     this.widthChangeRatio = width / this.originalWidth;
 
-    const originalTop = top || setRandomPosition(this.height, image.naturalHeight);
-    const originalLeft = left || setRandomPosition(this.width, image.naturalWidth);
+    const originalTop =
+      top || setRandomPosition(this.height, image.naturalHeight);
+    const originalLeft =
+      left || setRandomPosition(this.width, image.naturalWidth);
     this.top = originalTop * this.heightChangeRatio;
     this.left = originalLeft * this.widthChangeRatio;
   }
@@ -60,11 +70,11 @@ export class PositionManager {
       top: this.top / this.heightChangeRatio,
       originalHeight: this.originalHeight,
       originalWidth: this.originalWidth,
-    }
+    };
   }
 
   public updateToResizedPosition(resizedWidth: number, resizedHeight: number) {
-    if(resizedWidth !== this.width || resizedHeight !== this.height) {
+    if (resizedWidth !== this.width || resizedHeight !== this.height) {
       this.left = this.left * (resizedWidth / this.width);
       this.top = this.top * (resizedHeight / this.height);
 
@@ -76,15 +86,15 @@ export class PositionManager {
   public goToCoordinates(dx: number, dy: number, currentImg: HTMLImageElement) {
     const { naturalHeight, naturalWidth } = currentImg;
 
-    this.top = dy > 0
-      ? Math.min(this.top + MOVEMENT_PX, this.height - naturalHeight)
-      : Math.max(this.top - MOVEMENT_PX, 0)
-    ;
+    this.top =
+      dy > 0
+        ? Math.min(this.top + MOVEMENT_PX, this.height - naturalHeight)
+        : Math.max(this.top - MOVEMENT_PX, 0);
 
-    this.left = dx > 0
-      ? Math.min(this.left + MOVEMENT_PX, this.width - naturalWidth)
-      : Math.max(this.left - MOVEMENT_PX, 0)
-    ;
+    this.left =
+      dx > 0
+        ? Math.min(this.left + MOVEMENT_PX, this.width - naturalWidth)
+        : Math.max(this.left - MOVEMENT_PX, 0);
   }
 
   public walkRandomly(currentImg: HTMLImageElement) {

@@ -19,7 +19,12 @@
     margin-top: 4px;
     height: 0.5rem;
     flex-grow: 1;
-    background: linear-gradient(90deg, rgba(73,157,0,1) 0%, rgba(253,124,29,1) 50%, rgba(210,0,0,1) 100%);
+    background: linear-gradient(
+      90deg,
+      rgba(73, 157, 0, 1) 0%,
+      rgba(253, 124, 29, 1) 50%,
+      rgba(210, 0, 0, 1) 100%
+    );
 
     .hungerMarker {
       position: relative;

@@ -12,16 +12,15 @@ import {
   SetFoodAction,
 } from "./actions";
 
-export type AllFarmActions = (
-  SetObjectsAction
+export type AllFarmActions =
+  | SetObjectsAction
   | AddFoodAction
   | SetFoodAction
   | RemoveFoodAction
   | SetChickensAction
   | ToggleFeedingAction
   | ToggleDraggingAction
-  | ToggleInfoAction
-);
+  | ToggleInfoAction;
 
 interface FarmState extends FarmItems {
   isFeeding: boolean;
@@ -46,46 +45,43 @@ export const farmReducer: FarmReducerType = (state, action) => {
       return {
         ...state,
         chickens: action.payload.chickens,
-      }
+      };
     case FarmActions.setFood: {
       return {
         ...state,
         food: action.payload.food,
-      }
+      };
     }
     case FarmActions.addFood:
       return {
         ...state,
-        food: [
-          ...state.food,
-          action.payload.food,
-        ],
-      }
+        food: [...state.food, action.payload.food],
+      };
     case FarmActions.removeFood:
       return {
         ...state,
         food: state.food.filter(({ id }) => id !== action.payload.id),
-      }
+      };
     case FarmActions.setObjects:
       return {
         ...state,
         objects: action.payload.objects,
-      }
+      };
     case FarmActions.toggleDragging:
       return {
         ...state,
         isDragging: !state.isDragging,
-      }
+      };
     case FarmActions.toggleFeeding:
       return {
         ...state,
         isFeeding: !state.isFeeding,
-      }
+      };
     case FarmActions.toggleInfo:
       return {
         ...state,
         isInfoOpen: !state.isInfoOpen,
-      }
+      };
     default:
       return state;
   }

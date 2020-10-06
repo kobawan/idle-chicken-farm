@@ -16,7 +16,8 @@ import { SavedChickenState } from "../models/chicken/types";
 
 const CHICKEN_REFRESH_RATE = 500;
 
-type DrawDynamicObjectsProps = ChickenItems & DrawProps & { animationIdRef: React.MutableRefObject<number> };
+type DrawDynamicObjectsProps = ChickenItems &
+  DrawProps & { animationIdRef: React.MutableRefObject<number> };
 
 export const getChickens = async (width: number, height: number) => {
   const images = await Promise.all([
@@ -28,31 +29,37 @@ export const getChickens = async (width: number, height: number) => {
     [ChickenBreed.brown]: images[0],
     [ChickenBreed.orange]: images[1],
     [ChickenBreed.yellow]: images[2],
-  }
+  };
   const savedChickens = getStorageKey(StorageKeys.chickens);
-  if(!savedChickens) {
-    return Object.values(ChickenBreed).reduce<Chicken[]>((chickens, breed, index) => {
-      const gender = index === 0 ? 'male' : 'female';
-      const chicken = new Chicken({
-        width,
-        height,
-        imgs: imagesBreedMap[breed],
-        breed: breed,
-        gender,
-        name: generateName(gender, getAvailableNames(chickens))
-      })
-      chickens.push(chicken);
-      return chickens;
-    }, []);
+  if (!savedChickens) {
+    return Object.values(ChickenBreed).reduce<Chicken[]>(
+      (chickens, breed, index) => {
+        const gender = index === 0 ? "male" : "female";
+        const chicken = new Chicken({
+          width,
+          height,
+          imgs: imagesBreedMap[breed],
+          breed: breed,
+          gender,
+          name: generateName(gender, getAvailableNames(chickens)),
+        });
+        chickens.push(chicken);
+        return chickens;
+      },
+      []
+    );
   }
 
-  return savedChickens.map((props: SavedChickenState) => new Chicken({
-    width,
-    height,
-    imgs: imagesBreedMap[props.breed],
-    ...props,
-  }));
-}
+  return savedChickens.map(
+    (props: SavedChickenState) =>
+      new Chicken({
+        width,
+        height,
+        imgs: imagesBreedMap[props.breed],
+        ...props,
+      })
+  );
+};
 
 export const drawChickens = ({
   canvasRef,
@@ -61,11 +68,11 @@ export const drawChickens = ({
   chickens,
   animationIdRef,
 }: DrawDynamicObjectsProps) => {
-  if(!canvasRef.current) {
+  if (!canvasRef.current) {
     return;
   }
-  const ctx = canvasRef.current.getContext('2d');
-  if(!ctx) {
+  const ctx = canvasRef.current.getContext("2d");
+  if (!ctx) {
     return;
   }
 
@@ -74,11 +81,13 @@ export const drawChickens = ({
   animationIdRef.current = window.setInterval(() => {
     ctx.clearRect(0, 0, resizedWidth, resizedHeight);
 
-    chickens.forEach(chicken => chicken.update({
-      ctx,
-      timestamp: performance.now(),
-      resizedWidth,
-      resizedHeight
-    }));
-  }, CHICKEN_REFRESH_RATE)
+    chickens.forEach((chicken) =>
+      chicken.update({
+        ctx,
+        timestamp: performance.now(),
+        resizedWidth,
+        resizedHeight,
+      })
+    );
+  }, CHICKEN_REFRESH_RATE);
 };

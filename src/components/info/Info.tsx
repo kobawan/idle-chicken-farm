@@ -9,24 +9,23 @@ interface InfoProps {
 }
 
 const renderChickensHunger = (chickens: Chicken[]) => {
-  return chickens
-    .map((chicken, i) => (
-      <HungerMeter
-        key={i}
-        name={chicken.name}
-        gender={chicken.gender}
-        hunger={chicken.getHungerMeter()}
-        id={chicken.id}
-      />
-    ));
-}
+  return chickens.map((chicken, i) => (
+    <HungerMeter
+      key={i}
+      name={chicken.name}
+      gender={chicken.gender}
+      hunger={chicken.getHungerMeter()}
+      id={chicken.id}
+    />
+  ));
+};
 
 export const Info: React.FC<InfoProps> = ({ chickens, isOpen }) => {
   const [, setTime] = useState(0);
 
   useEffect(() => {
     let id = 0;
-    if(isOpen) {
+    if (isOpen) {
       id = window.setInterval(() => setTime(Date.now()), 1000);
     }
     return () => window.clearInterval(id);
@@ -35,8 +34,8 @@ export const Info: React.FC<InfoProps> = ({ chickens, isOpen }) => {
   return (
     <div className={styles.info}>
       <h3 className={styles.title}>Hunger</h3>
-      <hr className={styles.hr}/>
+      <hr className={styles.hr} />
       {renderChickensHunger(chickens)}
     </div>
   );
-}
+};

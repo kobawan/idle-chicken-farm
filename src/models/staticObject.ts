@@ -21,7 +21,15 @@ export class StaticObject {
   private deviationY: number;
   public id = generateId();
 
-  constructor({ img, top, left, width, height, deviationX, deviationY }: StaticObjectProps) {
+  constructor({
+    img,
+    top,
+    left,
+    width,
+    height,
+    deviationX,
+    deviationY,
+  }: StaticObjectProps) {
     this.img = img;
     this.top = top;
     this.left = left;
@@ -33,17 +41,21 @@ export class StaticObject {
     this.deviationY = deviationY || 0;
   }
 
-  public update({ ctx, resizedWidth, resizedHeight }: {
-    ctx: CanvasRenderingContext2D,
-    resizedWidth: number,
-    resizedHeight: number,
+  public update({
+    ctx,
+    resizedWidth,
+    resizedHeight,
+  }: {
+    ctx: CanvasRenderingContext2D;
+    resizedWidth: number;
+    resizedHeight: number;
   }) {
     this.updateToResizedPosition(resizedWidth, resizedHeight);
     this.draw(ctx);
   }
 
   private updateToResizedPosition(resizedWidth: number, resizedHeight: number) {
-    if(resizedWidth !== this.width || resizedHeight !== this.height) {
+    if (resizedWidth !== this.width || resizedHeight !== this.height) {
       this.left = this.originalLeft * (resizedWidth / this.width);
       this.top = this.originalTop * (resizedHeight / this.height);
     }

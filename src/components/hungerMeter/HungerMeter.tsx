@@ -11,20 +11,29 @@ interface HungerMeterProps {
   id: string;
 }
 
-export const HungerMeter = ({ name, gender, hunger, id }: HungerMeterProps) => {
+export const HungerMeter: React.FC<HungerMeterProps> = ({
+  name,
+  gender,
+  hunger,
+  id,
+}) => {
   return (
     <div>
       <h4 className={styles.name}>
-        {name} {gender === 'male' ? '♂' : '♀' }{!isProduction && <small>{id}</small>}
+        {name} {gender === "male" ? "♂" : "♀"}
+        {!isProduction && <small>{id}</small>}
       </h4>
       <div className={styles.hungerRow}>
         <span className={styles.hungerLabel}>Hunger:</span>
         <div className={styles.hungerMeter}>
-          <div className={styles.hungerMarker} style={{
-            left: `${hunger}%`,
-          }} />
+          <div
+            className={styles.hungerMarker}
+            style={{
+              left: `${hunger}%`,
+            }}
+          />
         </div>
       </div>
     </div>
   );
-}
+};

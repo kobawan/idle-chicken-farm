@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState } from "react";
 import ReactTooltip from "react-tooltip";
 import { EventName } from "../../utils/events";
 import { useEventEffect } from "../../utils/useEventEffect";
-import styles from './TooltipOverlay.module.scss'
+import styles from "./TooltipOverlay.module.scss";
 
 export interface TooltipProps {
   id: string;
@@ -28,51 +28,57 @@ interface TooltipOverlayProps {
   onDetectTooltipCb: (props: OnDetectTooltipCbProps) => void;
 }
 
-export const TooltipOverlay: React.FC<TooltipOverlayProps> = ({ onDetectTooltipCb }) => {
+export const TooltipOverlay: React.FC<TooltipOverlayProps> = ({
+  onDetectTooltipCb,
+}) => {
   const [tooltips, setTooltips] = useState<TooltipProps[]>([]);
   const addTooltip = useCallback<AddTooltip>(
     (tProps) => setTooltips([tProps, ...tooltips]),
     [tooltips]
-  )
+  );
   const removeTooltip = useCallback<RemoveTooltip>(
-    (id) => setTooltips(tooltips.filter(p => p.id !== id)),
+    (id) => setTooltips(tooltips.filter((p) => p.id !== id)),
     [tooltips]
-  )
+  );
   const hasTooltip = useCallback<HasTooltip>(
-    (id) => tooltips.some(p => p.id === id)
-  , [tooltips])
+    (id) => tooltips.some((p) => p.id === id),
+    [tooltips]
+  );
 
-  const onDetectTooltip = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
-    onDetectTooltipCb({ event, addTooltip, removeTooltip, hasTooltip })
-  }, [onDetectTooltipCb, addTooltip, removeTooltip, hasTooltip])
+  const onDetectTooltip = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      onDetectTooltipCb({ event, addTooltip, removeTooltip, hasTooltip });
+    },
+    [onDetectTooltipCb, addTooltip, removeTooltip, hasTooltip]
+  );
 
   useEventEffect(EventName.DetectTooltip, onDetectTooltip);
 
-  return(
+  return (
     <div className={styles.container}>
       {tooltips.map(({ id, text, minX, maxY, maxX, minY }) => (
         <React.Fragment key={id}>
-        <div
-          data-for={id}
-          data-tip={text}
-          data-iscapture={true}
-          style={{
-            position: 'relative',
-            top: `${minY}px`,
-            left: `${minX}px`,
-            width: `${maxX - minX}px`,
-            height: `${maxY - minY}px`,
-          }}
-        />
-        <ReactTooltip
-          id={id}
-          place="top"
-          type="dark"
-          effect="solid"
-          multiline={true}
-        />
+          <div
+            data-for={id}
+            data-tip={text}
+            data-iscapture={true}
+            style={{
+              position: "relative",
+              top: `${minY}px`,
+              left: `${minX}px`,
+              width: `${maxX - minX}px`,
+              height: `${maxY - minY}px`,
+            }}
+          />
+          <ReactTooltip
+            id={id}
+            place="top"
+            type="dark"
+            effect="solid"
+            multiline={true}
+          />
         </React.Fragment>
       ))}
     </div>
-  )
-}
+  );
+};

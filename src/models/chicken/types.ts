@@ -15,20 +15,30 @@ export interface ChickenProps {
   hungerMeter?: number;
 }
 
-export type SavedChickenState = Required<Pick<
-  ChickenProps,
-  "breed"|"id"|"top"|"left"|"hungerMeter"|"originalHeight"|"originalWidth"|"gender"|"name">
+export type SavedChickenState = Required<
+  Pick<
+    ChickenProps,
+    | "breed"
+    | "id"
+    | "top"
+    | "left"
+    | "hungerMeter"
+    | "originalHeight"
+    | "originalWidth"
+    | "gender"
+    | "name"
+  >
 >;
 
 export enum ChickenState {
-  eating = 'eating',
-  walkingToFood = 'walkingToFood',
-  walking = 'walking',
-  resting = 'resting',
+  eating = "eating",
+  walkingToFood = "walkingToFood",
+  walking = "walking",
+  resting = "resting",
 }
 
 export enum ChickenImage {
-  default = 'default',
-  walking = 'walking',
-  resting = 'resting',
+  default = "default",
+  walking = "walking",
+  resting = "resting",
 }

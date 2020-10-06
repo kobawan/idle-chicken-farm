@@ -1,0 +1,5 @@
+/.vscode
+/build
+/*.md
+
+package-lock.json

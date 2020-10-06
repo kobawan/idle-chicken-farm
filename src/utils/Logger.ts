@@ -1,8 +1,8 @@
 const allowedLogs: string[] = [];
 const hasLoggingEnabled = (id: string) => allowedLogs.includes(id);
 
-(window as any).enableDebugging = (id: string) => {
-  allowedLogs.push(id)
+window.enableDebugging = (id: string) => {
+  allowedLogs.push(id);
 };
 
 export class Logger {
@@ -14,14 +14,14 @@ export class Logger {
     this.id = id;
   }
 
-  public log(...args: any[]) {
-    if(!hasLoggingEnabled(this.id)) {
+  public log(...args: unknown[]) {
+    if (!hasLoggingEnabled(this.id)) {
       return;
     }
     console.log(`${this.displayName}: `, ...args);
   }
 
-  public error(...args: any[]) {
+  public error(...args: unknown[]) {
     console.error(`${this.displayName}: `, ...args);
   }
 }

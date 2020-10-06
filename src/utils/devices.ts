@@ -1,16 +1,18 @@
 import { InteractEvent } from "../types/types";
 
-export const isTouchEvent = (e: InteractEvent<HTMLElement>): e is React.TouchEvent<HTMLElement> => {
+export const isTouchEvent = (
+  e: InteractEvent<HTMLElement>
+): e is React.TouchEvent<HTMLElement> => {
   return (e as React.TouchEvent<HTMLElement>).type.includes("touch");
-}
+};
 
 export const getInteractionPos = (e: InteractEvent<HTMLElement>) => {
   let left: number;
   let top: number;
 
-  if(isTouchEvent(e)) {
+  if (isTouchEvent(e)) {
     // ignore interactions with more than one finger
-    if(e.touches.length !== 1) {
+    if (e.touches.length !== 1) {
       return;
     }
     left = e.touches[0].clientX;
@@ -21,4 +23,4 @@ export const getInteractionPos = (e: InteractEvent<HTMLElement>) => {
   }
 
   return { left, top };
-}
+};

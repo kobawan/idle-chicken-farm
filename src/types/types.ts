@@ -30,11 +30,11 @@ export enum ChickenBreed {
 export type InteractEvent<E> = React.MouseEvent<E> | React.TouchEvent<E>;
 
 export interface DrawProps {
-  canvasRef: React.RefObject<HTMLCanvasElement>,
-  resizedWidth: number,
-  resizedHeight: number,
+  canvasRef: React.RefObject<HTMLCanvasElement>;
+  resizedWidth: number;
+  resizedHeight: number;
 }
 
-export type Gender = 'female' | 'male';
+export type Gender = "female" | "male";
 
 export type ChickenNames = Record<Gender, string[]>;

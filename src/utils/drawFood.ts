@@ -8,19 +8,23 @@ import { FoodItems, DrawProps } from "../types/types";
 
 const FOOD_CANVAS_FRAME_THROTTLE = 30;
 
-type DrawFoodObjectsProps = FoodItems & DrawProps & { animationIdRef: React.MutableRefObject<number>; isDraggingFood: boolean };
+type DrawFoodObjectsProps = FoodItems &
+  DrawProps & {
+    animationIdRef: React.MutableRefObject<number>;
+    isDraggingFood: boolean;
+  };
 
 export const getFoodImgs = async () => {
-  return await loadMultipleImages([
-    food1,
-    food2,
-    food3,
-  ]);
-}
+  return await loadMultipleImages([food1, food2, food3]);
+};
 
-export const getFood = (imgs: HTMLImageElement[], width: number, height: number) => {
+export const getFood = (
+  imgs: HTMLImageElement[],
+  width: number,
+  height: number
+) => {
   const savedFood = getStorageKey(StorageKeys.food);
-  if(!savedFood) {
+  if (!savedFood) {
     return [];
   }
 
@@ -37,11 +41,11 @@ export const drawFoodObjects = ({
   animationIdRef,
   isDraggingFood,
 }: DrawFoodObjectsProps) => {
-  if(!canvasRef.current) {
+  if (!canvasRef.current) {
     return;
   }
-  const ctx = canvasRef.current.getContext('2d');
-  if(!ctx) {
+  const ctx = canvasRef.current.getContext("2d");
+  if (!ctx) {
     return;
   }
 
@@ -52,17 +56,19 @@ export const drawFoodObjects = ({
     window.cancelAnimationFrame(animationIdRef.current);
     frameCount++;
 
-    if(!isDraggingFood && frameCount < FOOD_CANVAS_FRAME_THROTTLE) {
+    if (!isDraggingFood && frameCount < FOOD_CANVAS_FRAME_THROTTLE) {
       animationIdRef.current = window.requestAnimationFrame(loop);
       return;
     }
     frameCount = 0;
     ctx.clearRect(0, 0, resizedWidth, resizedHeight);
 
-    food.forEach(singleFood => singleFood.update({ ctx, resizedWidth, resizedHeight }));
+    food.forEach((singleFood) =>
+      singleFood.update({ ctx, resizedWidth, resizedHeight })
+    );
 
-    animationIdRef.current = window.requestAnimationFrame(loop)
-  }
+    animationIdRef.current = window.requestAnimationFrame(loop);
+  };
 
   loop();
 };

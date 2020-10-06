@@ -22,7 +22,7 @@ export const StaticCanvas: React.FC<StaticCanvasProps> = ({
       resizedHeight,
       objects,
     });
-  }, [resizedWidth, resizedHeight, objects])
+  }, [resizedWidth, resizedHeight, objects]);
 
   return (
     <canvas
