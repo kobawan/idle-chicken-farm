@@ -1,5 +1,7 @@
 import { generateId } from "../utils/idGenerator";
 import { Coordinates } from "../types/types";
+import { CustomEventEmitter } from "../utils/EventEmitter";
+import { EventName } from "../utils/events";
 
 const MAX_EATERS = 3;
 const MAX_FOOD = 30;
@@ -14,7 +16,7 @@ export interface FoodProps extends Coordinates {
   foodMeter?: number;
 }
 
-export type SavedFoodState = Pick<FoodProps, "top"|"left"|"foodMeter"|"id"|"originalHeight"|"originalWidth">; 
+export type SavedFoodState = Pick<FoodProps, "top"|"left"|"foodMeter"|"id"|"originalHeight"|"originalWidth">;
 
 export class Food {
   private originalWidth: number;
@@ -40,7 +42,7 @@ export class Food {
     this.originalLeft = left;
     this.top = top * (height / this.originalHeight);
     this.left = left * (width / this.originalWidth);
-    this.foodMeter = foodMeter || foodMeter === 0 ? foodMeter : MAX_FOOD;
+    this.foodMeter = foodMeter ?? MAX_FOOD;
     this.id = id || generateId();
   }
 
@@ -66,6 +68,10 @@ export class Food {
 
   public updateFoodMeter() {
     this.foodMeter = Math.max(this.foodMeter - 1, 0);
+
+    if(!this.foodMeter) {
+      CustomEventEmitter.emit(EventName.RemoveFood, this.id);
+    }
   }
 
   public hasFinished() {

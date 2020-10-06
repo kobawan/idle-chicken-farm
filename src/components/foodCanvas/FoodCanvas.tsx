@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useCallback } from "react";
 import throttle from "lodash.throttle";
 import styles from "./foodCanvas.module.scss";
 import { drawFoodObjects } from "../../utils/drawFood";
-import { InteractEvent, FoodItems } from "../../types/types";
+import { InteractEvent, FoodItems, Coordinates } from "../../types/types";
 import { StorageKeys } from "../../utils/localStorage";
 import { saveItemsOnInterval } from "../../utils/saveItems";
 import { isTouchEvent, getInteractionPos } from "../../utils/devices";
@@ -10,8 +10,10 @@ import { Food, FoodProps } from "../../models/food";
 import { RESIZE_CANVAS_BY } from "../../gameConsts";
 import { EventName } from "../../utils/events";
 import { AllFarmActions } from "../farm/reducer";
-import { addFoodAction, toggleDraggingAction, toggleFeedingAction } from "../farm/actions";
+import { addFoodAction, removeFoodAction, toggleDraggingAction, toggleFeedingAction } from "../farm/actions";
 import { useEventEffect } from "../../utils/useEventEffect";
+import { getClosest, getDistance } from "../../utils/distance";
+import { CustomEventEmitter } from "../../utils/EventEmitter";
 
 interface FoodCanvasProps extends FoodItems {
   resizedWidth: number;
@@ -20,6 +22,22 @@ interface FoodCanvasProps extends FoodItems {
   isFeeding: boolean;
   foodImages: HTMLImageElement[];
   dispatch: React.Dispatch<AllFarmActions>;
+}
+
+const MAX_FOOD_DISTANCE = 300 / RESIZE_CANVAS_BY; // in px
+
+const getClosestFood = (coord: Coordinates, food: Food[]) => {
+  const allAvailableFood = food.filter(item => (
+    item.isAvailable()
+    && getDistance(coord, item) < MAX_FOOD_DISTANCE
+  ));
+  if(!allAvailableFood.length) {
+    return undefined;
+  }
+  return getClosest({
+    items: allAvailableFood,
+    ...coord,
+  });
 }
 
 const throtteFoodDrop = throttle((
@@ -47,6 +65,17 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationIdRef = useRef(0);
   const isDraggingFood = isFeeding && !!foodImages.length && isDragging;
+
+  const requestFood = useCallback(({ position, id }: { position: Coordinates, id: string }) => {
+    const closestFood = getClosestFood(position, food);
+
+    if(closestFood) {
+      CustomEventEmitter.emit(EventName.FoundRequestedFood, { food: closestFood, id });
+    } else {
+      CustomEventEmitter.emit(EventName.NotFoundRequestedFood, { id });
+    }
+  }, [food]);
+  const removeFood = useCallback((id: string) => dispatch(removeFoodAction(id)), [dispatch]);
 
   const toggleFoodDragging = useCallback((e: InteractEvent<HTMLCanvasElement>) => {
     e.stopPropagation();
@@ -117,6 +146,8 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
   useEventEffect(EventName.StartDraggingFood, toggleFoodDragging);
   useEventEffect(EventName.StopDraggingFood, onDragFinished);
   useEventEffect(EventName.DropFood, dropFood);
+  useEventEffect(EventName.RequestFood, requestFood);
+  useEventEffect(EventName.RemoveFood, removeFood);
 
   return (
     <canvas

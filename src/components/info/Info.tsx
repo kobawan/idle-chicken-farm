@@ -16,6 +16,7 @@ const renderChickensHunger = (chickens: Chicken[]) => {
         name={chicken.name}
         gender={chicken.gender}
         hunger={chicken.getHungerMeter()}
+        id={chicken.id}
       />
     ));
 }

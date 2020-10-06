@@ -3,4 +3,8 @@ export enum EventName {
   StartDraggingFood = 'StartDraggingFood',
   StopDraggingFood = 'StopDraggingFood',
   DropFood = 'DropFood',
+  RemoveFood = 'RemoveFood',
+  RequestFood = 'RequestFood',
+  FoundRequestedFood = 'FoundRequestedFood',
+  NotFoundRequestedFood = 'NotFoundRequestedFood',
 }

@@ -6,53 +6,19 @@ import { getChickens } from "../../utils/drawChickens";
 import { createObjects } from "../../utils/drawObjects";
 import { getFoodImgs, getFood } from "../../utils/drawFood";
 import { Chicken } from "../../models/chicken/chicken";
-import { Coordinates } from "../../types/types";
 import { farmReducer, initialFarmState } from "./reducer";
 import {
   setObjectsAction,
   setChickensAction,
-  removeFoodAction,
   setFoodAction,
 } from "./actions";
-import { Food } from "../../models/food";
 import { StaticCanvas } from "../StaticCanvas/StaticCanvas";
 import { Menu } from "../menu/Menu";
 import { ChickenCanvas } from "../chickenCanvas/ChickenCanvas";
-import { getClosest, getDistance } from "../../utils/distance";
 import { FoodCanvas } from "../foodCanvas/FoodCanvas";
 import { RESIZE_CANVAS_BY } from "../../gameConsts";
-import { OnDetectTooltipCbProps, TooltipOverlay, TooltipProps } from "../tooltipOverlay/TooltipOverlay";
+import { OnDetectTooltipCbProps, TooltipOverlay } from "../tooltipOverlay/TooltipOverlay";
 import { InteractionLayer } from "../interactionLayer/InteractionLayer";
-
-const MAX_FOOD_DISTANCE = 300 / RESIZE_CANVAS_BY; // in px
-
-const getClosestFood = (coord: Coordinates, food: Food[]) => {
-  const allAvailableFood = food.filter(item => (
-    item.isAvailable()
-    && getDistance(coord, item) < MAX_FOOD_DISTANCE
-  ));
-  if(!allAvailableFood.length) {
-    return undefined;
-  }
-  return getClosest({
-    items: allAvailableFood,
-    ...coord,
-  });
-}
-
-const linkFoodToChickens = ({
-  chickens,
-  removeFood,
-  requestFood,
-}: {
-  chickens: Chicken[]
-  removeFood: (id: string) => void
-  requestFood: (coord: Coordinates) => Food | undefined
-}) => {
-  chickens.forEach(chicken => {
-    chicken.setFoodMethods(removeFood, requestFood);
-  })
-}
 
 const handleChickenHover = (
   chickens: Chicken[],
@@ -121,12 +87,6 @@ export const Farm: React.FC = memo(() => {
       });
     }
   }, [resizedWidth, resizedHeight, chickens]);
-
-  useEffect(() => linkFoodToChickens({
-    chickens,
-    removeFood: (id: string) => dispatch(removeFoodAction(id)),
-    requestFood: (coord: Coordinates) => getClosestFood(coord, food),
-  }), [chickens, food])
 
   return (
     <div className={cx(styles.wrapper, isFeeding && styles.feeding)}>

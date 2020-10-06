@@ -1,10 +1,10 @@
-import { ChickenBreed, Coordinates, Gender } from "../../types/types";
-import { Food } from "../food";
+import { ChickenBreed, Gender } from "../../types/types";
 import { generateId } from "../../utils/idGenerator";
 import { RestingManager } from "./RestingManager";
 import { ChickenImage, ChickenState, ChickenProps, SavedChickenState } from "./types";
 import { PositionManager } from './PositionManager'
 import { HungerManager } from "./HungerManager";
+import { Logger } from "../../utils/Logger";
 
 export class Chicken {
   private imgs: Record<ChickenImage, HTMLImageElement>;
@@ -16,6 +16,7 @@ export class Chicken {
   private RestingManager: RestingManager;
   private PositionManager: PositionManager;
   private HungerManager: HungerManager;
+  private logger: Logger;
   public id: string;
   public name: string;
   public gender: Gender;
@@ -55,6 +56,8 @@ export class Chicken {
       image: this.imgs[this.currentAnimation]
     })
     this.HungerManager = new HungerManager({ hungerMeter, id: this.id })
+
+    this.logger = new Logger('Chicken Logger', this.id);
   }
 
   public update({ ctx, timestamp, resizedHeight, resizedWidth }: {
@@ -67,29 +70,9 @@ export class Chicken {
     this.timestamp = timestamp;
 
     this.PositionManager.updateToResizedPosition(resizedWidth, resizedHeight);
-    const currentPosition = this.PositionManager.getPosition();
-    this.HungerManager.updateHungerState(this.state, this.timestamp, currentPosition);
+    this.HungerManager.updateHungerMeter(this.timestamp);
 
-    if(this.HungerManager.hasFood()) {
-      if(this.HungerManager.hasReachedFood(currentPosition)) {
-        this.updateStateAndAnimation(ChickenState.eating);
-        this.HungerManager.eat();
-      } else {
-        this.updateStateAndAnimation(ChickenState.walkingToFood);
-        this.HungerManager.walkToFood(
-          currentPosition,
-          this.imgs[this.currentAnimation],
-          this.PositionManager.goToCoordinates.bind(this.PositionManager)
-        );
-      }
-    } else if(this.RestingManager.shouldRest(this.fps)) {
-      this.updateStateAndAnimation(ChickenState.resting);
-      this.RestingManager.rest(this.fps)
-    } else {
-      this.updateStateAndAnimation(ChickenState.walking);
-      this.PositionManager.walkRandomly(this.imgs[this.currentAnimation]);
-    }
-
+    this.updateBehaviour();
     this.draw(ctx);
   }
 
@@ -101,14 +84,6 @@ export class Chicken {
     return this.HungerManager.getHungerMeter();
   }
 
-  // TODO: Use custom events instead
-  public setFoodMethods(
-    removeFood: (id: string) => void,
-    requestFood: (props: Coordinates) => Food | undefined,
-  ) {
-    this.HungerManager.setFoodMethods(removeFood, requestFood);
-  }
-
   public getSavingState(): SavedChickenState {
     return {
       ...this.PositionManager.getSavingState(),
@@ -118,6 +93,60 @@ export class Chicken {
       gender: this.gender,
       breed: this.breed,
     }
+  }
+
+  public onDestroy() {
+    this.HungerManager.onDestroy();
+  }
+
+  private updateBehaviour() {
+    const currentPosition = this.PositionManager.getPosition();
+
+    if (this.HungerManager.isEating) {
+      this.logger.log('Updated behaviour: Eating');
+      this.updateStateAndAnimation(ChickenState.eating);
+      this.HungerManager.eat(currentPosition);
+      return;
+    }
+
+    const foodIsAvailable = this.HungerManager.hasAvailableFood();
+    const reachedFood = this.HungerManager.hasReachedFood(currentPosition);
+
+    if (foodIsAvailable && reachedFood) {
+      this.logger.log('Updated behaviour: Start eating');
+      this.updateStateAndAnimation(ChickenState.eating);
+      this.HungerManager.startEating(currentPosition);
+      return;
+    }
+
+    if(foodIsAvailable && !reachedFood) {
+      this.logger.log('Updated behaviour: Walking to food');
+      this.updateStateAndAnimation(ChickenState.walkingToFood);
+      this.HungerManager.walkToFood(
+        currentPosition,
+        this.imgs[this.currentAnimation],
+        this.PositionManager.goToCoordinates.bind(this.PositionManager)
+      );
+      return;
+    }
+
+    if(this.HungerManager.isHungry()) {
+      this.logger.log('Updated behaviour: Resting while waiting for food');
+      this.updateStateAndAnimation(ChickenState.resting);
+      this.HungerManager.searchForFood(currentPosition);
+      return;
+    }
+
+    if(this.RestingManager.shouldRest(this.fps)) {
+      this.logger.log('Updated behaviour: Resting');
+      this.updateStateAndAnimation(ChickenState.resting);
+      this.RestingManager.rest(this.fps)
+      return;
+    }
+
+    this.logger.log('Updated behaviour: Walking');
+    this.updateStateAndAnimation(ChickenState.walking);
+    this.PositionManager.walkRandomly(this.imgs[this.currentAnimation]);
   }
 
   private draw(ctx: CanvasRenderingContext2D) {
