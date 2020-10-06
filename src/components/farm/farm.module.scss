@@ -18,4 +18,13 @@
   &.feeding {
     cursor: url("../../sprites/food3.png"), auto;
   }
+
+  .version {
+    position: fixed;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    font-weight: 600;
+    color: #ffffff50;
+    text-decoration: none;
+  }
 }

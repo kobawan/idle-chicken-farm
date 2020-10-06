@@ -19,6 +19,7 @@ import { FoodCanvas } from "../foodCanvas/FoodCanvas";
 import { RESIZE_CANVAS_BY } from "../../gameConsts";
 import { OnDetectTooltipCbProps, TooltipOverlay } from "../tooltipOverlay/TooltipOverlay";
 import { InteractionLayer } from "../interactionLayer/InteractionLayer";
+import { version } from '../../../package.json';
 
 const handleChickenHover = (
   chickens: Chicken[],
@@ -112,6 +113,14 @@ export const Farm: React.FC = memo(() => {
           chickens={chickens}
         />
         <TooltipOverlay onDetectTooltipCb={onDetectTooltipCb} />
+        <a
+          href='https://github.com/kobawan/idle-chicken-farm/blob/master/CHANGELOG.md'
+          target='_blank'
+          rel="noreferrer noopener"
+          className={styles.version}
+        >
+          {version}
+        </a>
         <Menu
           isInfoOpen={isInfoOpen}
           isFeeding={isFeeding}
