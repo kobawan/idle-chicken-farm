@@ -1,3 +1,4 @@
+import React from "react";
 import { Chicken } from "../models/chicken/chicken";
 import { StaticObject } from "../models/staticObject";
 import { Food } from "../models/food";
@@ -22,9 +23,10 @@ export interface ChickenItems {
 export type FarmItems = StaticItems & ChickenItems & FoodItems;
 
 export enum ChickenBreed {
+  lightbrown = "lightbrown",
   brown = "brown",
   orange = "orange",
-  yellow = "yellow",
+  white = "white",
 }
 
 export type InteractEvent<E> = React.MouseEvent<E> | React.TouchEvent<E>;

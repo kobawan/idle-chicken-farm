@@ -3,6 +3,9 @@ import ReactDOM from "react-dom";
 import "./index.scss";
 import { Farm } from "./components/farm/Farm";
 import * as serviceWorker from "./serviceWorker";
+import { initSave } from "./utils/migrateSaves";
+
+initSave();
 
 ReactDOM.render(<Farm />, document.getElementById("root"));
 

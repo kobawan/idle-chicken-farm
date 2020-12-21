@@ -1,9 +1,11 @@
 export enum StorageKeys {
+  version = "version",
   chickens = "chickens",
   food = "food",
 }
 
 const storageKeysToDefaultMap: { [key in StorageKeys]: unknown } = {
+  [StorageKeys.version]: null,
   [StorageKeys.chickens]: null,
   [StorageKeys.food]: null,
 };

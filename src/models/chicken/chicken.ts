@@ -1,18 +1,20 @@
 import { ChickenBreed, Gender } from "../../types/types";
 import { generateId } from "../../utils/idGenerator";
 import { RestingManager } from "./RestingManager";
-import { ChickenImage, ChickenState, ChickenProps, SavedChickenState } from "./types";
+import { ChickenPose, ChickenState, ChickenProps } from "./types";
 import { PositionManager } from "./PositionManager";
 import { HungerManager } from "./HungerManager";
 import { Logger } from "../../utils/Logger";
+import { spriteCoordinatesMap } from "../../utils/spriteCoordinates";
+import { SavedChickenStateV2 } from "../../utils/migrateSaves";
 
 export class Chicken {
-  private imgs: Record<ChickenImage, HTMLImageElement>;
-  private currentAnimation = ChickenImage.default;
+  private currentAnimation = ChickenPose.default;
   private breed: ChickenBreed;
   private state = ChickenState.walking;
   private timestamp = 0;
   private fps = 0;
+  private sprite: HTMLImageElement;
   private RestingManager: RestingManager;
   private PositionManager: PositionManager;
   private HungerManager: HungerManager;
@@ -22,7 +24,6 @@ export class Chicken {
   public gender: Gender;
 
   constructor({
-    imgs,
     id,
     width,
     height,
@@ -34,16 +35,13 @@ export class Chicken {
     hungerMeter,
     name,
     gender,
+    sprite,
   }: ChickenProps) {
-    this.imgs = {
-      [ChickenImage.default]: imgs[0],
-      [ChickenImage.walking]: imgs[1],
-      [ChickenImage.resting]: imgs[2],
-    };
     this.breed = breed;
     this.id = id || generateId();
     this.name = name;
     this.gender = gender;
+    this.sprite = sprite;
 
     this.RestingManager = new RestingManager();
     this.PositionManager = new PositionManager({
@@ -53,7 +51,7 @@ export class Chicken {
       originalHeight,
       top,
       left,
-      image: this.imgs[this.currentAnimation],
+      spriteCoordinates: this.getSpriteCoordinates(),
     });
     this.HungerManager = new HungerManager({ hungerMeter, id: this.id });
 
@@ -82,14 +80,14 @@ export class Chicken {
   }
 
   public getBoundaries() {
-    return this.PositionManager.getBoundaries(this.imgs[this.currentAnimation]);
+    return this.PositionManager.getBoundaries(this.getSpriteCoordinates());
   }
 
   public getHungerMeter() {
     return this.HungerManager.getHungerMeter();
   }
 
-  public getSavingState(): SavedChickenState {
+  public getSavingState(): SavedChickenStateV2 {
     return {
       ...this.PositionManager.getSavingState(),
       ...this.HungerManager.getSavingState(),
@@ -102,6 +100,10 @@ export class Chicken {
 
   public onDestroy() {
     this.HungerManager.onDestroy();
+  }
+
+  private getSpriteCoordinates() {
+    return spriteCoordinatesMap.chicken[this.breed][this.currentAnimation];
   }
 
   private updateBehaviour() {
@@ -129,7 +131,7 @@ export class Chicken {
       this.updateStateAndAnimation(ChickenState.walkingToFood);
       this.HungerManager.walkToFood(
         currentPosition,
-        this.imgs[this.currentAnimation],
+        this.getSpriteCoordinates(),
         this.PositionManager.goToCoordinates.bind(this.PositionManager),
       );
       return;
@@ -151,22 +153,22 @@ export class Chicken {
 
     this.logger.log("Updated behaviour: Walking");
     this.updateStateAndAnimation(ChickenState.walking);
-    this.PositionManager.walkRandomly(this.imgs[this.currentAnimation]);
+    this.PositionManager.walkRandomly(this.getSpriteCoordinates());
   }
 
   private draw(ctx: CanvasRenderingContext2D) {
-    const currentImage = this.imgs[this.currentAnimation];
+    const spriteCoordinates = this.getSpriteCoordinates();
     const { left, top } = this.PositionManager.getPosition();
     ctx.drawImage(
-      currentImage,
-      0,
-      0,
-      currentImage.naturalWidth,
-      currentImage.naturalHeight,
+      this.sprite,
+      spriteCoordinates.x,
+      spriteCoordinates.y,
+      spriteCoordinates.width,
+      spriteCoordinates.height,
       left,
       top,
-      currentImage.naturalWidth,
-      currentImage.naturalHeight,
+      spriteCoordinates.width,
+      spriteCoordinates.height,
     );
   }
 
@@ -177,16 +179,14 @@ export class Chicken {
       case ChickenState.walking:
       case ChickenState.walkingToFood:
         this.currentAnimation =
-          this.currentAnimation === ChickenImage.default
-            ? ChickenImage.walking
-            : ChickenImage.default;
+          this.currentAnimation === ChickenPose.default ? ChickenPose.walking : ChickenPose.default;
         break;
       case ChickenState.resting:
-        this.currentAnimation = ChickenImage.resting;
+        this.currentAnimation = ChickenPose.resting;
         break;
       case ChickenState.eating:
       default:
-        this.currentAnimation = ChickenImage.default;
+        this.currentAnimation = ChickenPose.default;
     }
   }
 }

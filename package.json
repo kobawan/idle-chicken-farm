@@ -28,16 +28,22 @@
     "deploy": "NODE_DEBUG=gh-pages gh-pages -d build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint src/**/*.ts src/**/*.tsx --max-warnings 0",
     "prettier:fix": "prettier --write . --config .prettierrc"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged && npm run lint"
+      "pre-commit": "pretty-quick --staged"
     }
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "eslint:recommended",
+      "prettier",
+      "prettier/@typescript-eslint",
+      "prettier/react"
+    ],
+    "rules": {}
   },
   "browserslist": {
     "production": [
@@ -52,8 +58,8 @@
     ]
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.4.0",
-    "@typescript-eslint/parser": "^4.4.0",
+    "@typescript-eslint/eslint-plugin": "^2.10.0",
+    "@typescript-eslint/parser": "^2.10.0",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.12.0",
     "eslint-plugin-react": "^7.21.3",

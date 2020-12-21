@@ -1,11 +1,11 @@
 import React, { useEffect, memo, useState, useReducer, useCallback } from "react";
 import cx from "classnames";
 import styles from "./farm.module.scss";
+import spriteUrl from "../../sprites/farm_sprite.png";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
 import { getChickens } from "../../utils/drawChickens";
 import { createObjects } from "../../utils/drawObjects";
 import { getFoodImgs, getFood } from "../../utils/drawFood";
-import { Chicken } from "../../models/chicken/chicken";
 import { farmReducer, initialFarmState } from "./reducer";
 import { setObjectsAction, setChickensAction, setFoodAction } from "./actions";
 import { StaticCanvas } from "../StaticCanvas/StaticCanvas";
@@ -16,35 +16,8 @@ import { RESIZE_CANVAS_BY } from "../../gameConsts";
 import { OnDetectTooltipCbProps, TooltipOverlay } from "../tooltipOverlay/TooltipOverlay";
 import { InteractionLayer } from "../interactionLayer/InteractionLayer";
 import { version } from "../../../package.json";
-
-const handleChickenHover = (
-  chickens: Chicken[],
-  { event, addTooltip, removeTooltip, hasTooltip }: OnDetectTooltipCbProps,
-) => {
-  const { clientX, clientY } = event;
-  chickens.forEach((chicken) => {
-    const { id, name, gender } = chicken;
-    const { minX, minY, maxX, maxY } = chicken.getBoundaries();
-    const withinBoundaries =
-      clientX >= minX && clientX <= maxX && clientY >= minY && clientY <= maxY;
-    const isHovered = hasTooltip(id);
-
-    if (withinBoundaries && !isHovered) {
-      addTooltip({
-        id,
-        text: `${gender === "male" ? "♂" : "♀"} ${name}`,
-        minX,
-        minY,
-        maxX,
-        maxY,
-      });
-      return;
-    }
-    if (!withinBoundaries && isHovered) {
-      removeTooltip(id);
-    }
-  });
-};
+import { handleChickenHover } from "./utils";
+import { loadImage } from "../../utils/loadImages";
 
 export const Farm: React.FC = memo(() => {
   const { resizedWidth, resizedHeight } = useWindowDimensions(RESIZE_CANVAS_BY);
@@ -61,16 +34,20 @@ export const Farm: React.FC = memo(() => {
   useEffect(() => {
     // It should only run on mount
     if (!chickens.length) {
-      Promise.all([
-        createObjects(resizedWidth, resizedHeight),
-        getChickens(resizedWidth, resizedHeight),
-        getFoodImgs(),
-      ]).then(([objects, chickens, foodImgs]) => {
-        dispatch(setObjectsAction(objects));
-        dispatch(setChickensAction(chickens));
-        setFoodImgs(foodImgs);
-        dispatch(setFoodAction(getFood(foodImgs, resizedWidth, resizedHeight)));
-      });
+      loadImage(spriteUrl)
+        .then((sprite) => {
+          return Promise.all([
+            createObjects(resizedWidth, resizedHeight),
+            getChickens(resizedWidth, resizedHeight, sprite as HTMLImageElement),
+            getFoodImgs(),
+          ]);
+        })
+        .then(([objects, chickens, foodImgs]) => {
+          dispatch(setObjectsAction(objects));
+          dispatch(setChickensAction(chickens));
+          setFoodImgs(foodImgs);
+          dispatch(setFoodAction(getFood(foodImgs, resizedWidth, resizedHeight)));
+        });
     }
   }, [resizedWidth, resizedHeight, chickens]);
 

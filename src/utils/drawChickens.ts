@@ -1,61 +1,36 @@
-import brownChicken1 from "../sprites/brown-chicken-1.png";
-import brownChicken2 from "../sprites/brown-chicken-2.png";
-import brownChicken3 from "../sprites/brown-chicken-3.png";
-import orangeChicken1 from "../sprites/orange-chicken-1.png";
-import orangeChicken2 from "../sprites/orange-chicken-2.png";
-import orangeChicken3 from "../sprites/orange-chicken-3.png";
-import yellowChicken1 from "../sprites/yellow-chicken-1.png";
-import yellowChicken2 from "../sprites/yellow-chicken-2.png";
-import yellowChicken3 from "../sprites/yellow-chicken-3.png";
-import { loadMultipleImages } from "./loadImages";
+import React from "react";
 import { Chicken } from "../models/chicken/chicken";
 import { ChickenBreed, ChickenItems, DrawProps } from "../types/types";
 import { getStorageKey, StorageKeys } from "./localStorage";
 import { getAvailableNames, generateName } from "./chickenNameUtils";
-import { SavedChickenState } from "../models/chicken/types";
+import { SavedChickenStateV2 } from "./migrateSaves";
 
 const CHICKEN_REFRESH_RATE = 500;
 
 type DrawDynamicObjectsProps = ChickenItems &
   DrawProps & { animationIdRef: React.MutableRefObject<number> };
 
-export const getChickens = async (width: number, height: number) => {
-  const images = await Promise.all([
-    loadMultipleImages([brownChicken1, brownChicken2, brownChicken3]),
-    loadMultipleImages([orangeChicken1, orangeChicken2, orangeChicken3]),
-    loadMultipleImages([yellowChicken1, yellowChicken2, yellowChicken3]),
-  ]);
-  const imagesBreedMap: Record<ChickenBreed, HTMLImageElement[]> = {
-    [ChickenBreed.brown]: images[0],
-    [ChickenBreed.orange]: images[1],
-    [ChickenBreed.yellow]: images[2],
-  };
-  const savedChickens = getStorageKey(StorageKeys.chickens) as null | SavedChickenState[];
+export const getChickens = async (width: number, height: number, sprite: HTMLImageElement) => {
+  const savedChickens = getStorageKey(StorageKeys.chickens) as null | SavedChickenStateV2[];
   if (!savedChickens) {
     return Object.values(ChickenBreed).reduce<Chicken[]>((chickens, breed, index) => {
       const gender = index === 0 ? "male" : "female";
       const chicken = new Chicken({
         width,
         height,
-        imgs: imagesBreedMap[breed],
-        breed: breed,
+        breed,
         gender,
         name: generateName(gender, getAvailableNames(chickens)),
+        sprite,
       });
       chickens.push(chicken);
       return chickens;
     }, []);
   }
 
-  return savedChickens.map(
-    (props: SavedChickenState) =>
-      new Chicken({
-        width,
-        height,
-        imgs: imagesBreedMap[props.breed],
-        ...props,
-      }),
-  );
+  return savedChickens.map((props: SavedChickenStateV2) => {
+    return new Chicken({ width, height, sprite, ...props });
+  });
 };
 
 export const drawChickens = ({

@@ -1,5 +1,6 @@
 import { RESIZE_CANVAS_BY } from "../../gameConsts";
 import { Coordinates } from "../../types/types";
+import { CanvasCoordinates } from "../../utils/spriteCoordinates";
 
 const MOVEMENT_PX = 2;
 
@@ -10,7 +11,7 @@ interface PositionManagerProps {
   originalHeight?: number;
   top?: number;
   left?: number;
-  image: HTMLImageElement;
+  spriteCoordinates: CanvasCoordinates;
 }
 
 const setRandomPosition = (totalSize: number, imageSize: number) => {
@@ -34,7 +35,7 @@ export class PositionManager {
     originalWidth,
     top,
     left,
-    image,
+    spriteCoordinates,
   }: PositionManagerProps) {
     this.width = width;
     this.height = height;
@@ -43,8 +44,8 @@ export class PositionManager {
     this.heightChangeRatio = height / this.originalHeight;
     this.widthChangeRatio = width / this.originalWidth;
 
-    const originalTop = top || setRandomPosition(this.height, image.naturalHeight);
-    const originalLeft = left || setRandomPosition(this.width, image.naturalWidth);
+    const originalTop = top || setRandomPosition(this.height, spriteCoordinates.height);
+    const originalLeft = left || setRandomPosition(this.width, spriteCoordinates.width);
     this.top = originalTop * this.heightChangeRatio;
     this.left = originalLeft * this.widthChangeRatio;
   }
@@ -53,12 +54,12 @@ export class PositionManager {
     return { top: this.top, left: this.left };
   }
 
-  public getBoundaries(currentImg: HTMLImageElement) {
+  public getBoundaries(spriteCoordinates: CanvasCoordinates) {
     return {
       minX: this.left * RESIZE_CANVAS_BY,
-      maxX: (this.left + currentImg.naturalWidth) * RESIZE_CANVAS_BY,
+      maxX: (this.left + spriteCoordinates.width) * RESIZE_CANVAS_BY,
       minY: this.top * RESIZE_CANVAS_BY,
-      maxY: (this.top + currentImg.naturalHeight) * RESIZE_CANVAS_BY,
+      maxY: (this.top + spriteCoordinates.height) * RESIZE_CANVAS_BY,
     };
   }
 
@@ -81,24 +82,24 @@ export class PositionManager {
     }
   }
 
-  public goToCoordinates(dx: number, dy: number, currentImg: HTMLImageElement) {
-    const { naturalHeight, naturalWidth } = currentImg;
+  public goToCoordinates(dx: number, dy: number, spriteCoordinates: CanvasCoordinates) {
+    const { height, width } = spriteCoordinates;
 
     this.top =
       dy > 0
-        ? Math.min(this.top + MOVEMENT_PX, this.height - naturalHeight)
+        ? Math.min(this.top + MOVEMENT_PX, this.height - height)
         : Math.max(this.top - MOVEMENT_PX, 0);
 
     this.left =
       dx > 0
-        ? Math.min(this.left + MOVEMENT_PX, this.width - naturalWidth)
+        ? Math.min(this.left + MOVEMENT_PX, this.width - width)
         : Math.max(this.left - MOVEMENT_PX, 0);
   }
 
-  public walkRandomly(currentImg: HTMLImageElement) {
+  public walkRandomly(spriteCoordinates: CanvasCoordinates) {
     const dx = Math.round(Math.random());
     const dy = Math.round(Math.random());
 
-    this.goToCoordinates(dx, dy, currentImg);
+    this.goToCoordinates(dx, dy, spriteCoordinates);
   }
 }

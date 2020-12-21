@@ -1,10 +1,12 @@
+import React from "react";
 import food1 from "../sprites/food1.png";
 import food2 from "../sprites/food2.png";
 import food3 from "../sprites/food3.png";
 import { loadMultipleImages } from "./loadImages";
-import { Food, SavedFoodState } from "../models/food";
+import { Food } from "../models/food";
 import { getStorageKey, StorageKeys } from "./localStorage";
 import { FoodItems, DrawProps } from "../types/types";
+import { SavedFoodStateV2 } from "./migrateSaves";
 
 const FOOD_CANVAS_FRAME_THROTTLE = 30;
 
@@ -19,12 +21,12 @@ export const getFoodImgs = async () => {
 };
 
 export const getFood = (imgs: HTMLImageElement[], width: number, height: number) => {
-  const savedFood = getStorageKey(StorageKeys.food) as null | SavedFoodState[];
+  const savedFood = getStorageKey(StorageKeys.food) as null | SavedFoodStateV2[];
   if (!savedFood) {
     return [];
   }
 
-  return savedFood.map((food: SavedFoodState) => {
+  return savedFood.map((food: SavedFoodStateV2) => {
     return new Food({ ...food, imgs, width, height });
   });
 };

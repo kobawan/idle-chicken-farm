@@ -2,6 +2,7 @@ import { generateId } from "../utils/idGenerator";
 import { Coordinates } from "../types/types";
 import { CustomEventEmitter } from "../utils/EventEmitter";
 import { EventName } from "../utils/events";
+import { SavedFoodStateV2 } from "../utils/migrateSaves";
 
 const MAX_EATERS = 3;
 const MAX_FOOD = 30;
@@ -15,11 +16,6 @@ export interface FoodProps extends Coordinates {
   id?: string;
   foodMeter?: number;
 }
-
-export type SavedFoodState = Pick<
-  FoodProps,
-  "top" | "left" | "foodMeter" | "id" | "originalHeight" | "originalWidth"
->;
 
 export class Food {
   private originalWidth: number;
@@ -72,7 +68,7 @@ export class Food {
     this.draw(ctx, this.getImg());
   }
 
-  public getSavingState() {
+  public getSavingState(): SavedFoodStateV2 {
     return {
       top: this.originalTop,
       left: this.originalLeft,

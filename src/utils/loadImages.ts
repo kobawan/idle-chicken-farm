@@ -1,3 +1,4 @@
+// TODO: handle undefined cases
 export const loadImage = (url: string): Promise<HTMLImageElement | undefined> => {
   return new Promise((resolve) => {
     const img = new Image();

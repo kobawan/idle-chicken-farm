@@ -4,7 +4,7 @@ import styles from "./foodCanvas.module.scss";
 import { drawFoodObjects } from "../../utils/drawFood";
 import { InteractEvent, FoodItems, Coordinates } from "../../types/types";
 import { StorageKeys } from "../../utils/localStorage";
-import { saveItemsOnInterval } from "../../utils/saveItems";
+import { saveItemsOnInterval } from "../../utils/save";
 import { isTouchEvent, getInteractionPos } from "../../utils/devices";
 import { Food, FoodProps } from "../../models/food";
 import { RESIZE_CANVAS_BY } from "../../gameConsts";
