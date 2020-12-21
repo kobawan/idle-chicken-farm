@@ -7,7 +7,6 @@ import { StorageKeys } from "../../utils/localStorage";
 import { saveItemsOnInterval } from "../../utils/save";
 import { isTouchEvent, getInteractionPos } from "../../utils/devices";
 import { Food, FoodProps } from "../../models/food";
-import { RESIZE_CANVAS_BY } from "../../gameConsts";
 import { EventName } from "../../utils/events";
 import { AllFarmActions } from "../farm/reducer";
 import {
@@ -29,7 +28,7 @@ interface FoodCanvasProps extends FoodItems {
   dispatch: React.Dispatch<AllFarmActions>;
 }
 
-const MAX_FOOD_DISTANCE = 300 / RESIZE_CANVAS_BY; // in px
+const MAX_FOOD_DISTANCE = 300; // in px
 
 const getClosestFood = (coord: Coordinates, food: Food[]) => {
   const allAvailableFood = food.filter(
@@ -55,8 +54,8 @@ const throtteFoodDrop = throttle(
   }: FoodProps & { addFood: (food: Food) => void }) => {
     const food = new Food({
       sprite,
-      top: Math.round(top / RESIZE_CANVAS_BY),
-      left: Math.round(left / RESIZE_CANVAS_BY),
+      top,
+      left,
       width,
       height,
     });

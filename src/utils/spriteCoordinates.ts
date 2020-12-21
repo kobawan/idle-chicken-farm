@@ -118,20 +118,20 @@ export const spriteCoordinatesMap: SpriteCoordinatesMap = {
   },
   food: {
     small: {
-      x: 112,
-      y: 97,
+      x: 111,
+      y: 96,
       width: 15,
       height: 16,
     },
     medium: {
-      x: 129,
-      y: 97,
+      x: 128,
+      y: 96,
       width: 15,
       height: 16,
     },
     large: {
-      x: 145,
-      y: 97,
+      x: 144,
+      y: 96,
       width: 15,
       height: 16,
     },

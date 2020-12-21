@@ -1,1 +1,1 @@
-export const RESIZE_CANVAS_BY = 2;
+export const RESIZE_BY = 2;

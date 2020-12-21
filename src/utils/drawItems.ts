@@ -14,8 +14,8 @@ export const createItems = async (width: number, height: number, sprite: HTMLIma
   const waterProps = {
     top: houseProps.top,
     left: houseProps.left,
-    deviationX: 70,
-    deviationY: 30,
+    deviationX: 140,
+    deviationY: 60,
     spriteCoordinates: spriteCoordinatesMap.trough,
   };
 

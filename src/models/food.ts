@@ -4,6 +4,7 @@ import { CustomEventEmitter } from "../utils/EventEmitter";
 import { EventName } from "../utils/events";
 import { SavedFoodStateV2 } from "../utils/migrateSaves";
 import { CanvasCoordinates, spriteCoordinatesMap } from "../utils/spriteCoordinates";
+import { RESIZE_BY } from "../gameConsts";
 
 const MAX_EATERS = 3;
 const MAX_FOOD = 30;
@@ -142,8 +143,8 @@ export class Food {
       spriteCoordinates.height,
       this.left,
       this.top,
-      spriteCoordinates.width,
-      spriteCoordinates.height,
+      spriteCoordinates.width * RESIZE_BY,
+      spriteCoordinates.height * RESIZE_BY,
     );
   }
 }

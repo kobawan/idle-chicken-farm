@@ -1,4 +1,4 @@
-import { RESIZE_CANVAS_BY } from "../../gameConsts";
+import { RESIZE_BY } from "../../gameConsts";
 import { Coordinates } from "../../types/types";
 import { CanvasCoordinates } from "../../utils/spriteCoordinates";
 
@@ -56,10 +56,10 @@ export class PositionManager {
 
   public getBoundaries(spriteCoordinates: CanvasCoordinates) {
     return {
-      minX: this.left * RESIZE_CANVAS_BY,
-      maxX: (this.left + spriteCoordinates.width) * RESIZE_CANVAS_BY,
-      minY: this.top * RESIZE_CANVAS_BY,
-      maxY: (this.top + spriteCoordinates.height) * RESIZE_CANVAS_BY,
+      minX: this.left,
+      maxX: this.left + spriteCoordinates.width * RESIZE_BY,
+      minY: this.top,
+      maxY: this.top + spriteCoordinates.height * RESIZE_BY,
     };
   }
 

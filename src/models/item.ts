@@ -1,6 +1,7 @@
 import { generateId } from "../utils/idGenerator";
 import { Coordinates } from "../types/types";
 import { CanvasCoordinates } from "../utils/spriteCoordinates";
+import { RESIZE_BY } from "../gameConsts";
 
 interface ItemProps extends Coordinates {
   sprite: HTMLImageElement;
@@ -75,8 +76,8 @@ export class Item {
       this.spriteCoordinates.height,
       this.left + this.deviationX,
       this.top + this.deviationY,
-      this.spriteCoordinates.width,
-      this.spriteCoordinates.height,
+      this.spriteCoordinates.width * RESIZE_BY,
+      this.spriteCoordinates.height * RESIZE_BY,
     );
   }
 }

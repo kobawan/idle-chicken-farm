@@ -12,7 +12,6 @@ import { StaticCanvas } from "../StaticCanvas/StaticCanvas";
 import { Menu } from "../menu/Menu";
 import { ChickenCanvas } from "../chickenCanvas/ChickenCanvas";
 import { FoodCanvas } from "../foodCanvas/FoodCanvas";
-import { RESIZE_CANVAS_BY } from "../../gameConsts";
 import { OnDetectTooltipCbProps, TooltipOverlay } from "../tooltipOverlay/TooltipOverlay";
 import { InteractionLayer } from "../interactionLayer/InteractionLayer";
 import { version } from "../../../package.json";
@@ -20,7 +19,7 @@ import { handleChickenHover } from "./utils";
 import { loadImage } from "../../utils/loadImages";
 
 export const Farm: React.FC = memo(() => {
-  const { resizedWidth, resizedHeight } = useWindowDimensions(RESIZE_CANVAS_BY);
+  const { resizedWidth, resizedHeight } = useWindowDimensions();
   const [{ isDragging, isFeeding, isInfoOpen, items, chickens, food }, dispatch] = useReducer(
     farmReducer,
     initialFarmState,
