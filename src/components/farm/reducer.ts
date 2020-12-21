@@ -1,7 +1,7 @@
 import React from "react";
 import { FarmItems } from "../../types/types";
 import {
-  SetObjectsAction,
+  SetItemsAction,
   AddFoodAction,
   SetChickensAction,
   ToggleFeedingAction,
@@ -13,7 +13,7 @@ import {
 } from "./actions";
 
 export type AllFarmActions =
-  | SetObjectsAction
+  | SetItemsAction
   | AddFoodAction
   | SetFoodAction
   | RemoveFoodAction
@@ -29,7 +29,7 @@ interface FarmState extends FarmItems {
 }
 
 export const initialFarmState: FarmState = {
-  objects: [],
+  items: [],
   food: [],
   chickens: [],
   isFeeding: false,
@@ -62,10 +62,10 @@ export const farmReducer: FarmReducerType = (state, action) => {
         ...state,
         food: state.food.filter(({ id }) => id !== action.payload.id),
       };
-    case FarmActions.setObjects:
+    case FarmActions.setItems:
       return {
         ...state,
-        objects: action.payload.objects,
+        items: action.payload.items,
       };
     case FarmActions.toggleDragging:
       return {

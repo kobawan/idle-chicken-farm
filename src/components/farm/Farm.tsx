@@ -4,10 +4,10 @@ import styles from "./farm.module.scss";
 import spriteUrl from "../../sprites/farm_sprite.png";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
 import { getChickens } from "../../utils/drawChickens";
-import { createObjects } from "../../utils/drawObjects";
+import { createItems } from "../../utils/drawItems";
 import { getFoodImgs, getFood } from "../../utils/drawFood";
 import { farmReducer, initialFarmState } from "./reducer";
-import { setObjectsAction, setChickensAction, setFoodAction } from "./actions";
+import { setItemsAction, setChickensAction, setFoodAction } from "./actions";
 import { StaticCanvas } from "../StaticCanvas/StaticCanvas";
 import { Menu } from "../menu/Menu";
 import { ChickenCanvas } from "../chickenCanvas/ChickenCanvas";
@@ -21,7 +21,7 @@ import { loadImage } from "../../utils/loadImages";
 
 export const Farm: React.FC = memo(() => {
   const { resizedWidth, resizedHeight } = useWindowDimensions(RESIZE_CANVAS_BY);
-  const [{ isDragging, isFeeding, isInfoOpen, objects, chickens, food }, dispatch] = useReducer(
+  const [{ isDragging, isFeeding, isInfoOpen, items, chickens, food }, dispatch] = useReducer(
     farmReducer,
     initialFarmState,
   );
@@ -37,13 +37,13 @@ export const Farm: React.FC = memo(() => {
       loadImage(spriteUrl)
         .then((sprite) => {
           return Promise.all([
-            createObjects(resizedWidth, resizedHeight),
+            createItems(resizedWidth, resizedHeight, sprite as HTMLImageElement),
             getChickens(resizedWidth, resizedHeight, sprite as HTMLImageElement),
             getFoodImgs(),
           ]);
         })
-        .then(([objects, chickens, foodImgs]) => {
-          dispatch(setObjectsAction(objects));
+        .then(([items, chickens, foodImgs]) => {
+          dispatch(setItemsAction(items));
           dispatch(setChickensAction(chickens));
           setFoodImgs(foodImgs);
           dispatch(setFoodAction(getFood(foodImgs, resizedWidth, resizedHeight)));
@@ -55,7 +55,7 @@ export const Farm: React.FC = memo(() => {
     <div className={cx(styles.wrapper, isFeeding && styles.feeding)}>
       <InteractionLayer>
         <div className={styles.bg} />
-        <StaticCanvas resizedWidth={resizedWidth} resizedHeight={resizedHeight} objects={objects} />
+        <StaticCanvas resizedWidth={resizedWidth} resizedHeight={resizedHeight} items={items} />
         <FoodCanvas
           resizedWidth={resizedWidth}
           resizedHeight={resizedHeight}

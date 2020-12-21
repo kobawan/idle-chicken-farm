@@ -12,8 +12,8 @@ export type ChickenSprite = Record<ChickenPose, CanvasCoordinates>;
 
 interface SpriteCoordinatesMap {
   chicken: Record<ChickenBreed, ChickenSprite>;
-  // coop: CanvasCoordinates;
-  // trough: CanvasCoordinates;
+  coop: CanvasCoordinates;
+  trough: CanvasCoordinates;
   // food: {
   //   small: CanvasCoordinates;
   //   medium: CanvasCoordinates;
@@ -104,8 +104,18 @@ export const spriteCoordinatesMap: SpriteCoordinatesMap = {
       },
     },
   },
-  // coop: {},
-  // trough: {},
+  coop: {
+    x: 213,
+    y: 16,
+    width: 56,
+    height: 50,
+  },
+  trough: {
+    x: 112,
+    y: 83,
+    width: 34,
+    height: 15,
+  },
   // food: {
   //   small: {},
   //   medium: {},

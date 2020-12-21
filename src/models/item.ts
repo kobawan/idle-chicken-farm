@@ -1,16 +1,19 @@
 import { generateId } from "../utils/idGenerator";
 import { Coordinates } from "../types/types";
+import { CanvasCoordinates } from "../utils/spriteCoordinates";
 
-interface StaticObjectProps extends Coordinates {
-  img: HTMLImageElement;
+interface ItemProps extends Coordinates {
+  sprite: HTMLImageElement;
+  spriteCoordinates: CanvasCoordinates;
   width: number;
   height: number;
   deviationX?: number;
   deviationY?: number;
 }
 
-export class StaticObject {
-  private img: HTMLImageElement;
+export class Item {
+  private sprite: HTMLImageElement;
+  private spriteCoordinates: CanvasCoordinates;
   private top: number;
   private left: number;
   private originalLeft: number;
@@ -21,8 +24,18 @@ export class StaticObject {
   private deviationY: number;
   public id = generateId();
 
-  constructor({ img, top, left, width, height, deviationX, deviationY }: StaticObjectProps) {
-    this.img = img;
+  constructor({
+    sprite,
+    spriteCoordinates,
+    top,
+    left,
+    width,
+    height,
+    deviationX,
+    deviationY,
+  }: ItemProps) {
+    this.sprite = sprite;
+    this.spriteCoordinates = spriteCoordinates;
     this.top = top;
     this.left = left;
     this.originalLeft = left;
@@ -55,15 +68,15 @@ export class StaticObject {
 
   private draw(ctx: CanvasRenderingContext2D) {
     ctx.drawImage(
-      this.img,
-      0,
-      0,
-      this.img.naturalWidth,
-      this.img.naturalHeight,
+      this.sprite,
+      this.spriteCoordinates.x,
+      this.spriteCoordinates.y,
+      this.spriteCoordinates.width,
+      this.spriteCoordinates.height,
       this.left + this.deviationX,
       this.top + this.deviationY,
-      this.img.naturalWidth,
-      this.img.naturalHeight,
+      this.spriteCoordinates.width,
+      this.spriteCoordinates.height,
     );
   }
 }

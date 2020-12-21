@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import styles from "./staticCanvas.module.scss";
-import { drawStaticObjects } from "../../utils/drawObjects";
+import { drawItems } from "../../utils/drawItems";
 import { StaticItems } from "../../types/types";
 
 interface StaticCanvasProps extends StaticItems {
@@ -11,18 +11,18 @@ interface StaticCanvasProps extends StaticItems {
 export const StaticCanvas: React.FC<StaticCanvasProps> = ({
   resizedWidth,
   resizedHeight,
-  objects,
+  items,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    drawStaticObjects({
+    drawItems({
       canvasRef,
       resizedWidth,
       resizedHeight,
-      objects,
+      items,
     });
-  }, [resizedWidth, resizedHeight, objects]);
+  }, [resizedWidth, resizedHeight, items]);
 
   return (
     <canvas

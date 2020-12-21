@@ -1,6 +1,6 @@
 import React from "react";
 import { Chicken } from "../models/chicken/chicken";
-import { StaticObject } from "../models/staticObject";
+import { Item } from "../models/item";
 import { Food } from "../models/food";
 
 export interface Coordinates {
@@ -9,7 +9,7 @@ export interface Coordinates {
 }
 
 export interface StaticItems {
-  objects: StaticObject[];
+  items: Item[];
 }
 
 export interface FoodItems {
