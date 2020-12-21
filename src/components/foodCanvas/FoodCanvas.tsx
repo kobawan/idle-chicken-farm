@@ -25,7 +25,7 @@ interface FoodCanvasProps extends FoodItems {
   resizedHeight: number;
   isDragging: boolean;
   isFeeding: boolean;
-  foodImages: HTMLImageElement[];
+  sprite: HTMLImageElement;
   dispatch: React.Dispatch<AllFarmActions>;
 }
 
@@ -45,9 +45,16 @@ const getClosestFood = (coord: Coordinates, food: Food[]) => {
 };
 
 const throtteFoodDrop = throttle(
-  ({ imgs, left, top, addFood, width, height }: FoodProps & { addFood: (food: Food) => void }) => {
+  ({
+    sprite,
+    left,
+    top,
+    addFood,
+    width,
+    height,
+  }: FoodProps & { addFood: (food: Food) => void }) => {
     const food = new Food({
-      imgs,
+      sprite,
       top: Math.round(top / RESIZE_CANVAS_BY),
       left: Math.round(left / RESIZE_CANVAS_BY),
       width,
@@ -65,12 +72,12 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
   food,
   isDragging,
   isFeeding,
-  foodImages,
   dispatch,
+  sprite,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationIdRef = useRef(0);
-  const isDraggingFood = isFeeding && !!foodImages.length && isDragging;
+  const isDraggingFood = isFeeding && isDragging;
 
   const requestFood = useCallback(
     ({ position, id }: { position: Coordinates; id: string }) => {
@@ -120,13 +127,13 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
 
       throtteFoodDrop({
         ...pos,
-        imgs: foodImages,
+        sprite,
         addFood: (food: Food) => dispatch(addFoodAction(food)),
         width: resizedWidth,
         height: resizedHeight,
       });
     },
-    [isDraggingFood, foodImages, resizedHeight, resizedWidth, dispatch],
+    [isDraggingFood, resizedHeight, resizedWidth, dispatch, sprite],
   );
 
   const onDragFinished = useCallback(

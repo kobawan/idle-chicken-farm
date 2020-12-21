@@ -1,11 +1,11 @@
-import React, { useEffect, memo, useState, useReducer, useCallback } from "react";
+import React, { useEffect, memo, useReducer, useCallback, useState } from "react";
 import cx from "classnames";
 import styles from "./farm.module.scss";
-import spriteUrl from "../../sprites/farm_sprite.png";
+import spriteUrl from "../../assets/farm_sprite.png";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
 import { getChickens } from "../../utils/drawChickens";
 import { createItems } from "../../utils/drawItems";
-import { getFoodImgs, getFood } from "../../utils/drawFood";
+import { getFood } from "../../utils/drawFood";
 import { farmReducer, initialFarmState } from "./reducer";
 import { setItemsAction, setChickensAction, setFoodAction } from "./actions";
 import { StaticCanvas } from "../StaticCanvas/StaticCanvas";
@@ -25,7 +25,7 @@ export const Farm: React.FC = memo(() => {
     farmReducer,
     initialFarmState,
   );
-  const [foodImgs, setFoodImgs] = useState<HTMLImageElement[]>([]);
+  const [sprite, setSprite] = useState<HTMLImageElement>();
   const onDetectTooltipCb = useCallback(
     (args: OnDetectTooltipCbProps) => handleChickenHover(chickens, args),
     [chickens],
@@ -35,21 +35,26 @@ export const Farm: React.FC = memo(() => {
     // It should only run on mount
     if (!chickens.length) {
       loadImage(spriteUrl)
-        .then((sprite) => {
+        .then((img) => {
+          setSprite(img);
           return Promise.all([
-            createItems(resizedWidth, resizedHeight, sprite as HTMLImageElement),
-            getChickens(resizedWidth, resizedHeight, sprite as HTMLImageElement),
-            getFoodImgs(),
+            createItems(resizedWidth, resizedHeight, img as HTMLImageElement),
+            getChickens(resizedWidth, resizedHeight, img as HTMLImageElement),
+            Promise.resolve(getFood(resizedWidth, resizedHeight, img as HTMLImageElement)),
           ]);
         })
-        .then(([items, chickens, foodImgs]) => {
+        .then(([items, chickens, food]) => {
           dispatch(setItemsAction(items));
           dispatch(setChickensAction(chickens));
-          setFoodImgs(foodImgs);
-          dispatch(setFoodAction(getFood(foodImgs, resizedWidth, resizedHeight)));
+          dispatch(setFoodAction(food));
         });
     }
   }, [resizedWidth, resizedHeight, chickens]);
+
+  if (!sprite) {
+    // TODO: display loading screen
+    return null;
+  }
 
   return (
     <div className={cx(styles.wrapper, isFeeding && styles.feeding)}>
@@ -62,7 +67,7 @@ export const Farm: React.FC = memo(() => {
           food={food}
           isDragging={isDragging}
           isFeeding={isFeeding}
-          foodImages={foodImgs}
+          sprite={sprite}
           dispatch={dispatch}
         />
         <ChickenCanvas

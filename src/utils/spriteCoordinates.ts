@@ -14,11 +14,11 @@ interface SpriteCoordinatesMap {
   chicken: Record<ChickenBreed, ChickenSprite>;
   coop: CanvasCoordinates;
   trough: CanvasCoordinates;
-  // food: {
-  //   small: CanvasCoordinates;
-  //   medium: CanvasCoordinates;
-  //   large: CanvasCoordinates;
-  // };
+  food: {
+    small: CanvasCoordinates;
+    medium: CanvasCoordinates;
+    large: CanvasCoordinates;
+  };
 }
 
 export const spriteCoordinatesMap: SpriteCoordinatesMap = {
@@ -116,9 +116,24 @@ export const spriteCoordinatesMap: SpriteCoordinatesMap = {
     width: 34,
     height: 15,
   },
-  // food: {
-  //   small: {},
-  //   medium: {},
-  //   large: {},
-  // },
+  food: {
+    small: {
+      x: 112,
+      y: 97,
+      width: 15,
+      height: 16,
+    },
+    medium: {
+      x: 129,
+      y: 97,
+      width: 15,
+      height: 16,
+    },
+    large: {
+      x: 145,
+      y: 97,
+      width: 15,
+      height: 16,
+    },
+  },
 };

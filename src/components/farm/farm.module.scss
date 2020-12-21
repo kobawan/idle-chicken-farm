@@ -9,14 +9,14 @@
     background-repeat: no-repeat;
     background-position: top left;
     background-size: cover;
-    background-image: url("../../sprites/farmBg.png");
+    background-image: url("../../assets/farmBg.png");
     background-color: #39551c;
     opacity: 0.4;
     pointer-events: none;
   }
 
   &.feeding {
-    cursor: url("../../sprites/food3.png"), auto;
+    cursor: url("../../assets/food3.png"), auto;
   }
 
   .version {

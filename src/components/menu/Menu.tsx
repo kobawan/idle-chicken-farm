@@ -1,8 +1,8 @@
 import React from "react";
 import cx from "classnames";
 import styles from "./menu.module.scss";
-import foodUrl from "../../sprites/food1.png";
-import chickenUrl from "../../sprites/chicken.png";
+import foodUrl from "../../assets/food1.png";
+import chickenUrl from "../../assets/chicken.png";
 import { Info } from "../info/Info";
 import { Chicken } from "../../models/chicken/chicken";
 import { toggleFeedingAction, toggleInfoAction } from "../farm/actions";

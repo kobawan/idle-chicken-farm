@@ -3,6 +3,7 @@ import { Coordinates } from "../types/types";
 import { CustomEventEmitter } from "../utils/EventEmitter";
 import { EventName } from "../utils/events";
 import { SavedFoodStateV2 } from "../utils/migrateSaves";
+import { CanvasCoordinates, spriteCoordinatesMap } from "../utils/spriteCoordinates";
 
 const MAX_EATERS = 3;
 const MAX_FOOD = 30;
@@ -12,7 +13,7 @@ export interface FoodProps extends Coordinates {
   height: number;
   originalWidth?: number;
   originalHeight?: number;
-  imgs: HTMLImageElement[];
+  sprite: HTMLImageElement;
   id?: string;
   foodMeter?: number;
 }
@@ -22,7 +23,7 @@ export class Food {
   private originalHeight: number;
   private width: number;
   private height: number;
-  private imgs: HTMLImageElement[];
+  private sprite: HTMLImageElement;
   private foodMeter: number;
   private animalsEating: string[] = [];
   private originalTop: number;
@@ -32,7 +33,7 @@ export class Food {
   public id: string;
 
   constructor({
-    imgs,
+    sprite,
     top,
     left,
     foodMeter,
@@ -42,7 +43,7 @@ export class Food {
     originalHeight,
     originalWidth,
   }: FoodProps) {
-    this.imgs = imgs;
+    this.sprite = sprite;
     this.originalWidth = originalWidth || width;
     this.originalHeight = originalHeight || height;
     this.width = width;
@@ -65,7 +66,7 @@ export class Food {
     resizedHeight: number;
   }) {
     this.updateToResizedPosition(resizedWidth, resizedHeight);
-    this.draw(ctx, this.getImg());
+    this.draw(ctx);
   }
 
   public getSavingState(): SavedFoodStateV2 {
@@ -118,29 +119,31 @@ export class Food {
     }
   }
 
-  private getImg() {
+  private getSpriteCoordinates(): CanvasCoordinates {
+    const { small, medium, large } = spriteCoordinatesMap.food;
     if (this.foodMeter <= 10) {
-      return this.imgs[0];
+      return small;
     }
 
     if (this.foodMeter <= 20) {
-      return this.imgs[1];
+      return medium;
     }
 
-    return this.imgs[2];
+    return large;
   }
 
-  private draw(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
+  private draw(ctx: CanvasRenderingContext2D) {
+    const spriteCoordinates = this.getSpriteCoordinates();
     ctx.drawImage(
-      img,
-      0,
-      0,
-      img.naturalWidth,
-      img.naturalHeight,
+      this.sprite,
+      spriteCoordinates.x,
+      spriteCoordinates.y,
+      spriteCoordinates.width,
+      spriteCoordinates.height,
       this.left,
       this.top,
-      img.naturalWidth,
-      img.naturalHeight,
+      spriteCoordinates.width,
+      spriteCoordinates.height,
     );
   }
 }
