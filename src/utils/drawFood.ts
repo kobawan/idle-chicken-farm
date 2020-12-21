@@ -19,7 +19,7 @@ export const getFoodImgs = async () => {
 };
 
 export const getFood = (imgs: HTMLImageElement[], width: number, height: number) => {
-  const savedFood = getStorageKey(StorageKeys.food);
+  const savedFood = getStorageKey(StorageKeys.food) as null | SavedFoodState[];
   if (!savedFood) {
     return [];
   }

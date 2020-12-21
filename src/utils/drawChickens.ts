@@ -30,7 +30,7 @@ export const getChickens = async (width: number, height: number) => {
     [ChickenBreed.orange]: images[1],
     [ChickenBreed.yellow]: images[2],
   };
-  const savedChickens = getStorageKey(StorageKeys.chickens);
+  const savedChickens = getStorageKey(StorageKeys.chickens) as null | SavedChickenState[];
   if (!savedChickens) {
     return Object.values(ChickenBreed).reduce<Chicken[]>((chickens, breed, index) => {
       const gender = index === 0 ? "male" : "female";
