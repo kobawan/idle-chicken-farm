@@ -25,6 +25,7 @@ export const Farm: React.FC = memo(() => {
     initialFarmState,
   );
   const [sprite, setSprite] = useState<HTMLImageElement>();
+  const [isLoading, setIsLoading] = useState(true);
   const onDetectTooltipCb = useCallback(
     (args: OnDetectTooltipCbProps) => handleChickenHover(chickens, args),
     [chickens],
@@ -46,9 +47,14 @@ export const Farm: React.FC = memo(() => {
     dispatch(setItemsAction(newItems));
     dispatch(setChickensAction(newChickens));
     dispatch(setFoodAction(newFood));
+    setIsLoading(false);
   }, [resizedWidth, resizedHeight, sprite]);
 
-  if (!sprite) {
+  /*
+   * Very important to not render canvases before init is done,
+   * otherwise the saves are overritten with empty arrays
+   */
+  if (isLoading) {
     // TODO: display loading screen
     return null;
   }
@@ -64,7 +70,7 @@ export const Farm: React.FC = memo(() => {
           food={food}
           isDragging={isDragging}
           isFeeding={isFeeding}
-          sprite={sprite}
+          sprite={sprite as HTMLImageElement}
           dispatch={dispatch}
         />
         <ChickenCanvas

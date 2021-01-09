@@ -7,9 +7,6 @@ const saveItemsToStorage = (
   items: { getSavingState: () => unknown }[],
 ) => {
   const storage = items.map((item) => item.getSavingState());
-  if (!storage.length) {
-    return;
-  }
   setStorageKey(storageKey, storage);
 };
 
