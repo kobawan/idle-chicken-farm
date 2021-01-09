@@ -38,6 +38,10 @@
         opacity: 1;
       }
 
+      img {
+        pointer-events: none;
+      }
+
       @media (hover) {
         &:hover:not(.active) {
           opacity: 1;

@@ -7,6 +7,7 @@ import { Info } from "../info/Info";
 import { Chicken } from "../../models/chicken/chicken";
 import { toggleFeedingAction, toggleInfoAction } from "../farm/actions";
 import { AllFarmActions } from "../farm/reducer";
+import { TOGGLE_FEEDING_BTN_ID } from "./consts";
 
 interface MenuProps {
   isInfoOpen: boolean;
@@ -35,6 +36,7 @@ export const Menu: React.FC<MenuProps> = ({ isInfoOpen, isFeeding, chickens, dis
         <button
           className={cx(styles.farmButton, isFeeding && styles.active)}
           onClick={toggleFeeding}
+          id={TOGGLE_FEEDING_BTN_ID}
         >
           <img src={foodUrl} alt="food"></img>
         </button>

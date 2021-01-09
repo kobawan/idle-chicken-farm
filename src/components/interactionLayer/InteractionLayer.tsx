@@ -3,13 +3,20 @@ import { InteractEvent } from "../../types/types";
 import { isTouchEvent } from "../../utils/devices";
 import { CustomEventEmitter } from "../../utils/EventEmitter";
 import { EventName } from "../../utils/events";
+import { TOGGLE_FEEDING_BTN_ID } from "../menu/consts";
 import styles from "./interactionLayer.module.scss";
 
 const onInteractStart = (e: InteractEvent<HTMLDivElement>) => {
+  if ((e.target as HTMLElement).id === TOGGLE_FEEDING_BTN_ID) {
+    return;
+  }
   CustomEventEmitter.emit(EventName.StartDraggingFood, e);
 };
 
 const onInteractEnd = (e: InteractEvent<HTMLDivElement>) => {
+  if ((e.target as HTMLElement).id === TOGGLE_FEEDING_BTN_ID) {
+    return;
+  }
   CustomEventEmitter.emit(EventName.StopDraggingFood, e);
 };
 
