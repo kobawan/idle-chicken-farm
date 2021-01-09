@@ -4,7 +4,7 @@ import styles from "./farm.module.scss";
 import spriteUrl from "../../assets/farm_sprite.png";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
 import { getChickens } from "../../utils/drawChickens";
-import { createItems } from "../../utils/drawItems";
+import { getItems } from "../../utils/drawItems";
 import { getFood } from "../../utils/drawFood";
 import { farmReducer, initialFarmState } from "./reducer";
 import { setItemsAction, setChickensAction, setFoodAction } from "./actions";
@@ -31,24 +31,22 @@ export const Farm: React.FC = memo(() => {
   );
 
   useEffect(() => {
-    // It should only run on mount
-    if (!chickens.length) {
-      loadImage(spriteUrl)
-        .then((img) => {
-          setSprite(img);
-          return Promise.all([
-            createItems(resizedWidth, resizedHeight, img as HTMLImageElement),
-            getChickens(resizedWidth, resizedHeight, img as HTMLImageElement),
-            Promise.resolve(getFood(resizedWidth, resizedHeight, img as HTMLImageElement)),
-          ]);
-        })
-        .then(([items, chickens, food]) => {
-          dispatch(setItemsAction(items));
-          dispatch(setChickensAction(chickens));
-          dispatch(setFoodAction(food));
-        });
+    loadImage(spriteUrl).then((img) => {
+      setSprite(img);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!sprite) {
+      return;
     }
-  }, [resizedWidth, resizedHeight, chickens]);
+    const newItems = getItems(resizedWidth, resizedHeight, sprite);
+    const newChickens = getChickens(resizedWidth, resizedHeight, sprite);
+    const newFood = getFood(resizedWidth, resizedHeight, sprite);
+    dispatch(setItemsAction(newItems));
+    dispatch(setChickensAction(newChickens));
+    dispatch(setFoodAction(newFood));
+  }, [resizedWidth, resizedHeight, sprite]);
 
   if (!sprite) {
     // TODO: display loading screen

@@ -5,7 +5,7 @@
   top: 0;
   right: 0;
   transition: 0.2s ease-in-out;
-  transform: translateX(calc(12em + 2.125em));
+  transform: translateX(calc(12em + 2em));
   height: 100%;
   pointer-events: none;
 
@@ -15,6 +15,9 @@
   }
 
   .toolBar {
+    position: relative;
+    top: 3em;
+
     .farmButton {
       display: flex;
       align-items: center;
@@ -26,8 +29,7 @@
       transition: 0.3s;
       height: 2em;
       width: 2em;
-      position: relative;
-      top: 1em;
+
       opacity: 0.5;
       pointer-events: all;
 

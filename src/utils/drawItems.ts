@@ -1,25 +1,37 @@
 import { Item } from "../models/item";
 import { StaticItems } from "../types/types";
 import { DrawProps } from "../types/types";
+import { getWholeFenceProps } from "./fenceUtils";
 import { spriteCoordinatesMap } from "./spriteCoordinates";
 
 type DrawItemsProps = StaticItems & DrawProps;
 
-export const createItems = async (width: number, height: number, sprite: HTMLImageElement) => {
-  const houseProps = {
+const getCoopProps = (width: number, height: number) => {
+  return {
     top: height * 0.2,
     left: width * 0.2,
     spriteCoordinates: spriteCoordinatesMap.coop,
   };
-  const waterProps = {
-    top: houseProps.top,
-    left: houseProps.left,
+};
+
+const getTroughProps = (width: number, height: number) => {
+  return {
+    top: height * 0.2,
+    left: width * 0.2,
     deviationX: 140,
     deviationY: 60,
     spriteCoordinates: spriteCoordinatesMap.trough,
   };
+};
 
-  return [houseProps, waterProps].map((props) => {
+export const getItems = (width: number, height: number, sprite: HTMLImageElement) => {
+  const items = [
+    getCoopProps(width, height),
+    getTroughProps(width, height),
+    ...getWholeFenceProps(width, height),
+  ];
+
+  return items.map((props) => {
     return new Item({ ...props, width, height, sprite });
   });
 };

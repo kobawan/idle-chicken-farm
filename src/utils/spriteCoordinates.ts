@@ -19,6 +19,16 @@ interface SpriteCoordinatesMap {
     medium: CanvasCoordinates;
     large: CanvasCoordinates;
   };
+  fence: {
+    topLeft: CanvasCoordinates;
+    topRight: CanvasCoordinates;
+    bottomLeft: CanvasCoordinates;
+    bottomRight: CanvasCoordinates;
+    sideLeft: CanvasCoordinates;
+    sideRight: CanvasCoordinates;
+    top: CanvasCoordinates;
+    bottom: CanvasCoordinates;
+  };
 }
 
 export const spriteCoordinatesMap: SpriteCoordinatesMap = {
@@ -133,6 +143,56 @@ export const spriteCoordinatesMap: SpriteCoordinatesMap = {
       x: 144,
       y: 96,
       width: 15,
+      height: 16,
+    },
+  },
+  fence: {
+    topLeft: {
+      x: 0,
+      y: 0,
+      width: 14,
+      height: 16,
+    },
+    top: {
+      x: 14,
+      y: 0,
+      width: 20,
+      height: 16,
+    },
+    topRight: {
+      x: 50,
+      y: 0,
+      width: 14,
+      height: 16,
+    },
+    bottomLeft: {
+      x: 0,
+      y: 32,
+      width: 14,
+      height: 16,
+    },
+    sideLeft: {
+      x: 0,
+      y: 16,
+      width: 14,
+      height: 15,
+    },
+    sideRight: {
+      x: 50,
+      y: 16,
+      width: 14,
+      height: 15,
+    },
+    bottomRight: {
+      x: 50,
+      y: 32,
+      width: 14,
+      height: 16,
+    },
+    bottom: {
+      x: 14,
+      y: 32,
+      width: 20,
       height: 16,
     },
   },

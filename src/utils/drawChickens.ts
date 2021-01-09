@@ -10,7 +10,7 @@ const CHICKEN_REFRESH_RATE = 500;
 type DrawDynamicObjectsProps = ChickenItems &
   DrawProps & { animationIdRef: React.MutableRefObject<number> };
 
-export const getChickens = async (width: number, height: number, sprite: HTMLImageElement) => {
+export const getChickens = (width: number, height: number, sprite: HTMLImageElement) => {
   const savedChickens = getStorageKey(StorageKeys.chickens) as null | SavedChickenStateV2[];
   if (!savedChickens) {
     return Object.values(ChickenBreed).reduce<Chicken[]>((chickens, breed, index) => {
