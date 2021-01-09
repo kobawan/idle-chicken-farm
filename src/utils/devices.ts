@@ -1,3 +1,4 @@
+import React from "react";
 import { InteractEvent } from "../types/types";
 
 export const isTouchEvent = (e: InteractEvent<HTMLElement>): e is React.TouchEvent<HTMLElement> => {

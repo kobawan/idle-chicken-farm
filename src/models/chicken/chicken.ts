@@ -73,7 +73,11 @@ export class Chicken {
     this.fps = 1000 / (timestamp - this.timestamp);
     this.timestamp = timestamp;
 
-    this.PositionManager.updateToResizedPosition(resizedWidth, resizedHeight);
+    this.PositionManager.updateToResizedPosition(
+      resizedWidth,
+      resizedHeight,
+      this.getSpriteCoordinates(),
+    );
     this.HungerManager.updateHungerMeter(this.timestamp);
 
     this.updateBehaviour();
@@ -81,7 +85,7 @@ export class Chicken {
   }
 
   public getBoundaries() {
-    return this.PositionManager.getBoundaries(this.getSpriteCoordinates());
+    return this.PositionManager.getChickenBoundaries(this.getSpriteCoordinates());
   }
 
   public getHungerMeter() {
