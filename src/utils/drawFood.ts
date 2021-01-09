@@ -2,7 +2,7 @@ import React from "react";
 import { Food } from "../models/food";
 import { getStorageKey, StorageKeys } from "./localStorage";
 import { FoodItems, DrawProps } from "../types/types";
-import { SavedFoodStateV2 } from "./migrateSaves";
+import { SavedFoodState } from "./migrateSaves";
 
 const FOOD_CANVAS_FRAME_THROTTLE = 30;
 
@@ -13,12 +13,12 @@ type DrawFoodObjectsProps = FoodItems &
   };
 
 export const getFood = (width: number, height: number, sprite: HTMLImageElement) => {
-  const savedFood = getStorageKey(StorageKeys.food) as null | SavedFoodStateV2[];
+  const savedFood = getStorageKey(StorageKeys.food) as null | SavedFoodState[];
   if (!savedFood) {
     return [];
   }
 
-  return savedFood.map((food: SavedFoodStateV2) => {
+  return savedFood.map((food: SavedFoodState) => {
     return new Food({ ...food, width, height, sprite });
   });
 };

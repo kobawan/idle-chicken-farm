@@ -3,7 +3,7 @@ import { Chicken } from "../models/chicken/chicken";
 import { ChickenBreed, ChickenItems, DrawProps } from "../types/types";
 import { getStorageKey, StorageKeys } from "./localStorage";
 import { getAvailableNames, generateName } from "./chickenNameUtils";
-import { SavedChickenStateV2 } from "./migrateSaves";
+import { SavedChickenState } from "./migrateSaves";
 
 const CHICKEN_REFRESH_RATE = 500;
 
@@ -11,7 +11,7 @@ type DrawDynamicObjectsProps = ChickenItems &
   DrawProps & { animationIdRef: React.MutableRefObject<number> };
 
 export const getChickens = (width: number, height: number, sprite: HTMLImageElement) => {
-  const savedChickens = getStorageKey(StorageKeys.chickens) as null | SavedChickenStateV2[];
+  const savedChickens = getStorageKey(StorageKeys.chickens) as null | SavedChickenState[];
   if (!savedChickens) {
     return Object.values(ChickenBreed).reduce<Chicken[]>((chickens, breed, index) => {
       const gender = index === 0 ? "male" : "female";
@@ -28,7 +28,7 @@ export const getChickens = (width: number, height: number, sprite: HTMLImageElem
     }, []);
   }
 
-  return savedChickens.map((props: SavedChickenStateV2) => {
+  return savedChickens.map((props: SavedChickenState) => {
     return new Chicken({ width, height, sprite, ...props });
   });
 };

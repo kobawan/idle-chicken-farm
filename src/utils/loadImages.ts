@@ -1,15 +1,8 @@
-// TODO: handle undefined cases
-export const loadImage = (url: string): Promise<HTMLImageElement | undefined> => {
-  return new Promise((resolve) => {
+export const loadImage = (url: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = url;
     img.onload = () => resolve(img);
-    img.onerror = () => resolve();
+    img.onerror = () => reject();
   });
-};
-
-export const loadMultipleImages = (urls: string[]): Promise<HTMLImageElement[]> => {
-  return Promise.all(urls.map((url) => loadImage(url))).then((imgs) =>
-    imgs.filter(Boolean),
-  ) as Promise<HTMLImageElement[]>;
 };

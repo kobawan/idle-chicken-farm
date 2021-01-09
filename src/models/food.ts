@@ -2,7 +2,7 @@ import { generateId } from "../utils/idGenerator";
 import { Coordinates } from "../types/types";
 import { CustomEventEmitter } from "../utils/EventEmitter";
 import { EventName } from "../utils/events";
-import { SavedFoodStateV2 } from "../utils/migrateSaves";
+import { SavedFoodState } from "../utils/migrateSaves";
 import { CanvasCoordinates, spriteCoordinatesMap } from "../utils/spriteCoordinates";
 import { RESIZE_BY } from "../gameConsts";
 
@@ -70,7 +70,7 @@ export class Food {
     this.draw(ctx);
   }
 
-  public getSavingState(): SavedFoodStateV2 {
+  public getSavingState(): SavedFoodState {
     return {
       top: this.originalTop,
       left: this.originalLeft,

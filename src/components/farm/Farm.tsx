@@ -17,6 +17,7 @@ import { InteractionLayer } from "../interactionLayer/InteractionLayer";
 import { version } from "../../../package.json";
 import { handleChickenHover } from "./utils";
 import { loadImage } from "../../utils/loadImages";
+import { initSave } from "../../utils/migrateSaves";
 
 export const Farm: React.FC = memo(() => {
   const { resizedWidth, resizedHeight } = useWindowDimensions();
@@ -32,9 +33,15 @@ export const Farm: React.FC = memo(() => {
   );
 
   useEffect(() => {
-    loadImage(spriteUrl).then((img) => {
-      setSprite(img);
-    });
+    loadImage(spriteUrl)
+      .then((img) => {
+        initSave(resizedWidth, resizedHeight, img);
+        setSprite(img);
+      })
+      .catch(() => {
+        // TODO: improve error handling
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

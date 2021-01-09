@@ -6,7 +6,7 @@ import { PositionManager } from "./PositionManager";
 import { HungerManager } from "./HungerManager";
 import { Logger } from "../../utils/Logger";
 import { spriteCoordinatesMap } from "../../utils/spriteCoordinates";
-import { SavedChickenStateV2 } from "../../utils/migrateSaves";
+import { SavedChickenState } from "../../utils/migrateSaves";
 import { RESIZE_BY } from "../../gameConsts";
 
 export class Chicken {
@@ -92,7 +92,7 @@ export class Chicken {
     return this.HungerManager.getHungerMeter();
   }
 
-  public getSavingState(): SavedChickenStateV2 {
+  public getSavingState(): SavedChickenState {
     return {
       ...this.PositionManager.getSavingState(),
       ...this.HungerManager.getSavingState(),
