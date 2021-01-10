@@ -1,4 +1,4 @@
-import { generateId } from "../utils/idGenerator";
+import { generateId } from "../utils/math";
 import { Coordinates } from "../types/types";
 import { CanvasCoordinates } from "../utils/spriteCoordinates";
 import { RESIZE_BY } from "../gameConsts";

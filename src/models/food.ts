@@ -1,8 +1,8 @@
-import { generateId } from "../utils/idGenerator";
+import { generateId } from "../utils/math";
 import { Coordinates } from "../types/types";
-import { CustomEventEmitter } from "../utils/EventEmitter";
-import { EventName } from "../utils/events";
-import { SavedFoodState } from "../utils/migrateSaves";
+import { CustomEventEmitter } from "../utils/eventUtils/EventEmitter";
+import { EventName } from "../utils/eventUtils/events";
+import { SavedFoodState } from "../utils/saveUtils/migrateSaves";
 import { CanvasCoordinates, spriteCoordinatesMap } from "../utils/spriteCoordinates";
 import { RESIZE_BY } from "../gameConsts";
 

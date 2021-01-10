@@ -7,9 +7,9 @@ import { getFood } from "../../utils/drawFood";
 import { farmReducer, initialFarmState } from "./reducer";
 import { setItemsAction, setChickensAction, setFoodAction } from "./actions";
 import { loadImage } from "../../utils/loadImages";
-import { initSave } from "../../utils/migrateSaves";
-import { LoadingPage } from "../loadingPage/LoadingPage";
-import { GamePage } from "../gamePage/GamePage";
+import { initSave } from "../../utils/saveUtils/migrateSaves";
+import { LoadingPage } from "../../pages/loadingPage/LoadingPage";
+import { GamePage } from "../../pages/gamePage/GamePage";
 
 export const Farm: React.FC = memo(() => {
   const { resizedWidth, resizedHeight } = useWindowDimensions();

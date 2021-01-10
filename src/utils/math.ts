@@ -9,3 +9,5 @@ export const getValueWithinRange = ({
 }) => {
   return Math.max(min, Math.min(max, value));
 };
+
+export const generateId = () => Math.random().toString(36).substr(2, 9);

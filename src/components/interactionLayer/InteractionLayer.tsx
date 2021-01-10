@@ -1,8 +1,8 @@
 import React from "react";
 import { InteractEvent } from "../../types/types";
 import { isTouchEvent } from "../../utils/devices";
-import { CustomEventEmitter } from "../../utils/EventEmitter";
-import { EventName } from "../../utils/events";
+import { CustomEventEmitter } from "../../utils/eventUtils/EventEmitter";
+import { EventName } from "../../utils/eventUtils/events";
 import { TOGGLE_FEEDING_BTN_ID } from "../menu/consts";
 import styles from "./interactionLayer.module.scss";
 

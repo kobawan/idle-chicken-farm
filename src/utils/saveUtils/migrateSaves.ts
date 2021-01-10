@@ -1,6 +1,6 @@
-import { Chicken } from "../models/chicken/chicken";
-import { ChickenBreed } from "../types/types";
-import { generateName, getAvailableNames } from "./chickenNameUtils";
+import { Chicken } from "../../models/chicken/chicken";
+import { ChickenBreed } from "../../types/types";
+import { generateName, getAvailableNames } from "../chickenNameUtils";
 import { getStorageKey, setStorageKey, StorageKeys } from "./localStorage";
 
 export interface SavedChickenStateV1 {

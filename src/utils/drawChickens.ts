@@ -1,9 +1,9 @@
 import React from "react";
 import { Chicken } from "../models/chicken/chicken";
 import { ChickenBreed, ChickenItems, DrawProps } from "../types/types";
-import { getStorageKey, StorageKeys } from "./localStorage";
+import { getStorageKey, StorageKeys } from "./saveUtils/localStorage";
 import { getAvailableNames, generateName } from "./chickenNameUtils";
-import { SavedChickenState } from "./migrateSaves";
+import { SavedChickenState } from "./saveUtils/migrateSaves";
 
 const CHICKEN_REFRESH_RATE = 500;
 

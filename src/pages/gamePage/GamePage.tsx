@@ -1,14 +1,17 @@
 import React, { useCallback, version } from "react";
 import cx from "classnames";
 import styles from "./gamePage.module.scss";
-import { ChickenCanvas } from "../chickenCanvas/ChickenCanvas";
-import { FoodCanvas } from "../foodCanvas/FoodCanvas";
-import { InteractionLayer } from "../interactionLayer/InteractionLayer";
-import { Menu } from "../menu/Menu";
-import { StaticCanvas } from "../StaticCanvas/StaticCanvas";
-import { OnDetectTooltipCbProps, TooltipOverlay } from "../tooltipOverlay/TooltipOverlay";
-import { AllFarmActions, FarmState } from "../farm/reducer";
-import { handleChickenHover } from "../farm/utils";
+import { ChickenCanvas } from "../../components/chickenCanvas/ChickenCanvas";
+import { FoodCanvas } from "../../components/foodCanvas/FoodCanvas";
+import { InteractionLayer } from "../../components/interactionLayer/InteractionLayer";
+import { Menu } from "../../components/menu/Menu";
+import { StaticCanvas } from "../../components/StaticCanvas/StaticCanvas";
+import {
+  OnDetectTooltipCbProps,
+  TooltipOverlay,
+} from "../../components/tooltipOverlay/TooltipOverlay";
+import { AllFarmActions, FarmState } from "../../components/farm/reducer";
+import { handleChickenHover } from "../../components/farm/utils";
 
 interface GamePageProps extends FarmState {
   resizedWidth: number;

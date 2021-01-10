@@ -1,12 +1,12 @@
 import { ChickenBreed, Gender } from "../../types/types";
-import { generateId } from "../../utils/idGenerator";
+import { generateId } from "../../utils/math";
 import { RestingManager } from "./RestingManager";
 import { ChickenPose, ChickenState, ChickenProps } from "./types";
 import { PositionManager } from "./PositionManager";
 import { HungerManager } from "./HungerManager";
 import { Logger } from "../../utils/Logger";
 import { spriteCoordinatesMap } from "../../utils/spriteCoordinates";
-import { SavedChickenState } from "../../utils/migrateSaves";
+import { SavedChickenState } from "../../utils/saveUtils/migrateSaves";
 import { RESIZE_BY } from "../../gameConsts";
 
 export class Chicken {

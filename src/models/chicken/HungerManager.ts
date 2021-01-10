@@ -1,6 +1,6 @@
 import { Coordinates } from "../../types/types";
-import { CustomEventEmitter } from "../../utils/EventEmitter";
-import { EventName } from "../../utils/events";
+import { CustomEventEmitter } from "../../utils/eventUtils/EventEmitter";
+import { EventName } from "../../utils/eventUtils/events";
 import { Logger } from "../../utils/Logger";
 import { CanvasCoordinates } from "../../utils/spriteCoordinates";
 import { Food } from "../food";

@@ -3,11 +3,11 @@ import throttle from "lodash.throttle";
 import styles from "./foodCanvas.module.scss";
 import { drawFoodObjects } from "../../utils/drawFood";
 import { InteractEvent, FoodItems, Coordinates } from "../../types/types";
-import { StorageKeys } from "../../utils/localStorage";
-import { saveItemsOnInterval } from "../../utils/save";
+import { StorageKeys } from "../../utils/saveUtils/localStorage";
+import { saveItemsOnInterval } from "../../utils/saveUtils/save";
 import { isTouchEvent, getInteractionPos } from "../../utils/devices";
 import { Food, FoodProps } from "../../models/food";
-import { EventName } from "../../utils/events";
+import { EventName } from "../../utils/eventUtils/events";
 import { AllFarmActions } from "../farm/reducer";
 import {
   addFoodAction,
@@ -17,7 +17,7 @@ import {
 } from "../farm/actions";
 import { useEventEffect } from "../../utils/useEventEffect";
 import { getClosest, getDistance } from "../../utils/distance";
-import { CustomEventEmitter } from "../../utils/EventEmitter";
+import { CustomEventEmitter } from "../../utils/eventUtils/EventEmitter";
 
 interface FoodCanvasProps extends FoodItems {
   resizedWidth: number;

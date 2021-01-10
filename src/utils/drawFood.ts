@@ -1,8 +1,8 @@
 import React from "react";
 import { Food } from "../models/food";
-import { getStorageKey, StorageKeys } from "./localStorage";
+import { getStorageKey, StorageKeys } from "./saveUtils/localStorage";
 import { FoodItems, DrawProps } from "../types/types";
-import { SavedFoodState } from "./migrateSaves";
+import { SavedFoodState } from "./saveUtils/migrateSaves";
 
 const FOOD_CANVAS_FRAME_THROTTLE = 30;
 
