@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import ReactTooltip from "react-tooltip";
 import { EventName } from "../../utils/eventUtils/events";
-import { useEventEffect } from "../../utils/useEventEffect";
+import { useEventEffect } from "../../utils/eventUtils/useEventEffect";
 import styles from "./TooltipOverlay.module.scss";
 
 export interface TooltipProps {

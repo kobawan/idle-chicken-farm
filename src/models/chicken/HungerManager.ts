@@ -1,14 +1,14 @@
+import {
+  CHICKEN_HUNGER_THRESHOLD,
+  CHICKEN_MIN_DISTANCE_TO_EAT,
+  CHICKEN_MIN_HUNGER,
+} from "../../gameConfig";
 import { Coordinates } from "../../types/types";
 import { CustomEventEmitter } from "../../utils/eventUtils/EventEmitter";
 import { EventName } from "../../utils/eventUtils/events";
 import { Logger } from "../../utils/Logger";
 import { CanvasCoordinates } from "../../utils/spriteCoordinates";
 import { Food } from "../food";
-
-export const HUNGER_MIN = 30;
-const MIN_DISTANCE_TO_EAT = 5;
-
-const HUNGER_THRESHOLD = process.env.NODE_ENV === "development" ? 2000 : 60000; // every 1 min hunger will increase
 
 interface HungerManagerProps {
   hungerMeter?: number;
@@ -48,7 +48,7 @@ export class HungerManager {
       return;
     }
 
-    if (timestamp - this.lastHungerIncrease >= HUNGER_THRESHOLD) {
+    if (timestamp - this.lastHungerIncrease >= CHICKEN_HUNGER_THRESHOLD) {
       this.hungerMeter = Math.min(this.hungerMeter + 1, 100);
       this.lastHungerIncrease = timestamp;
     }
@@ -63,7 +63,9 @@ export class HungerManager {
       return false;
     }
     const { dx, dy } = this.getFoodDistance(this.food, currentPos);
-    return Math.abs(dx) <= MIN_DISTANCE_TO_EAT && Math.abs(dy) <= MIN_DISTANCE_TO_EAT;
+    return (
+      Math.abs(dx) <= CHICKEN_MIN_DISTANCE_TO_EAT && Math.abs(dy) <= CHICKEN_MIN_DISTANCE_TO_EAT
+    );
   }
 
   public startEating(position: Coordinates) {
@@ -111,7 +113,7 @@ export class HungerManager {
   }
 
   public isHungry() {
-    return this.hungerMeter > HUNGER_MIN;
+    return this.hungerMeter > CHICKEN_MIN_HUNGER;
   }
 
   public hasAvailableFood() {

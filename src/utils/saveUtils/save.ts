@@ -1,6 +1,5 @@
+import { SAVING_INTERVAL } from "../../gameConfig";
 import { setStorageKey, StorageKeys } from "./localStorage";
-
-const SAVING_INTERVAL = 5000;
 
 const saveItemsToStorage = (
   storageKey: StorageKeys,

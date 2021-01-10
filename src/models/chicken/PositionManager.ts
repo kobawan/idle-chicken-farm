@@ -1,10 +1,8 @@
-import { RESIZE_BY } from "../../gameConsts";
+import { CHICKEN_MOVEMENT_PX, RESIZE_BY } from "../../gameConfig";
 import { Coordinates } from "../../types/types";
 import { getFenceBoundaries } from "../../utils/fenceUtils";
 import { getValueWithinRange } from "../../utils/math";
 import { CanvasCoordinates } from "../../utils/spriteCoordinates";
-
-const MOVEMENT_PX = 2;
 
 interface PositionManagerProps {
   width: number;
@@ -110,13 +108,13 @@ export class PositionManager {
 
     this.top =
       dy > 0
-        ? Math.min(this.top + MOVEMENT_PX, bounds.bottom)
-        : Math.max(this.top - MOVEMENT_PX, bounds.top);
+        ? Math.min(this.top + CHICKEN_MOVEMENT_PX, bounds.bottom)
+        : Math.max(this.top - CHICKEN_MOVEMENT_PX, bounds.top);
 
     this.left =
       dx > 0
-        ? Math.min(this.left + MOVEMENT_PX, bounds.right)
-        : Math.max(this.left - MOVEMENT_PX, bounds.left);
+        ? Math.min(this.left + CHICKEN_MOVEMENT_PX, bounds.right)
+        : Math.max(this.left - CHICKEN_MOVEMENT_PX, bounds.left);
   }
 
   public walkRandomly(spriteCoordinates: CanvasCoordinates) {

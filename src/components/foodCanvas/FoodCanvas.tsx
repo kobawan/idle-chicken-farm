@@ -15,9 +15,10 @@ import {
   toggleDraggingAction,
   toggleFeedingAction,
 } from "../farm/actions";
-import { useEventEffect } from "../../utils/useEventEffect";
+import { useEventEffect } from "../../utils/eventUtils/useEventEffect";
 import { getClosest, getDistance } from "../../utils/distance";
 import { CustomEventEmitter } from "../../utils/eventUtils/EventEmitter";
+import { FOOD_MAX_DISTANCE_PX } from "../../gameConfig";
 
 interface FoodCanvasProps extends FoodItems {
   resizedWidth: number;
@@ -28,11 +29,9 @@ interface FoodCanvasProps extends FoodItems {
   dispatch: React.Dispatch<AllFarmActions>;
 }
 
-const MAX_FOOD_DISTANCE = 300; // in px
-
 const getClosestFood = (coord: Coordinates, food: Food[]) => {
   const allAvailableFood = food.filter(
-    (item) => item.isAvailable() && getDistance(coord, item) < MAX_FOOD_DISTANCE,
+    (item) => item.isAvailable() && getDistance(coord, item) < FOOD_MAX_DISTANCE_PX,
   );
   if (!allAvailableFood.length) {
     return undefined;

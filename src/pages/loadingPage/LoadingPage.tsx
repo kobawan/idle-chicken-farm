@@ -4,12 +4,11 @@ import styles from "./loadingPage.module.scss";
 import chickenUrl from "../../assets/chicken.png";
 import chickenWalkingUrl from "../../assets/chicken_walking.png";
 import { loadMultipleImages } from "../../utils/loadImages";
-import { RESIZE_BY } from "../../gameConsts";
+import { LOADING_PAGE_MIN_MS, RESIZE_BY } from "../../gameConfig";
 
 const IMG_WIDTH = 15;
 const IMG_HEIGHT = 17;
 const FADING_MS = 1000;
-const MIN_LOADING_MS = 1000;
 
 interface LoadingPageProps {
   shouldStartFading: boolean;
@@ -59,7 +58,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({ shouldStartFading, sto
     return () => clearInterval(id);
   }, [dots, animationIndex, images]);
 
-  const hasFinishedMinLoadTime = performance.now() - startLoadTime.current >= MIN_LOADING_MS;
+  const hasFinishedMinLoadTime = performance.now() - startLoadTime.current >= LOADING_PAGE_MIN_MS;
   const startFading = shouldStartFading && hasFinishedMinLoadTime;
   useEffect(() => {
     if (startFading) {

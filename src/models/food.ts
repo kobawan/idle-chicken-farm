@@ -4,10 +4,7 @@ import { CustomEventEmitter } from "../utils/eventUtils/EventEmitter";
 import { EventName } from "../utils/eventUtils/events";
 import { SavedFoodState } from "../utils/saveUtils/migrateSaves";
 import { CanvasCoordinates, spriteCoordinatesMap } from "../utils/spriteCoordinates";
-import { RESIZE_BY } from "../gameConsts";
-
-const MAX_EATERS = 3;
-const MAX_FOOD = 30;
+import { FOOD_MAX_EATERS, FOOD_MAX_METER, RESIZE_BY } from "../gameConfig";
 
 export interface FoodProps extends Coordinates {
   width: number;
@@ -53,7 +50,7 @@ export class Food {
     this.originalLeft = left;
     this.top = top * (height / this.originalHeight);
     this.left = left * (width / this.originalWidth);
-    this.foodMeter = foodMeter ?? MAX_FOOD;
+    this.foodMeter = foodMeter ?? FOOD_MAX_METER;
     this.id = id || generateId();
   }
 
@@ -94,7 +91,7 @@ export class Food {
   }
 
   public isAvailable() {
-    return this.animalsEating.length <= MAX_EATERS;
+    return this.animalsEating.length <= FOOD_MAX_EATERS;
   }
 
   public startEating(id: string) {

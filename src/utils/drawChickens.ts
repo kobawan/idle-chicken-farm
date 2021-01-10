@@ -4,8 +4,7 @@ import { ChickenBreed, ChickenItems, DrawProps } from "../types/types";
 import { getStorageKey, StorageKeys } from "./saveUtils/localStorage";
 import { getAvailableNames, generateName } from "./chickenNameUtils";
 import { SavedChickenState } from "./saveUtils/migrateSaves";
-
-const CHICKEN_REFRESH_RATE = 500;
+import { CHICKEN_REFRESH_RATE } from "../gameConfig";
 
 type DrawDynamicObjectsProps = ChickenItems &
   DrawProps & { animationIdRef: React.MutableRefObject<number> };

@@ -1,10 +1,8 @@
-import { RESIZE_BY } from "../gameConsts";
+import { RESIZE_BY, SCREEN_PADDING_PX } from "../gameConfig";
 import { spriteCoordinatesMap } from "./spriteCoordinates";
 
-const SCREEN_PADDING = 5; //px
-
 const getLeftEdge = ({ horizontalGap }: { horizontalGap: number }) => {
-  return SCREEN_PADDING + horizontalGap;
+  return SCREEN_PADDING_PX + horizontalGap;
 };
 
 const getRightEdge = ({
@@ -20,7 +18,7 @@ const getRightEdge = ({
 };
 
 const getTopEdge = ({ verticalGap }: { verticalGap: number }) => {
-  return SCREEN_PADDING + verticalGap;
+  return SCREEN_PADDING_PX + verticalGap;
 };
 
 const getBottomEdge = ({
@@ -40,7 +38,7 @@ const calculateFenceHorizontalGap = (width: number) => {
   const leftFenceWidth = sideLeft.width * RESIZE_BY;
   const rightFenceWidth = sideRight.width * RESIZE_BY;
   const topFenceWidth = top.width * RESIZE_BY;
-  const widthAvailable = width - SCREEN_PADDING * 2 - leftFenceWidth - rightFenceWidth;
+  const widthAvailable = width - SCREEN_PADDING_PX * 2 - leftFenceWidth - rightFenceWidth;
   const amountHorizontalFences = Math.floor(widthAvailable / topFenceWidth);
   const horizontalGap = (widthAvailable - amountHorizontalFences * topFenceWidth) / 2;
 
@@ -55,7 +53,7 @@ const calculateFenceVerticalGap = (height: number) => {
   const topFenceHeight = top.height * RESIZE_BY;
   const bottomFenceHeight = bottom.height * RESIZE_BY;
   const sideFenceHeight = sideLeft.height * RESIZE_BY;
-  const heightAvailable = height - SCREEN_PADDING * 2 - topFenceHeight - bottomFenceHeight;
+  const heightAvailable = height - SCREEN_PADDING_PX * 2 - topFenceHeight - bottomFenceHeight;
   const amountVerticalFences = Math.floor(heightAvailable / sideFenceHeight);
   const verticalGap = (heightAvailable - amountVerticalFences * sideFenceHeight) / 2;
 

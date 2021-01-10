@@ -7,7 +7,7 @@ import { HungerManager } from "./HungerManager";
 import { Logger } from "../../utils/Logger";
 import { spriteCoordinatesMap } from "../../utils/spriteCoordinates";
 import { SavedChickenState } from "../../utils/saveUtils/migrateSaves";
-import { RESIZE_BY } from "../../gameConsts";
+import { RESIZE_BY } from "../../gameConfig";
 
 export class Chicken {
   private currentAnimation = ChickenPose.default;

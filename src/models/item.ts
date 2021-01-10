@@ -1,7 +1,7 @@
 import { generateId } from "../utils/math";
 import { Coordinates } from "../types/types";
 import { CanvasCoordinates } from "../utils/spriteCoordinates";
-import { RESIZE_BY } from "../gameConsts";
+import { RESIZE_BY } from "../gameConfig";
 
 interface ItemProps extends Coordinates {
   sprite: HTMLImageElement;

@@ -3,8 +3,7 @@ import { Food } from "../models/food";
 import { getStorageKey, StorageKeys } from "./saveUtils/localStorage";
 import { FoodItems, DrawProps } from "../types/types";
 import { SavedFoodState } from "./saveUtils/migrateSaves";
-
-const FOOD_CANVAS_FRAME_THROTTLE = 30;
+import { FOOD_CANVAS_FRAME_THROTTLE } from "../gameConfig";
 
 type DrawFoodObjectsProps = FoodItems &
   DrawProps & {
