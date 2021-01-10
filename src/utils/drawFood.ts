@@ -23,6 +23,18 @@ export const getFood = (width: number, height: number, sprite: HTMLImageElement)
   });
 };
 
+const draw = ({
+  ctx,
+  food,
+  resizedHeight,
+  resizedWidth,
+}: Pick<DrawFoodObjectsProps, "food" | "resizedHeight" | "resizedWidth"> & {
+  ctx: CanvasRenderingContext2D;
+}) => {
+  ctx.clearRect(0, 0, resizedWidth, resizedHeight);
+  food.forEach((singleFood) => singleFood.update({ ctx, resizedWidth, resizedHeight }));
+};
+
 export const drawFoodObjects = ({
   canvasRef,
   resizedWidth,
@@ -42,19 +54,19 @@ export const drawFoodObjects = ({
   let frameCount = 0;
   ctx.imageSmoothingEnabled = false;
   window.cancelAnimationFrame(animationIdRef.current);
+
+  // to avoid interaction delays
+  draw({ ctx, food, resizedHeight, resizedWidth });
+
   const loop = () => {
     window.cancelAnimationFrame(animationIdRef.current);
     frameCount++;
 
-    if (!isDraggingFood && frameCount < FOOD_CANVAS_FRAME_THROTTLE) {
-      animationIdRef.current = window.requestAnimationFrame(loop);
-      return;
+    if (isDraggingFood || frameCount >= FOOD_CANVAS_FRAME_THROTTLE) {
+      frameCount = 0;
+
+      draw({ ctx, food, resizedHeight, resizedWidth });
     }
-    frameCount = 0;
-    ctx.clearRect(0, 0, resizedWidth, resizedHeight);
-
-    food.forEach((singleFood) => singleFood.update({ ctx, resizedWidth, resizedHeight }));
-
     animationIdRef.current = window.requestAnimationFrame(loop);
   };
 
