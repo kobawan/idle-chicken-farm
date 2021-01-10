@@ -1,6 +1,4 @@
-import React, { useEffect, memo, useReducer, useCallback, useState } from "react";
-import cx from "classnames";
-import styles from "./farm.module.scss";
+import React, { useEffect, memo, useReducer, useState } from "react";
 import spriteUrl from "../../assets/farm_sprite.png";
 import { useWindowDimensions } from "../../utils/useWindowDimensions";
 import { getChickens } from "../../utils/drawChickens";
@@ -8,16 +6,10 @@ import { getItems } from "../../utils/drawItems";
 import { getFood } from "../../utils/drawFood";
 import { farmReducer, initialFarmState } from "./reducer";
 import { setItemsAction, setChickensAction, setFoodAction } from "./actions";
-import { StaticCanvas } from "../StaticCanvas/StaticCanvas";
-import { Menu } from "../menu/Menu";
-import { ChickenCanvas } from "../chickenCanvas/ChickenCanvas";
-import { FoodCanvas } from "../foodCanvas/FoodCanvas";
-import { OnDetectTooltipCbProps, TooltipOverlay } from "../tooltipOverlay/TooltipOverlay";
-import { InteractionLayer } from "../interactionLayer/InteractionLayer";
-import { version } from "../../../package.json";
-import { handleChickenHover } from "./utils";
 import { loadImage } from "../../utils/loadImages";
 import { initSave } from "../../utils/migrateSaves";
+import { LoadingPage } from "../loadingPage/LoadingPage";
+import { GamePage } from "../gamePage/GamePage";
 
 export const Farm: React.FC = memo(() => {
   const { resizedWidth, resizedHeight } = useWindowDimensions();
@@ -27,10 +19,7 @@ export const Farm: React.FC = memo(() => {
   );
   const [sprite, setSprite] = useState<HTMLImageElement>();
   const [isLoading, setIsLoading] = useState(true);
-  const onDetectTooltipCb = useCallback(
-    (args: OnDetectTooltipCbProps) => handleChickenHover(chickens, args),
-    [chickens],
-  );
+  const [startFadingLoadingPage, setStartFadingLoadingPage] = useState(false);
 
   useEffect(() => {
     loadImage(spriteUrl)
@@ -54,6 +43,8 @@ export const Farm: React.FC = memo(() => {
     dispatch(setItemsAction(newItems));
     dispatch(setChickensAction(newChickens));
     dispatch(setFoodAction(newFood));
+
+    setStartFadingLoadingPage(true);
     setIsLoading(false);
   }, [resizedWidth, resizedHeight, sprite]);
 
@@ -61,46 +52,30 @@ export const Farm: React.FC = memo(() => {
    * Very important to not render canvases before init is done,
    * otherwise the saves are overritten with empty arrays
    */
-  if (isLoading) {
-    // TODO: display loading screen
-    return null;
-  }
-
   return (
-    <div className={cx(styles.wrapper, isFeeding && styles.feeding)}>
-      <InteractionLayer>
-        <div className={styles.bg} />
-        <StaticCanvas resizedWidth={resizedWidth} resizedHeight={resizedHeight} items={items} />
-        <FoodCanvas
-          resizedWidth={resizedWidth}
-          resizedHeight={resizedHeight}
-          food={food}
-          isDragging={isDragging}
-          isFeeding={isFeeding}
-          sprite={sprite as HTMLImageElement}
-          dispatch={dispatch}
+    <>
+      {(isLoading || startFadingLoadingPage) && (
+        <LoadingPage
+          shouldStartFading={startFadingLoadingPage}
+          stopFading={() => setStartFadingLoadingPage(false)}
         />
-        <ChickenCanvas
-          resizedWidth={resizedWidth}
-          resizedHeight={resizedHeight}
-          chickens={chickens}
+      )}
+      {!isLoading && (
+        <GamePage
+          {...{
+            isDragging,
+            isFeeding,
+            isInfoOpen,
+            items,
+            chickens,
+            food,
+            resizedHeight,
+            resizedWidth,
+            sprite: sprite as HTMLImageElement,
+            dispatch,
+          }}
         />
-        <TooltipOverlay onDetectTooltipCb={onDetectTooltipCb} />
-        <a
-          href="https://github.com/kobawan/idle-chicken-farm/blob/master/CHANGELOG.md"
-          target="_blank"
-          rel="noreferrer noopener"
-          className={styles.version}
-        >
-          {version}
-        </a>
-        <Menu
-          isInfoOpen={isInfoOpen}
-          isFeeding={isFeeding}
-          chickens={chickens}
-          dispatch={dispatch}
-        />
-      </InteractionLayer>
-    </div>
+      )}
+    </>
   );
 });

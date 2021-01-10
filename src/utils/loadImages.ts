@@ -6,3 +6,7 @@ export const loadImage = (url: string): Promise<HTMLImageElement> => {
     img.onerror = () => reject();
   });
 };
+
+export const loadMultipleImages = (urls: string[]): Promise<HTMLImageElement[]> => {
+  return Promise.all(urls.map((url) => loadImage(url)));
+};

@@ -22,7 +22,7 @@ export type AllFarmActions =
   | ToggleDraggingAction
   | ToggleInfoAction;
 
-interface FarmState extends FarmItems {
+export interface FarmState extends FarmItems {
   isFeeding: boolean;
   isDragging: boolean;
   isInfoOpen: boolean;

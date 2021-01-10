@@ -1,0 +1,31 @@
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(87, 107, 51);
+  background: linear-gradient(0deg, rgba(87, 107, 51, 1) 37%, rgba(228, 180, 73, 1) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  opacity: 1;
+  z-index: 9999;
+
+  h1 {
+    padding: 0;
+    width: 7.1rem;
+    color: #2e4201;
+    text-shadow: 1px 1px 3px #2e420191;
+  }
+
+  canvas {
+    filter: drop-shadow(1px 1px 3px #2e420191);
+  }
+}
+
+.startFading {
+  opacity: 0;
+  transition: opacity 1000ms ease-in;
+}
