@@ -11,33 +11,33 @@ type DrawFoodObjectsProps = FoodItems &
     isDraggingFood: boolean;
   };
 
-export const getFood = (width: number, height: number, sprite: HTMLImageElement) => {
+export const getFood = (canvasWidth: number, canvasHeight: number, sprite: HTMLImageElement) => {
   const savedFood = getStorageKey(StorageKeys.food) as null | SavedFoodState[];
   if (!savedFood) {
     return [];
   }
 
   return savedFood.map((food: SavedFoodState) => {
-    return new Food({ ...food, width, height, sprite });
+    return new Food({ ...food, canvasWidth, canvasHeight, sprite });
   });
 };
 
 const draw = ({
   ctx,
   food,
-  resizedHeight,
-  resizedWidth,
-}: Pick<DrawFoodObjectsProps, "food" | "resizedHeight" | "resizedWidth"> & {
+  canvasHeight,
+  canvasWidth,
+}: Pick<DrawFoodObjectsProps, "food" | "canvasHeight" | "canvasWidth"> & {
   ctx: CanvasRenderingContext2D;
 }) => {
-  ctx.clearRect(0, 0, resizedWidth, resizedHeight);
-  food.forEach((singleFood) => singleFood.update({ ctx, resizedWidth, resizedHeight }));
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+  food.forEach((singleFood) => singleFood.update({ ctx, canvasWidth, canvasHeight }));
 };
 
 export const drawFoodObjects = ({
   canvasRef,
-  resizedWidth,
-  resizedHeight,
+  canvasWidth,
+  canvasHeight,
   food,
   animationIdRef,
   isDraggingFood,
@@ -55,7 +55,7 @@ export const drawFoodObjects = ({
   window.cancelAnimationFrame(animationIdRef.current);
 
   // to avoid interaction delays
-  draw({ ctx, food, resizedHeight, resizedWidth });
+  draw({ ctx, food, canvasHeight, canvasWidth });
 
   const loop = () => {
     window.cancelAnimationFrame(animationIdRef.current);
@@ -64,7 +64,7 @@ export const drawFoodObjects = ({
     if (isDraggingFood || frameCount >= FOOD_CANVAS_FRAME_THROTTLE) {
       frameCount = 0;
 
-      draw({ ctx, food, resizedHeight, resizedWidth });
+      draw({ ctx, food, canvasHeight, canvasWidth });
     }
     animationIdRef.current = window.requestAnimationFrame(loop);
   };

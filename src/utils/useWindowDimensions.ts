@@ -25,7 +25,7 @@ export const useWindowDimensions = (resizeBy = 1) => {
   }, []);
 
   return {
-    resizedWidth: width / resizeBy,
-    resizedHeight: height / resizeBy,
+    canvasWidth: width / resizeBy,
+    canvasHeight: height / resizeBy,
   };
 };

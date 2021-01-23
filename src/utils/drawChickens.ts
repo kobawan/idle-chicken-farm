@@ -34,8 +34,8 @@ export const getChickens = (width: number, height: number, sprite: HTMLImageElem
 
 export const drawChickens = ({
   canvasRef,
-  resizedWidth,
-  resizedHeight,
+  canvasWidth,
+  canvasHeight,
   chickens,
   animationIdRef,
 }: DrawDynamicObjectsProps) => {
@@ -50,14 +50,14 @@ export const drawChickens = ({
   ctx.imageSmoothingEnabled = false;
   window.clearInterval(animationIdRef.current);
   animationIdRef.current = window.setInterval(() => {
-    ctx.clearRect(0, 0, resizedWidth, resizedHeight);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
     chickens.forEach((chicken) =>
       chicken.update({
         ctx,
         timestamp: performance.now(),
-        resizedWidth,
-        resizedHeight,
+        canvasWidth,
+        canvasHeight,
       }),
     );
   }, CHICKEN_REFRESH_RATE);

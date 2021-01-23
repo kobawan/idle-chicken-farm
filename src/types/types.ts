@@ -33,8 +33,8 @@ export type InteractEvent<E> = React.MouseEvent<E> | React.TouchEvent<E>;
 
 export interface DrawProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
-  resizedWidth: number;
-  resizedHeight: number;
+  canvasWidth: number;
+  canvasHeight: number;
 }
 
 export type Gender = "female" | "male";

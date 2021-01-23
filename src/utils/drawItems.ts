@@ -36,7 +36,7 @@ export const getItems = (width: number, height: number, sprite: HTMLImageElement
   });
 };
 
-export const drawItems = ({ canvasRef, items, resizedWidth, resizedHeight }: DrawItemsProps) => {
+export const drawItems = ({ canvasRef, items, canvasWidth, canvasHeight }: DrawItemsProps) => {
   if (!canvasRef.current) {
     return;
   }
@@ -46,7 +46,7 @@ export const drawItems = ({ canvasRef, items, resizedWidth, resizedHeight }: Dra
   }
 
   ctx.imageSmoothingEnabled = false;
-  ctx.clearRect(0, 0, resizedWidth, resizedHeight);
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-  items.forEach((item) => item.update({ ctx, resizedWidth, resizedHeight }));
+  items.forEach((item) => item.update({ ctx, canvasWidth, canvasHeight }));
 };

@@ -49,21 +49,21 @@ export class Item {
 
   public update({
     ctx,
-    resizedWidth,
-    resizedHeight,
+    canvasWidth,
+    canvasHeight,
   }: {
     ctx: CanvasRenderingContext2D;
-    resizedWidth: number;
-    resizedHeight: number;
+    canvasWidth: number;
+    canvasHeight: number;
   }) {
-    this.updateToResizedPosition(resizedWidth, resizedHeight);
+    this.updateToResizedPosition(canvasWidth, canvasHeight);
     this.draw(ctx);
   }
 
-  private updateToResizedPosition(resizedWidth: number, resizedHeight: number) {
-    if (resizedWidth !== this.width || resizedHeight !== this.height) {
-      this.left = this.originalLeft * (resizedWidth / this.width);
-      this.top = this.originalTop * (resizedHeight / this.height);
+  private updateToResizedPosition(canvasWidth: number, canvasHeight: number) {
+    if (canvasWidth !== this.width || canvasHeight !== this.height) {
+      this.left = this.originalLeft * (canvasWidth / this.width);
+      this.top = this.originalTop * (canvasHeight / this.height);
     }
   }
 

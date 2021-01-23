@@ -6,13 +6,13 @@ import { StorageKeys } from "../../utils/saveUtils/localStorage";
 import { saveItemsOnInterval } from "../../utils/saveUtils/save";
 
 interface ChickenCanvasProps extends ChickenItems {
-  resizedWidth: number;
-  resizedHeight: number;
+  canvasWidth: number;
+  canvasHeight: number;
 }
 
 export const ChickenCanvas: React.FC<ChickenCanvasProps> = ({
-  resizedWidth,
-  resizedHeight,
+  canvasWidth,
+  canvasHeight,
   chickens,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -21,23 +21,23 @@ export const ChickenCanvas: React.FC<ChickenCanvasProps> = ({
   useEffect(() => {
     drawChickens({
       canvasRef,
-      resizedWidth,
-      resizedHeight,
+      canvasWidth,
+      canvasHeight,
       animationIdRef,
       chickens,
     });
-  }, [resizedWidth, resizedHeight, animationIdRef, chickens]);
+  }, [canvasWidth, canvasHeight, animationIdRef, chickens]);
   useEffect(() => saveItemsOnInterval(StorageKeys.chickens, chickens), [
     chickens,
-    resizedHeight,
-    resizedWidth,
+    canvasHeight,
+    canvasWidth,
   ]);
 
   return (
     <canvas
       ref={canvasRef}
-      width={resizedWidth}
-      height={resizedHeight}
+      width={canvasWidth}
+      height={canvasHeight}
       className={styles.canvas}
     ></canvas>
   );

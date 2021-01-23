@@ -7,8 +7,8 @@ import { CanvasCoordinates, spriteCoordinatesMap } from "../utils/spriteCoordina
 import { FOOD_MAX_EATERS, FOOD_MAX_METER, RESIZE_BY } from "../gameConfig";
 
 export interface FoodProps extends Coordinates {
-  width: number;
-  height: number;
+  canvasWidth: number;
+  canvasHeight: number;
   originalWidth?: number;
   originalHeight?: number;
   sprite: HTMLImageElement;
@@ -19,8 +19,8 @@ export interface FoodProps extends Coordinates {
 export class Food {
   private originalWidth: number;
   private originalHeight: number;
-  private width: number;
-  private height: number;
+  private canvasWidth: number;
+  private canvasHeight: number;
   private sprite: HTMLImageElement;
   private foodMeter: number;
   private animalsEating: string[] = [];
@@ -36,34 +36,34 @@ export class Food {
     left,
     foodMeter,
     id,
-    width,
-    height,
+    canvasWidth,
+    canvasHeight,
     originalHeight,
     originalWidth,
   }: FoodProps) {
     this.sprite = sprite;
-    this.originalWidth = originalWidth || width;
-    this.originalHeight = originalHeight || height;
-    this.width = width;
-    this.height = height;
+    this.originalWidth = originalWidth || canvasWidth;
+    this.originalHeight = originalHeight || canvasHeight;
+    this.canvasWidth = canvasWidth;
+    this.canvasHeight = canvasHeight;
     this.originalTop = top;
     this.originalLeft = left;
-    this.top = top * (height / this.originalHeight);
-    this.left = left * (width / this.originalWidth);
+    this.top = top * (canvasHeight / this.originalHeight);
+    this.left = left * (canvasWidth / this.originalWidth);
     this.foodMeter = foodMeter ?? FOOD_MAX_METER;
     this.id = id || generateId();
   }
 
   public update({
     ctx,
-    resizedHeight,
-    resizedWidth,
+    canvasHeight,
+    canvasWidth,
   }: {
     ctx: CanvasRenderingContext2D;
-    resizedWidth: number;
-    resizedHeight: number;
+    canvasWidth: number;
+    canvasHeight: number;
   }) {
-    this.updateToResizedPosition(resizedWidth, resizedHeight);
+    this.updateToResizedPosition(canvasWidth, canvasHeight);
     this.draw(ctx);
   }
 
@@ -107,13 +107,13 @@ export class Food {
     }
   }
 
-  private updateToResizedPosition(resizedWidth: number, resizedHeight: number) {
-    if (resizedWidth !== this.width || resizedHeight !== this.height) {
-      this.left = this.originalLeft * (resizedWidth / this.originalWidth);
-      this.top = this.originalTop * (resizedHeight / this.originalHeight);
+  private updateToResizedPosition(canvasWidth: number, canvasHeight: number) {
+    if (canvasWidth !== this.canvasWidth || canvasHeight !== this.canvasHeight) {
+      this.left = this.originalLeft * (canvasWidth / this.originalWidth);
+      this.top = this.originalTop * (canvasHeight / this.originalHeight);
 
-      this.width = resizedWidth;
-      this.height = resizedHeight;
+      this.canvasWidth = canvasWidth;
+      this.canvasHeight = canvasHeight;
     }
   }
 

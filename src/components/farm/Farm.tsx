@@ -13,7 +13,7 @@ import { GamePage } from "../../pages/gamePage/GamePage";
 import { positionManager } from "../../models/PositionManager";
 
 export const Farm: React.FC = memo(() => {
-  const { resizedWidth, resizedHeight } = useWindowDimensions();
+  const { canvasWidth, canvasHeight } = useWindowDimensions();
   const [{ isDragging, isFeeding, isInfoOpen, items, chickens, food }, dispatch] = useReducer(
     farmReducer,
     initialFarmState,
@@ -25,7 +25,7 @@ export const Farm: React.FC = memo(() => {
   useEffect(() => {
     loadImage(spriteUrl)
       .then((img) => {
-        initSave(resizedWidth, resizedHeight, img);
+        initSave(canvasWidth, canvasHeight, img);
         setSprite(img);
       })
       .catch(() => {
@@ -38,20 +38,20 @@ export const Farm: React.FC = memo(() => {
     if (!sprite) {
       return;
     }
-    const newItems = getItems(resizedWidth, resizedHeight, sprite);
-    const newChickens = getChickens(resizedWidth, resizedHeight, sprite);
-    const newFood = getFood(resizedWidth, resizedHeight, sprite);
+    const newItems = getItems(canvasWidth, canvasHeight, sprite);
+    const newChickens = getChickens(canvasWidth, canvasHeight, sprite);
+    const newFood = getFood(canvasWidth, canvasHeight, sprite);
     dispatch(setItemsAction(newItems));
     dispatch(setChickensAction(newChickens));
     dispatch(setFoodAction(newFood));
 
     setStartFadingLoadingPage(true);
     setIsLoading(false);
-  }, [resizedWidth, resizedHeight, sprite]);
+  }, [canvasWidth, canvasHeight, sprite]);
 
   useEffect(() => {
-    positionManager.init({ canvasHeight: resizedHeight, canvasWidth: resizedWidth });
-  }, [resizedWidth, resizedHeight]);
+    positionManager.init({ canvasHeight: canvasHeight, canvasWidth });
+  }, [canvasWidth, canvasHeight]);
 
   /*
    * Very important to not render canvases before init is done,
@@ -74,8 +74,8 @@ export const Farm: React.FC = memo(() => {
             items,
             chickens,
             food,
-            resizedHeight,
-            resizedWidth,
+            canvasHeight,
+            canvasWidth,
             sprite: sprite as HTMLImageElement,
             dispatch,
           }}

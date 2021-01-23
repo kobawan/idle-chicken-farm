@@ -14,8 +14,8 @@ import { AllFarmActions, FarmState } from "../../components/farm/reducer";
 import { handleChickenHover } from "./utils";
 
 interface GamePageProps extends FarmState {
-  resizedWidth: number;
-  resizedHeight: number;
+  canvasWidth: number;
+  canvasHeight: number;
   sprite: HTMLImageElement;
   dispatch: React.Dispatch<AllFarmActions>;
 }
@@ -26,8 +26,8 @@ export const GamePage: React.FC<GamePageProps> = ({
   food,
   chickens,
   isInfoOpen,
-  resizedWidth,
-  resizedHeight,
+  canvasWidth,
+  canvasHeight,
   items,
   sprite,
   dispatch,
@@ -41,21 +41,17 @@ export const GamePage: React.FC<GamePageProps> = ({
     <div className={cx(styles.wrapper, isFeeding && styles.feeding)}>
       <InteractionLayer>
         <div className={styles.bg} />
-        <StaticCanvas resizedWidth={resizedWidth} resizedHeight={resizedHeight} items={items} />
+        <StaticCanvas canvasWidth={canvasWidth} canvasHeight={canvasHeight} items={items} />
         <FoodCanvas
-          resizedWidth={resizedWidth}
-          resizedHeight={resizedHeight}
+          canvasWidth={canvasWidth}
+          canvasHeight={canvasHeight}
           food={food}
           isDragging={isDragging}
           isFeeding={isFeeding}
           sprite={sprite}
           dispatch={dispatch}
         />
-        <ChickenCanvas
-          resizedWidth={resizedWidth}
-          resizedHeight={resizedHeight}
-          chickens={chickens}
-        />
+        <ChickenCanvas canvasWidth={canvasWidth} canvasHeight={canvasHeight} chickens={chickens} />
         <TooltipOverlay onDetectTooltipCb={onDetectTooltipCb} />
         <a
           href="https://github.com/kobawan/idle-chicken-farm/blob/master/CHANGELOG.md"

@@ -4,31 +4,27 @@ import { drawItems } from "../../utils/drawItems";
 import { StaticItems } from "../../types/types";
 
 interface StaticCanvasProps extends StaticItems {
-  resizedWidth: number;
-  resizedHeight: number;
+  canvasWidth: number;
+  canvasHeight: number;
 }
 
-export const StaticCanvas: React.FC<StaticCanvasProps> = ({
-  resizedWidth,
-  resizedHeight,
-  items,
-}) => {
+export const StaticCanvas: React.FC<StaticCanvasProps> = ({ canvasWidth, canvasHeight, items }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     drawItems({
       canvasRef,
-      resizedWidth,
-      resizedHeight,
+      canvasWidth,
+      canvasHeight,
       items,
     });
-  }, [resizedWidth, resizedHeight, items]);
+  }, [canvasWidth, canvasHeight, items]);
 
   return (
     <canvas
       ref={canvasRef}
-      width={resizedWidth}
-      height={resizedHeight}
+      width={canvasWidth}
+      height={canvasHeight}
       className={styles.canvas}
     ></canvas>
   );

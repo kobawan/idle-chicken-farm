@@ -82,24 +82,24 @@ export class PositionManager {
   }
 
   public updateToResizedPosition(
-    resizedWidth: number,
-    resizedHeight: number,
+    canvasWidth: number,
+    canvasHeight: number,
     spriteCoordinates: CanvasCoordinates,
   ) {
-    if (resizedWidth !== this.width || resizedHeight !== this.height) {
+    if (canvasWidth !== this.width || canvasHeight !== this.height) {
       const bounds = this.getGameBoundariesForChicken(spriteCoordinates);
       this.top = getValueWithinRange({
-        value: this.top * (resizedHeight / this.height),
+        value: this.top * (canvasHeight / this.height),
         min: bounds.top,
         max: bounds.bottom,
       });
       this.left = getValueWithinRange({
-        value: this.left * (resizedWidth / this.width),
+        value: this.left * (canvasWidth / this.width),
         min: bounds.left,
         max: bounds.right,
       });
-      this.width = resizedWidth;
-      this.height = resizedHeight;
+      this.width = canvasWidth;
+      this.height = canvasHeight;
     }
   }
 

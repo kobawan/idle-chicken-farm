@@ -21,8 +21,8 @@ import { positionManager } from "../../models/PositionManager";
 import { spriteCoordinatesMap } from "../../utils/spriteCoordinates";
 
 interface FoodCanvasProps extends FoodItems {
-  resizedWidth: number;
-  resizedHeight: number;
+  canvasWidth: number;
+  canvasHeight: number;
   isDragging: boolean;
   isFeeding: boolean;
   sprite: HTMLImageElement;
@@ -35,8 +35,8 @@ const throtteFoodDrop = throttle(
     left,
     top,
     addFood,
-    width,
-    height,
+    canvasWidth,
+    canvasHeight,
   }: FoodProps & { addFood: (food: Food) => void }) => {
     const foodDimensions = spriteCoordinatesMap.food.medium;
     if (
@@ -54,8 +54,8 @@ const throtteFoodDrop = throttle(
       sprite,
       top,
       left,
-      width,
-      height,
+      canvasWidth,
+      canvasHeight,
     });
     addFood(food);
   },
@@ -64,8 +64,8 @@ const throtteFoodDrop = throttle(
 );
 
 export const FoodCanvas: React.FC<FoodCanvasProps> = ({
-  resizedWidth,
-  resizedHeight,
+  canvasWidth,
+  canvasHeight,
   food,
   isDragging,
   isFeeding,
@@ -124,11 +124,11 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
         ...pos,
         sprite,
         addFood,
-        width: resizedWidth,
-        height: resizedHeight,
+        canvasWidth: canvasWidth,
+        canvasHeight: canvasHeight,
       });
     },
-    [isDraggingFood, resizedHeight, resizedWidth, sprite, addFood],
+    [isDraggingFood, canvasHeight, canvasWidth, sprite, addFood],
   );
 
   const onDragFinished = useCallback(
@@ -142,14 +142,14 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
   useEffect(() => {
     drawFoodObjects({
       canvasRef,
-      resizedWidth,
-      resizedHeight,
+      canvasWidth,
+      canvasHeight,
       animationIdRef,
       food,
       isDraggingFood,
     });
-  }, [resizedWidth, resizedHeight, food, isDraggingFood, animationIdRef]);
-  useEffect(() => saveItemsOnInterval(StorageKeys.food, food), [food, resizedHeight, resizedWidth]);
+  }, [canvasWidth, canvasHeight, food, isDraggingFood, animationIdRef]);
+  useEffect(() => saveItemsOnInterval(StorageKeys.food, food), [food, canvasHeight, canvasWidth]);
   useEffect(() => {
     const stopFeedingOnEsc = (e: KeyboardEvent) => {
       if (e.code === "Escape" && isFeeding) {
@@ -172,8 +172,8 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      width={resizedWidth}
-      height={resizedHeight}
+      width={canvasWidth}
+      height={canvasHeight}
       className={styles.canvas}
     ></canvas>
   );

@@ -62,20 +62,20 @@ export class Chicken {
   public update({
     ctx,
     timestamp,
-    resizedHeight,
-    resizedWidth,
+    canvasHeight,
+    canvasWidth,
   }: {
     ctx: CanvasRenderingContext2D;
     timestamp: number;
-    resizedWidth: number;
-    resizedHeight: number;
+    canvasWidth: number;
+    canvasHeight: number;
   }) {
     this.fps = 1000 / (timestamp - this.timestamp);
     this.timestamp = timestamp;
 
     this.PositionManager.updateToResizedPosition(
-      resizedWidth,
-      resizedHeight,
+      canvasWidth,
+      canvasHeight,
       this.getSpriteCoordinates(),
     );
     this.HungerManager.updateHungerMeter(this.timestamp);
