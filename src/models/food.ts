@@ -91,7 +91,7 @@ export class Food {
   }
 
   public isAvailable() {
-    return this.animalsEating.length <= FOOD_MAX_EATERS;
+    return this.animalsEating.length <= FOOD_MAX_EATERS && !this.hasFinished();
   }
 
   public startEating(id: string) {

@@ -5,7 +5,7 @@ import { drawFoodObjects } from "../../utils/drawFood";
 import { InteractEvent, FoodItems, Coordinates } from "../../types/types";
 import { StorageKeys } from "../../utils/saveUtils/localStorage";
 import { saveItemsOnInterval } from "../../utils/saveUtils/save";
-import { isTouchEvent, getInteractionPos } from "../../utils/devices";
+import { isTouchEvent, getInteractionPos, isMultiFingerTouchEvent } from "../../utils/devices";
 import { Food, FoodProps } from "../../models/food";
 import { EventName } from "../../utils/eventUtils/events";
 import { AllFarmActions } from "../farm/reducer";
@@ -16,9 +16,9 @@ import {
   toggleFeedingAction,
 } from "../farm/actions";
 import { useEventEffect } from "../../utils/eventUtils/useEventEffect";
-import { getClosest, getDistance } from "../../utils/distance";
 import { CustomEventEmitter } from "../../utils/eventUtils/EventEmitter";
-import { FOOD_MAX_DISTANCE_PX } from "../../gameConfig";
+import { positionManager } from "../../models/PositionManager";
+import { spriteCoordinatesMap } from "../../utils/spriteCoordinates";
 
 interface FoodCanvasProps extends FoodItems {
   resizedWidth: number;
@@ -29,19 +29,6 @@ interface FoodCanvasProps extends FoodItems {
   dispatch: React.Dispatch<AllFarmActions>;
 }
 
-const getClosestFood = (coord: Coordinates, food: Food[]) => {
-  const allAvailableFood = food.filter(
-    (item) => item.isAvailable() && getDistance(coord, item) < FOOD_MAX_DISTANCE_PX,
-  );
-  if (!allAvailableFood.length) {
-    return undefined;
-  }
-  return getClosest({
-    items: allAvailableFood,
-    ...coord,
-  });
-};
-
 const throtteFoodDrop = throttle(
   ({
     sprite,
@@ -51,6 +38,18 @@ const throtteFoodDrop = throttle(
     width,
     height,
   }: FoodProps & { addFood: (food: Food) => void }) => {
+    const foodDimensions = spriteCoordinatesMap.food.medium;
+    if (
+      !positionManager.canGoToZone({
+        left,
+        top,
+        width: foodDimensions.width,
+        height: foodDimensions.height,
+      })
+    ) {
+      return;
+    }
+
     const food = new Food({
       sprite,
       top,
@@ -79,7 +78,7 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
 
   const requestFood = useCallback(
     ({ position, id }: { position: Coordinates; id: string }) => {
-      const closestFood = getClosestFood(position, food);
+      const closestFood = positionManager.getClosestFood(position, food);
 
       if (closestFood) {
         CustomEventEmitter.emit(EventName.FoundRequestedFood, {
@@ -93,6 +92,7 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
     [food],
   );
   const removeFood = useCallback((id: string) => dispatch(removeFoodAction(id)), [dispatch]);
+  const addFood = useCallback((food: Food) => dispatch(addFoodAction(food)), [dispatch]);
 
   const toggleFoodDragging = useCallback(
     (e: InteractEvent<HTMLCanvasElement>) => {
@@ -108,14 +108,11 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
 
   const dropFood = useCallback(
     (e: InteractEvent<HTMLCanvasElement>) => {
-      if (!isDraggingFood) {
+      if (!isDraggingFood || isMultiFingerTouchEvent(e)) {
         return;
       }
 
       const pos = getInteractionPos(e);
-      if (!pos) {
-        return;
-      }
 
       e.persist();
       e.stopPropagation();
@@ -126,12 +123,12 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
       throtteFoodDrop({
         ...pos,
         sprite,
-        addFood: (food: Food) => dispatch(addFoodAction(food)),
+        addFood,
         width: resizedWidth,
         height: resizedHeight,
       });
     },
-    [isDraggingFood, resizedHeight, resizedWidth, dispatch, sprite],
+    [isDraggingFood, resizedHeight, resizedWidth, sprite, addFood],
   );
 
   const onDragFinished = useCallback(

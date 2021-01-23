@@ -11,7 +11,7 @@ import {
   TooltipOverlay,
 } from "../../components/tooltipOverlay/TooltipOverlay";
 import { AllFarmActions, FarmState } from "../../components/farm/reducer";
-import { handleChickenHover } from "../../components/farm/utils";
+import { handleChickenHover } from "./utils";
 
 interface GamePageProps extends FarmState {
   resizedWidth: number;

@@ -117,7 +117,7 @@ export class HungerManager {
   }
 
   public hasAvailableFood() {
-    return !!this.food && this.food.isAvailable() && !this.food.hasFinished();
+    return !!this.food && this.food.isAvailable();
   }
 
   public searchForFood(position: Coordinates) {

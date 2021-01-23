@@ -1,5 +1,5 @@
 import { Chicken } from "../../models/chicken/chicken";
-import { OnDetectTooltipCbProps } from "../tooltipOverlay/TooltipOverlay";
+import { OnDetectTooltipCbProps } from "../../components/tooltipOverlay/TooltipOverlay";
 
 export const handleChickenHover = (
   chickens: Chicken[],

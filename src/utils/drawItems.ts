@@ -6,7 +6,7 @@ import { spriteCoordinatesMap } from "./spriteCoordinates";
 
 type DrawItemsProps = StaticItems & DrawProps;
 
-const getCoopProps = (width: number, height: number) => {
+export const getCoopProps = (width: number, height: number) => {
   return {
     top: height * 0.2,
     left: width * 0.2,
@@ -14,7 +14,7 @@ const getCoopProps = (width: number, height: number) => {
   };
 };
 
-const getTroughProps = (width: number, height: number) => {
+export const getTroughProps = (width: number, height: number) => {
   return {
     top: height * 0.2,
     left: width * 0.2,

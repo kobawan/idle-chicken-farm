@@ -1,3 +1,7 @@
+export const isInRange = ({ min, max, value }: { min: number; max: number; value: number }) => {
+  return value >= min && value <= max;
+};
+
 export const getValueWithinRange = ({
   min,
   max,

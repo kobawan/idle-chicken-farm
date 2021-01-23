@@ -10,6 +10,7 @@ import { loadImage } from "../../utils/loadImages";
 import { initSave } from "../../utils/saveUtils/migrateSaves";
 import { LoadingPage } from "../../pages/loadingPage/LoadingPage";
 import { GamePage } from "../../pages/gamePage/GamePage";
+import { positionManager } from "../../models/PositionManager";
 
 export const Farm: React.FC = memo(() => {
   const { resizedWidth, resizedHeight } = useWindowDimensions();
@@ -47,6 +48,10 @@ export const Farm: React.FC = memo(() => {
     setStartFadingLoadingPage(true);
     setIsLoading(false);
   }, [resizedWidth, resizedHeight, sprite]);
+
+  useEffect(() => {
+    positionManager.init({ canvasHeight: resizedHeight, canvasWidth: resizedWidth });
+  }, [resizedWidth, resizedHeight]);
 
   /*
    * Very important to not render canvases before init is done,
