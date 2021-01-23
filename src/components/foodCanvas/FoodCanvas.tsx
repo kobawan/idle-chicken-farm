@@ -4,7 +4,7 @@ import styles from "./foodCanvas.module.scss";
 import { drawFoodObjects } from "../../utils/drawFood";
 import { InteractEvent, FoodItems, Coordinates } from "../../types/types";
 import { StorageKeys } from "../../utils/saveUtils/localStorage";
-import { saveItemsOnInterval } from "../../utils/saveUtils/save";
+import { useAutoSaveEffect } from "../../utils/saveUtils/save";
 import { isTouchEvent, getInteractionPos, isMultiFingerTouchEvent } from "../../utils/devices";
 import { Food, FoodProps } from "../../models/food";
 import { EventName } from "../../utils/eventUtils/events";
@@ -124,8 +124,8 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
         ...pos,
         sprite,
         addFood,
-        canvasWidth: canvasWidth,
-        canvasHeight: canvasHeight,
+        canvasWidth,
+        canvasHeight,
       });
     },
     [isDraggingFood, canvasHeight, canvasWidth, sprite, addFood],
@@ -149,7 +149,12 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
       isDraggingFood,
     });
   }, [canvasWidth, canvasHeight, food, isDraggingFood, animationIdRef]);
-  useEffect(() => saveItemsOnInterval(StorageKeys.food, food), [food, canvasHeight, canvasWidth]);
+  useAutoSaveEffect({
+    storageKey: StorageKeys.food,
+    items: food,
+    canvasWidth,
+    canvasHeight,
+  });
   useEffect(() => {
     const stopFeedingOnEsc = (e: KeyboardEvent) => {
       if (e.code === "Escape" && isFeeding) {

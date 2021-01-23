@@ -31,9 +31,7 @@ export const getItems = (width: number, height: number, sprite: HTMLImageElement
     ...getWholeFenceProps(width, height),
   ];
 
-  return items.map((props) => {
-    return new Item({ ...props, width, height, sprite });
-  });
+  return items.map((props) => new Item({ ...props, sprite }));
 };
 
 export const drawItems = ({ canvasRef, items, canvasWidth, canvasHeight }: DrawItemsProps) => {
@@ -48,5 +46,5 @@ export const drawItems = ({ canvasRef, items, canvasWidth, canvasHeight }: DrawI
   ctx.imageSmoothingEnabled = false;
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-  items.forEach((item) => item.update({ ctx, canvasWidth, canvasHeight }));
+  items.forEach((item) => item.update({ ctx }));
 };

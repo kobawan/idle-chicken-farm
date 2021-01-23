@@ -3,15 +3,13 @@ import { Gender, ChickenBreed } from "../../types/types";
 export interface ChickenProps {
   name: string;
   gender: Gender;
-  width: number;
-  height: number;
+  canvasWidth: number;
+  canvasHeight: number;
   sprite: HTMLImageElement;
-  originalWidth?: number;
-  originalHeight?: number;
   id?: string;
   breed: ChickenBreed;
-  top?: number;
-  left?: number;
+  topRatio?: number;
+  leftRatio?: number;
   hungerMeter?: number;
 }
 

@@ -26,13 +26,11 @@ export class Chicken {
 
   constructor({
     id,
-    width,
-    height,
-    originalWidth,
-    originalHeight,
+    canvasWidth,
+    canvasHeight,
     breed,
-    top,
-    left,
+    topRatio,
+    leftRatio,
     hungerMeter,
     name,
     gender,
@@ -46,12 +44,10 @@ export class Chicken {
 
     this.RestingManager = new RestingManager();
     this.PositionManager = new PositionManager({
-      width,
-      height,
-      originalWidth,
-      originalHeight,
-      top,
-      left,
+      canvasWidth,
+      canvasHeight,
+      topRatio,
+      leftRatio,
       spriteCoordinates: this.getSpriteCoordinates(),
     });
     this.HungerManager = new HungerManager({ hungerMeter, id: this.id });
@@ -59,25 +55,10 @@ export class Chicken {
     this.logger = new Logger("Chicken Logger", this.id);
   }
 
-  public update({
-    ctx,
-    timestamp,
-    canvasHeight,
-    canvasWidth,
-  }: {
-    ctx: CanvasRenderingContext2D;
-    timestamp: number;
-    canvasWidth: number;
-    canvasHeight: number;
-  }) {
+  public update({ ctx, timestamp }: { ctx: CanvasRenderingContext2D; timestamp: number }) {
     this.fps = 1000 / (timestamp - this.timestamp);
     this.timestamp = timestamp;
 
-    this.PositionManager.updateToResizedPosition(
-      canvasWidth,
-      canvasHeight,
-      this.getSpriteCoordinates(),
-    );
     this.HungerManager.updateHungerMeter(this.timestamp);
 
     this.updateBehaviour();

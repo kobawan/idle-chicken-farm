@@ -1,6 +1,6 @@
 import React, { useEffect, memo, useReducer, useState } from "react";
 import spriteUrl from "../../assets/farm_sprite.png";
-import { useWindowDimensions } from "../../utils/useWindowDimensions";
+import { useWindowDimensionsEffect } from "../../utils/useWindowDimensions";
 import { getChickens } from "../../utils/drawChickens";
 import { getItems } from "../../utils/drawItems";
 import { getFood } from "../../utils/drawFood";
@@ -13,7 +13,7 @@ import { GamePage } from "../../pages/gamePage/GamePage";
 import { positionManager } from "../../models/PositionManager";
 
 export const Farm: React.FC = memo(() => {
-  const { canvasWidth, canvasHeight } = useWindowDimensions();
+  const { canvasWidth, canvasHeight } = useWindowDimensionsEffect();
   const [{ isDragging, isFeeding, isInfoOpen, items, chickens, food }, dispatch] = useReducer(
     farmReducer,
     initialFarmState,

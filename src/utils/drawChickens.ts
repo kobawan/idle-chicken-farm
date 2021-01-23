@@ -9,14 +9,18 @@ import { CHICKEN_REFRESH_RATE } from "../gameConfig";
 type DrawDynamicObjectsProps = ChickenItems &
   DrawProps & { animationIdRef: React.MutableRefObject<number> };
 
-export const getChickens = (width: number, height: number, sprite: HTMLImageElement) => {
+export const getChickens = (
+  canvasWidth: number,
+  canvasHeight: number,
+  sprite: HTMLImageElement,
+) => {
   const savedChickens = getStorageKey(StorageKeys.chickens) as null | SavedChickenState[];
   if (!savedChickens) {
     return Object.values(ChickenBreed).reduce<Chicken[]>((chickens, breed, index) => {
       const gender = index === 0 ? "male" : "female";
       const chicken = new Chicken({
-        width,
-        height,
+        canvasWidth,
+        canvasHeight,
         breed,
         gender,
         name: generateName(gender, getAvailableNames(chickens)),
@@ -28,7 +32,7 @@ export const getChickens = (width: number, height: number, sprite: HTMLImageElem
   }
 
   return savedChickens.map((props: SavedChickenState) => {
-    return new Chicken({ width, height, sprite, ...props });
+    return new Chicken({ canvasWidth, canvasHeight, sprite, ...props });
   });
 };
 
@@ -56,8 +60,6 @@ export const drawChickens = ({
       chicken.update({
         ctx,
         timestamp: performance.now(),
-        canvasWidth,
-        canvasHeight,
       }),
     );
   }, CHICKEN_REFRESH_RATE);

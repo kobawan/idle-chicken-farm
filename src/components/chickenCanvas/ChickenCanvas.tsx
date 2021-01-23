@@ -3,7 +3,7 @@ import styles from "./chickenCanvas.module.scss";
 import { ChickenItems } from "../../types/types";
 import { drawChickens } from "../../utils/drawChickens";
 import { StorageKeys } from "../../utils/saveUtils/localStorage";
-import { saveItemsOnInterval } from "../../utils/saveUtils/save";
+import { useAutoSaveEffect } from "../../utils/saveUtils/save";
 
 interface ChickenCanvasProps extends ChickenItems {
   canvasWidth: number;
@@ -27,11 +27,13 @@ export const ChickenCanvas: React.FC<ChickenCanvasProps> = ({
       chickens,
     });
   }, [canvasWidth, canvasHeight, animationIdRef, chickens]);
-  useEffect(() => saveItemsOnInterval(StorageKeys.chickens, chickens), [
-    chickens,
-    canvasHeight,
+
+  useAutoSaveEffect({
+    storageKey: StorageKeys.chickens,
+    items: chickens,
     canvasWidth,
-  ]);
+    canvasHeight,
+  });
 
   return (
     <canvas

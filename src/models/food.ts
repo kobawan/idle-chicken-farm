@@ -9,72 +9,41 @@ import { FOOD_MAX_EATERS, FOOD_MAX_METER, RESIZE_BY } from "../gameConfig";
 export interface FoodProps extends Coordinates {
   canvasWidth: number;
   canvasHeight: number;
-  originalWidth?: number;
-  originalHeight?: number;
   sprite: HTMLImageElement;
   id?: string;
   foodMeter?: number;
 }
 
 export class Food {
-  private originalWidth: number;
-  private originalHeight: number;
   private canvasWidth: number;
   private canvasHeight: number;
   private sprite: HTMLImageElement;
   private foodMeter: number;
   private animalsEating: string[] = [];
-  private originalTop: number;
-  private originalLeft: number;
   public top: number;
   public left: number;
   public id: string;
 
-  constructor({
-    sprite,
-    top,
-    left,
-    foodMeter,
-    id,
-    canvasWidth,
-    canvasHeight,
-    originalHeight,
-    originalWidth,
-  }: FoodProps) {
+  constructor({ sprite, foodMeter, id, canvasWidth, canvasHeight, left, top }: FoodProps) {
     this.sprite = sprite;
-    this.originalWidth = originalWidth || canvasWidth;
-    this.originalHeight = originalHeight || canvasHeight;
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
-    this.originalTop = top;
-    this.originalLeft = left;
-    this.top = top * (canvasHeight / this.originalHeight);
-    this.left = left * (canvasWidth / this.originalWidth);
+    this.top = top;
+    this.left = left;
     this.foodMeter = foodMeter ?? FOOD_MAX_METER;
     this.id = id || generateId();
   }
 
-  public update({
-    ctx,
-    canvasHeight,
-    canvasWidth,
-  }: {
-    ctx: CanvasRenderingContext2D;
-    canvasWidth: number;
-    canvasHeight: number;
-  }) {
-    this.updateToResizedPosition(canvasWidth, canvasHeight);
+  public update({ ctx }: { ctx: CanvasRenderingContext2D }) {
     this.draw(ctx);
   }
 
   public getSavingState(): SavedFoodState {
     return {
-      top: this.originalTop,
-      left: this.originalLeft,
+      topRatio: this.top / this.canvasHeight,
+      leftRatio: this.left / this.canvasWidth,
       foodMeter: this.foodMeter,
       id: this.id,
-      originalHeight: this.originalHeight,
-      originalWidth: this.originalWidth,
     };
   }
 
@@ -104,16 +73,6 @@ export class Food {
     const i = this.animalsEating.indexOf(id);
     if (i !== -1) {
       this.animalsEating.splice(i, 1);
-    }
-  }
-
-  private updateToResizedPosition(canvasWidth: number, canvasHeight: number) {
-    if (canvasWidth !== this.canvasWidth || canvasHeight !== this.canvasHeight) {
-      this.left = this.originalLeft * (canvasWidth / this.originalWidth);
-      this.top = this.originalTop * (canvasHeight / this.originalHeight);
-
-      this.canvasWidth = canvasWidth;
-      this.canvasHeight = canvasHeight;
     }
   }
 

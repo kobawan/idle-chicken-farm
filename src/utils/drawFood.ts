@@ -17,8 +17,15 @@ export const getFood = (canvasWidth: number, canvasHeight: number, sprite: HTMLI
     return [];
   }
 
-  return savedFood.map((food: SavedFoodState) => {
-    return new Food({ ...food, canvasWidth, canvasHeight, sprite });
+  return savedFood.map(({ topRatio, leftRatio, ...props }: SavedFoodState) => {
+    return new Food({
+      ...props,
+      left: leftRatio * canvasWidth,
+      top: topRatio * canvasHeight,
+      canvasWidth,
+      canvasHeight,
+      sprite,
+    });
   });
 };
 
@@ -31,7 +38,7 @@ const draw = ({
   ctx: CanvasRenderingContext2D;
 }) => {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-  food.forEach((singleFood) => singleFood.update({ ctx, canvasWidth, canvasHeight }));
+  food.forEach((singleFood) => singleFood.update({ ctx }));
 };
 
 export const drawFoodObjects = ({

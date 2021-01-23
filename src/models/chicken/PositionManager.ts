@@ -3,14 +3,10 @@ import { Coordinates } from "../../types/types";
 import { getFenceBoundaries } from "../../utils/fenceUtils";
 import { getValueWithinRange } from "../../utils/math";
 import { CanvasCoordinates } from "../../utils/spriteCoordinates";
+import { ChickenProps } from "./types";
 
-interface PositionManagerProps {
-  width: number;
-  height: number;
-  originalWidth?: number;
-  originalHeight?: number;
-  top?: number;
-  left?: number;
+interface PositionManagerProps
+  extends Pick<ChickenProps, "canvasWidth" | "canvasHeight" | "topRatio" | "leftRatio"> {
   spriteCoordinates: CanvasCoordinates;
 }
 
@@ -19,41 +15,37 @@ const setRandomPosition = (totalSize: number, imageSize: number) => {
 };
 
 export class PositionManager {
-  private width: number;
-  private height: number;
-  private originalWidth: number;
-  private originalHeight: number;
-  private widthChangeRatio: number;
-  private heightChangeRatio: number;
+  private canvasWidth: number;
+  private canvasHeight: number;
   private top: number;
   private left: number;
 
   constructor({
-    width,
-    height,
-    originalHeight,
-    originalWidth,
-    top,
-    left,
+    canvasWidth,
+    canvasHeight,
+    topRatio,
+    leftRatio,
     spriteCoordinates,
   }: PositionManagerProps) {
-    this.width = width;
-    this.height = height;
-    this.originalWidth = originalWidth || this.width;
-    this.originalHeight = originalHeight || this.height;
-    this.heightChangeRatio = height / this.originalHeight;
-    this.widthChangeRatio = width / this.originalWidth;
+    this.canvasWidth = canvasWidth;
+    this.canvasHeight = canvasHeight;
 
-    const originalTop = top || setRandomPosition(this.height, spriteCoordinates.height);
-    const originalLeft = left || setRandomPosition(this.width, spriteCoordinates.width);
+    const top = topRatio
+      ? topRatio * this.canvasHeight
+      : setRandomPosition(this.canvasHeight, spriteCoordinates.height);
+    const left = leftRatio
+      ? leftRatio * this.canvasWidth
+      : setRandomPosition(this.canvasWidth, spriteCoordinates.width);
+
     const bounds = this.getGameBoundariesForChicken(spriteCoordinates);
+
     this.top = getValueWithinRange({
-      value: originalTop * this.heightChangeRatio,
+      value: top,
       min: bounds.top,
       max: bounds.bottom,
     });
     this.left = getValueWithinRange({
-      value: originalLeft * this.widthChangeRatio,
+      value: left,
       min: bounds.left,
       max: bounds.right,
     });
@@ -74,33 +66,9 @@ export class PositionManager {
 
   public getSavingState() {
     return {
-      left: this.left / this.widthChangeRatio,
-      top: this.top / this.heightChangeRatio,
-      originalHeight: this.originalHeight,
-      originalWidth: this.originalWidth,
+      leftRatio: this.left / this.canvasWidth,
+      topRatio: this.top / this.canvasHeight,
     };
-  }
-
-  public updateToResizedPosition(
-    canvasWidth: number,
-    canvasHeight: number,
-    spriteCoordinates: CanvasCoordinates,
-  ) {
-    if (canvasWidth !== this.width || canvasHeight !== this.height) {
-      const bounds = this.getGameBoundariesForChicken(spriteCoordinates);
-      this.top = getValueWithinRange({
-        value: this.top * (canvasHeight / this.height),
-        min: bounds.top,
-        max: bounds.bottom,
-      });
-      this.left = getValueWithinRange({
-        value: this.left * (canvasWidth / this.width),
-        min: bounds.left,
-        max: bounds.right,
-      });
-      this.width = canvasWidth;
-      this.height = canvasHeight;
-    }
   }
 
   public goToCoordinates(dx: number, dy: number, spriteCoordinates: CanvasCoordinates) {
@@ -125,7 +93,7 @@ export class PositionManager {
   }
 
   private getGameBoundariesForChicken(spriteCoordinates: CanvasCoordinates) {
-    const bounds = getFenceBoundaries(this.width, this.height);
+    const bounds = getFenceBoundaries(this.canvasWidth, this.canvasHeight);
 
     return {
       left: bounds.left,
