@@ -1,4 +1,4 @@
-import React, { useCallback, version } from "react";
+import React, { useCallback } from "react";
 import cx from "classnames";
 import styles from "./gamePage.module.scss";
 import { ChickenCanvas } from "../../components/chickenCanvas/ChickenCanvas";
@@ -13,6 +13,7 @@ import {
 import { AllFarmActions, FarmState } from "../../components/farm/reducer";
 import { handleChickenHover } from "./utils";
 import { ZoneDebugger } from "../../components/zoneDebugger/ZoneDebugger";
+import { version } from "../../../package.json";
 
 interface GamePageProps extends FarmState {
   canvasWidth: number;
