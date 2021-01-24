@@ -1,18 +1,10 @@
 import { CHICKEN_MOVEMENT_PX, RESIZE_BY } from "../../gameConfig";
 import { Coordinates } from "../../types/types";
-import { getFenceBoundaries } from "../../utils/fenceUtils";
-import { getValueWithinRange } from "../../utils/math";
 import { CanvasCoordinates } from "../../utils/spriteCoordinates";
+import { globalPositionManager } from "../globalPositionManager";
 import { ChickenProps } from "./types";
 
-interface PositionManagerProps
-  extends Pick<ChickenProps, "canvasWidth" | "canvasHeight" | "topRatio" | "leftRatio"> {
-  spriteCoordinates: CanvasCoordinates;
-}
-
-const setRandomPosition = (totalSize: number, imageSize: number) => {
-  return Math.round(Math.random() * (totalSize - imageSize));
-};
+type PositionManagerProps = Pick<ChickenProps, "canvasWidth" | "canvasHeight" | "top" | "left">;
 
 export class PositionManager {
   private canvasWidth: number;
@@ -20,35 +12,14 @@ export class PositionManager {
   private top: number;
   private left: number;
 
-  constructor({
-    canvasWidth,
-    canvasHeight,
-    topRatio,
-    leftRatio,
-    spriteCoordinates,
-  }: PositionManagerProps) {
+  constructor({ canvasWidth, canvasHeight, top, left }: PositionManagerProps) {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
 
-    const top = topRatio
-      ? topRatio * this.canvasHeight
-      : setRandomPosition(this.canvasHeight, spriteCoordinates.height);
-    const left = leftRatio
-      ? leftRatio * this.canvasWidth
-      : setRandomPosition(this.canvasWidth, spriteCoordinates.width);
+    const boundedPos = globalPositionManager.getPositionWithinBounds({ top, left });
 
-    const bounds = this.getGameBoundariesForChicken(spriteCoordinates);
-
-    this.top = getValueWithinRange({
-      value: top,
-      min: bounds.top,
-      max: bounds.bottom,
-    });
-    this.left = getValueWithinRange({
-      value: left,
-      min: bounds.left,
-      max: bounds.right,
-    });
+    this.top = boundedPos.top;
+    this.left = boundedPos.left;
   }
 
   public getPosition(): Coordinates {
@@ -71,35 +42,40 @@ export class PositionManager {
     };
   }
 
-  public goToCoordinates(dx: number, dy: number, spriteCoordinates: CanvasCoordinates) {
-    const bounds = this.getGameBoundariesForChicken(spriteCoordinates);
+  public walkTowardsDirection(dx: number, dy: number) {
+    const { left, top } = this.getNewPosition(dx, dy);
 
-    this.top =
-      dy > 0
-        ? Math.min(this.top + CHICKEN_MOVEMENT_PX, bounds.bottom)
-        : Math.max(this.top - CHICKEN_MOVEMENT_PX, bounds.top);
+    const canGoToZone = globalPositionManager.canGoToZone({ left, top });
 
-    this.left =
-      dx > 0
-        ? Math.min(this.left + CHICKEN_MOVEMENT_PX, bounds.right)
-        : Math.max(this.left - CHICKEN_MOVEMENT_PX, bounds.left);
+    // TODO: go around obstacle instead of throwing error
+    if (!canGoToZone) {
+      return;
+    }
+
+    this.top = top;
+    this.left = left;
   }
 
-  public walkRandomly(spriteCoordinates: CanvasCoordinates) {
+  public walkRandomly() {
+    // TODO: first check which directions are available
     const dx = Math.round(Math.random());
     const dy = Math.round(Math.random());
+    const { left, top } = this.getNewPosition(dx, dy);
 
-    this.goToCoordinates(dx, dy, spriteCoordinates);
+    const canGoToZone = globalPositionManager.canGoToZone({ left, top });
+
+    if (!canGoToZone) {
+      return;
+    }
+
+    this.top = top;
+    this.left = left;
   }
 
-  private getGameBoundariesForChicken(spriteCoordinates: CanvasCoordinates) {
-    const bounds = getFenceBoundaries(this.canvasWidth, this.canvasHeight);
+  private getNewPosition = (dx: number, dy: number) => {
+    const left = dx > 0 ? this.left + CHICKEN_MOVEMENT_PX : this.left - CHICKEN_MOVEMENT_PX;
+    const top = dy > 0 ? this.top + CHICKEN_MOVEMENT_PX : this.top - CHICKEN_MOVEMENT_PX;
 
-    return {
-      left: bounds.left,
-      right: bounds.right - spriteCoordinates.width * RESIZE_BY,
-      top: bounds.top,
-      bottom: bounds.bottom - spriteCoordinates.height * RESIZE_BY,
-    };
-  }
+    return { left, top };
+  };
 }

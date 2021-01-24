@@ -17,8 +17,7 @@ import {
 } from "../farm/actions";
 import { useEventEffect } from "../../utils/eventUtils/useEventEffect";
 import { CustomEventEmitter } from "../../utils/eventUtils/EventEmitter";
-import { positionManager } from "../../models/PositionManager";
-import { spriteCoordinatesMap } from "../../utils/spriteCoordinates";
+import { globalPositionManager } from "../../models/globalPositionManager";
 
 interface FoodCanvasProps extends FoodItems {
   canvasWidth: number;
@@ -38,15 +37,7 @@ const throtteFoodDrop = throttle(
     canvasWidth,
     canvasHeight,
   }: FoodProps & { addFood: (food: Food) => void }) => {
-    const foodDimensions = spriteCoordinatesMap.food.medium;
-    if (
-      !positionManager.canGoToZone({
-        left,
-        top,
-        width: foodDimensions.width,
-        height: foodDimensions.height,
-      })
-    ) {
+    if (!globalPositionManager.canGoToZone({ left, top })) {
       return;
     }
 
@@ -78,7 +69,7 @@ export const FoodCanvas: React.FC<FoodCanvasProps> = ({
 
   const requestFood = useCallback(
     ({ position, id }: { position: Coordinates; id: string }) => {
-      const closestFood = positionManager.getClosestFood(position, food);
+      const closestFood = globalPositionManager.getClosestFood(position, food);
 
       if (closestFood) {
         CustomEventEmitter.emit(EventName.FoundRequestedFood, {

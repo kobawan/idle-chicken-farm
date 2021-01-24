@@ -5,6 +5,7 @@ import { EventName } from "../utils/eventUtils/events";
 import { SavedFoodState } from "../utils/saveUtils/migrateSaves";
 import { CanvasCoordinates, spriteCoordinatesMap } from "../utils/spriteCoordinates";
 import { FOOD_MAX_EATERS, FOOD_MAX_METER, RESIZE_BY } from "../gameConfig";
+import { globalPositionManager } from "./globalPositionManager";
 
 export interface FoodProps extends Coordinates {
   canvasWidth: number;
@@ -28,8 +29,10 @@ export class Food {
     this.sprite = sprite;
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
-    this.top = top;
-    this.left = left;
+
+    const boundedPos = globalPositionManager.getPositionWithinBounds({ top, left });
+    this.top = boundedPos.top;
+    this.left = boundedPos.left;
     this.foodMeter = foodMeter ?? FOOD_MAX_METER;
     this.id = id || generateId();
   }

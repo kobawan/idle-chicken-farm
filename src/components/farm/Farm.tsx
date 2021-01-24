@@ -10,7 +10,7 @@ import { loadImage } from "../../utils/loadImages";
 import { initSave } from "../../utils/saveUtils/migrateSaves";
 import { LoadingPage } from "../../pages/loadingPage/LoadingPage";
 import { GamePage } from "../../pages/gamePage/GamePage";
-import { positionManager } from "../../models/PositionManager";
+import { globalPositionManager } from "../../models/globalPositionManager";
 
 export const Farm: React.FC = memo(() => {
   const { canvasWidth, canvasHeight } = useWindowDimensionsEffect();
@@ -45,13 +45,11 @@ export const Farm: React.FC = memo(() => {
     dispatch(setChickensAction(newChickens));
     dispatch(setFoodAction(newFood));
 
+    globalPositionManager.updateCanvasDimension({ canvasWidth, canvasHeight });
+
     setStartFadingLoadingPage(true);
     setIsLoading(false);
   }, [canvasWidth, canvasHeight, sprite]);
-
-  useEffect(() => {
-    positionManager.init({ canvasHeight: canvasHeight, canvasWidth });
-  }, [canvasWidth, canvasHeight]);
 
   /*
    * Very important to not render canvases before init is done,

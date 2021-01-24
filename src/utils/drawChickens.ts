@@ -31,8 +31,15 @@ export const getChickens = (
     }, []);
   }
 
-  return savedChickens.map((props: SavedChickenState) => {
-    return new Chicken({ canvasWidth, canvasHeight, sprite, ...props });
+  return savedChickens.map(({ topRatio, leftRatio, ...props }: SavedChickenState) => {
+    return new Chicken({
+      canvasWidth,
+      canvasHeight,
+      sprite,
+      top: topRatio ? topRatio * canvasHeight : undefined,
+      left: leftRatio ? leftRatio * canvasWidth : undefined,
+      ...props,
+    });
   });
 };
 

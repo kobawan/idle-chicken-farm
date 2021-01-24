@@ -10,7 +10,7 @@ export const getDistance = (a: Coordinates, b: Coordinates) => {
 
 export const getClosest = <I extends Coordinates>({ items, left, top }: GetClosestOptions<I>) => {
   let closest = Infinity;
-  let closestItem: I | undefined;
+  let closestItem!: I;
 
   items.forEach((item) => {
     const distance = getDistance({ left, top }, item);

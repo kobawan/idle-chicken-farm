@@ -7,7 +7,6 @@ import { Coordinates } from "../../types/types";
 import { CustomEventEmitter } from "../../utils/eventUtils/EventEmitter";
 import { EventName } from "../../utils/eventUtils/events";
 import { Logger } from "../../utils/Logger";
-import { CanvasCoordinates } from "../../utils/spriteCoordinates";
 import { Food } from "../food";
 
 interface HungerManagerProps {
@@ -32,7 +31,7 @@ export class HungerManager {
     this.startFoodListener();
   }
 
-  public onDestroy() {
+  public onUnmount() {
     this.stopFoodListener();
   }
 
@@ -96,8 +95,7 @@ export class HungerManager {
 
   public walkToFood(
     currentPos: Coordinates,
-    spriteCoordinates: CanvasCoordinates,
-    goToCoordinates: (dx: number, dy: number, spriteCoordinates: CanvasCoordinates) => void,
+    walkTowardsDirection: (dx: number, dy: number) => void,
   ) {
     if (!this.food) {
       console.error("Chicken needs food in order to walk towards it!");
@@ -105,7 +103,7 @@ export class HungerManager {
     }
 
     const { dx, dy } = this.getFoodDistance(this.food, currentPos);
-    goToCoordinates(dx, dy, spriteCoordinates);
+    walkTowardsDirection(dx, dy);
   }
 
   public getHungerMeter() {

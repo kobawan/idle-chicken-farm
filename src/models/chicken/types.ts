@@ -8,16 +8,17 @@ export interface ChickenProps {
   sprite: HTMLImageElement;
   id?: string;
   breed: ChickenBreed;
-  topRatio?: number;
-  leftRatio?: number;
+  top?: number;
+  left?: number;
   hungerMeter?: number;
 }
 
 export enum ChickenState {
   eating = "eating",
   walkingToFood = "walkingToFood",
-  walking = "walking",
+  wandering = "wandering",
   resting = "resting",
+  searchingForFood = "searchingForFood",
 }
 
 export enum ChickenPose {

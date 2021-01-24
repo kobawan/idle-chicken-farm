@@ -12,6 +12,7 @@ import {
 } from "../../components/tooltipOverlay/TooltipOverlay";
 import { AllFarmActions, FarmState } from "../../components/farm/reducer";
 import { handleChickenHover } from "./utils";
+import { ZoneDebugger } from "../../components/zoneDebugger/ZoneDebugger";
 
 interface GamePageProps extends FarmState {
   canvasWidth: number;
@@ -39,6 +40,7 @@ export const GamePage: React.FC<GamePageProps> = ({
 
   return (
     <div className={cx(styles.wrapper, isFeeding && styles.feeding)}>
+      <ZoneDebugger />
       <InteractionLayer>
         <div className={styles.bg} />
         <StaticCanvas canvasWidth={canvasWidth} canvasHeight={canvasHeight} items={items} />
