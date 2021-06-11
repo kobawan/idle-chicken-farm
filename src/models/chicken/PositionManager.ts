@@ -1,6 +1,6 @@
-import { CHICKEN_MOVEMENT_PX, RESIZE_BY } from "../../gameConfig";
+import { CHICKEN_MOVEMENT_PX } from "../../gameConfig";
 import { Coordinates } from "../../types/types";
-import { CanvasCoordinates } from "../../utils/spriteCoordinates";
+import { CHICKEN_SIZE } from "../../utils/spriteCoordinates";
 import { globalPositionManager } from "../globalPositionManager";
 import { ChickenProps } from "./types";
 
@@ -16,22 +16,26 @@ export class PositionManager {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
 
-    const boundedPos = globalPositionManager.getPositionWithinBounds({ top, left });
+    const boundedPos = globalPositionManager.getPositionWithinBounds({
+      top,
+      left,
+      ...CHICKEN_SIZE,
+    });
 
     this.top = boundedPos.top;
     this.left = boundedPos.left;
   }
 
-  public getPosition(): Coordinates {
+  public get position(): Coordinates {
     return { top: this.top, left: this.left };
   }
 
-  public getChickenBoundaries(spriteCoordinates: CanvasCoordinates) {
+  public get chickenBoundaries() {
     return {
       minX: this.left,
-      maxX: this.left + spriteCoordinates.width * RESIZE_BY,
+      maxX: this.left + CHICKEN_SIZE.width,
       minY: this.top,
-      maxY: this.top + spriteCoordinates.height * RESIZE_BY,
+      maxY: this.top + CHICKEN_SIZE.height,
     };
   }
 
@@ -45,7 +49,11 @@ export class PositionManager {
   public walkTowardsDirection(dx: number, dy: number) {
     const { left, top } = this.getNewPosition(dx, dy);
 
-    const canGoToZone = globalPositionManager.canGoToZone({ left, top });
+    const canGoToZone = globalPositionManager.canGoToCoordinates({
+      left,
+      top,
+      ...CHICKEN_SIZE,
+    });
 
     // TODO: go around obstacle instead of throwing error
     if (!canGoToZone) {
@@ -62,7 +70,11 @@ export class PositionManager {
     const dy = Math.round(Math.random());
     const { left, top } = this.getNewPosition(dx, dy);
 
-    const canGoToZone = globalPositionManager.canGoToZone({ left, top });
+    const canGoToZone = globalPositionManager.canGoToCoordinates({
+      left,
+      top,
+      ...CHICKEN_SIZE,
+    });
 
     if (!canGoToZone) {
       return;

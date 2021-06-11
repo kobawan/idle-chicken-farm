@@ -18,6 +18,7 @@ import {
 import { useEventEffect } from "../../utils/eventUtils/useEventEffect";
 import { CustomEventEmitter } from "../../utils/eventUtils/EventEmitter";
 import { globalPositionManager } from "../../models/globalPositionManager";
+import { FOOD_SIZE } from "../../utils/spriteCoordinates";
 
 interface FoodCanvasProps extends FoodItems {
   canvasWidth: number;
@@ -37,7 +38,7 @@ const throtteFoodDrop = throttle(
     canvasWidth,
     canvasHeight,
   }: FoodProps & { addFood: (food: Food) => void }) => {
-    if (!globalPositionManager.canGoToZone({ left, top })) {
+    if (!globalPositionManager.canGoToCoordinates({ left, top, ...FOOD_SIZE })) {
       return;
     }
 

@@ -3,7 +3,7 @@ import { Coordinates } from "../types/types";
 import { CustomEventEmitter } from "../utils/eventUtils/EventEmitter";
 import { EventName } from "../utils/eventUtils/events";
 import { SavedFoodState } from "../utils/saveUtils/migrateSaves";
-import { CanvasCoordinates, spriteCoordinatesMap } from "../utils/spriteCoordinates";
+import { CanvasCoordinates, FOOD_SIZE, spriteCoordinatesMap } from "../utils/spriteCoordinates";
 import { FOOD_MAX_EATERS, FOOD_MAX_METER, RESIZE_BY } from "../gameConfig";
 import { globalPositionManager } from "./globalPositionManager";
 
@@ -30,7 +30,7 @@ export class Food {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
 
-    const boundedPos = globalPositionManager.getPositionWithinBounds({ top, left });
+    const boundedPos = globalPositionManager.getPositionWithinBounds({ top, left, ...FOOD_SIZE });
     this.top = boundedPos.top;
     this.left = boundedPos.left;
     this.foodMeter = foodMeter ?? FOOD_MAX_METER;

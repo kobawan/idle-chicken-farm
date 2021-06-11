@@ -65,7 +65,7 @@ export class Chicken {
   }
 
   public getBoundaries() {
-    return this.PositionManager.getChickenBoundaries(this.getSpriteCoordinates());
+    return this.PositionManager.chickenBoundaries;
   }
 
   public getHungerMeter() {
@@ -92,7 +92,7 @@ export class Chicken {
   }
 
   private updateBehaviour() {
-    const currentPosition = this.PositionManager.getPosition();
+    const currentPosition = this.PositionManager.position;
 
     if (this.HungerManager.isEating) {
       this.updateStateAndAnimation(ChickenState.eating);
@@ -136,7 +136,7 @@ export class Chicken {
 
   private draw(ctx: CanvasRenderingContext2D) {
     const spriteCoordinates = this.getSpriteCoordinates();
-    const { left, top } = this.PositionManager.getPosition();
+    const { left, top } = this.PositionManager.position;
     ctx.drawImage(
       this.sprite,
       spriteCoordinates.x,

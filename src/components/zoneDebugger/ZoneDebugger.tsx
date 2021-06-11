@@ -1,40 +1,39 @@
 import React, { useRef } from "react";
-import { globalPositionManager } from "../../models/globalPositionManager";
+import { Zone } from "../../models/globalPositionManager";
+import { ColoredZone } from "./ColoredZone";
 
-const DEBUG_FREE_ZONES = false;
+interface ZoneDebuggerProps {
+  freeZones: Zone[];
+  noGoZones: Zone[];
+  hidden: boolean;
+}
 
-export const ZoneDebugger: React.FC = () => {
+export const ZoneDebugger: React.FC<ZoneDebuggerProps> = ({ freeZones, noGoZones, hidden }) => {
   const getRandomColor = () => {
     const letters = "0123456789ABCDEF";
     let color = "#";
     for (let y = 0; y < 6; y++) {
       color += letters.charAt(Math.floor(Math.random() * letters.length));
     }
-    return color + "50";
+    return color + "70";
   };
 
-  const zones = useRef(
-    globalPositionManager.freeZones.map((zone) => ({ ...zone, color: getRandomColor() })),
-  ).current;
+  const freeZoneColors = useRef(freeZones.map(getRandomColor)).current;
+
+  if (hidden) {
+    return null;
+  }
 
   return (
     <>
-      {DEBUG_FREE_ZONES &&
-        zones.map((zone, i) => {
-          return (
-            <div
-              key={`zone-${i}`}
-              style={{
-                position: "absolute",
-                backgroundColor: zone.color,
-                top: zone.top,
-                height: zone.bottom - zone.top,
-                left: zone.left,
-                width: zone.right - zone.left,
-              }}
-            />
-          );
-        })}
+      {freeZones.map((zone, i) => {
+        const id = `free-zone-${i}`;
+        return <ColoredZone id={id} key={id} zone={zone} color={freeZoneColors[i]} />;
+      })}
+      {noGoZones.map((zone, i) => {
+        const id = `no-go-zone-${i}`;
+        return <ColoredZone id={id} key={id} zone={zone} color={"#ff00009c"} />;
+      })}
     </>
   );
 };

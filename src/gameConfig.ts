@@ -20,3 +20,6 @@ export const CHICKEN_MOVEMENT_PX = 2;
 export const CHICKEN_RESTING_TURNS_PER_SEC = 10;
 export const CHICKEN_RESTING_PROBABILITY_PER_SEC = 20;
 export const CHICKEN_REFRESH_RATE = 500;
+
+// DEBUG
+export const DEBUG_FREE_ZONES = false;

@@ -14,6 +14,8 @@ import { AllFarmActions, FarmState } from "../../components/farm/reducer";
 import { handleChickenHover } from "./utils";
 import { ZoneDebugger } from "../../components/zoneDebugger/ZoneDebugger";
 import { version } from "../../../package.json";
+import { globalPositionManager } from "../../models/globalPositionManager";
+import { DEBUG_ZONES } from "../../gameConfig";
 
 interface GamePageProps extends FarmState {
   canvasWidth: number;
@@ -41,7 +43,11 @@ export const GamePage: React.FC<GamePageProps> = ({
 
   return (
     <div className={cx(styles.wrapper, isFeeding && styles.feeding)}>
-      <ZoneDebugger />
+      <ZoneDebugger
+        noGoZones={globalPositionManager.noGoZones}
+        freeZones={globalPositionManager.freeZones}
+        hidden={!DEBUG_ZONES}
+      />
       <InteractionLayer>
         <div className={styles.bg} />
         <StaticCanvas canvasWidth={canvasWidth} canvasHeight={canvasHeight} items={items} />
