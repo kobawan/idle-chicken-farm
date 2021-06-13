@@ -13,6 +13,13 @@ export interface Dimensions {
   height: number;
 }
 
+export interface Boundary {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
+
 export interface StaticItems {
   items: Item[];
 }

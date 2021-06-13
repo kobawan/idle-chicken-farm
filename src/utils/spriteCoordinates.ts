@@ -213,3 +213,6 @@ export const CHICKEN_SIZE = {
   width: STANDARD_CHICKEN_DIMENSION * RESIZE_BY,
   height: STANDARD_CHICKEN_DIMENSION * RESIZE_BY,
 };
+
+export const FOOD_RADIUS = FOOD_SIZE.width / 2;
+export const CHICKEN_RADIUS = CHICKEN_SIZE.height / 2;

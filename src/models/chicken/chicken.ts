@@ -8,6 +8,7 @@ import { Logger } from "../../utils/Logger";
 import { spriteCoordinatesMap } from "../../utils/spriteCoordinates";
 import { SavedChickenState } from "../../utils/saveUtils/migrateSaves";
 import { RESIZE_BY } from "../../gameConfig";
+import { Food } from "../food";
 
 export class Chicken {
   private currentAnimation = ChickenPose.default;
@@ -41,6 +42,7 @@ export class Chicken {
     this.name = name;
     this.gender = gender;
     this.sprite = sprite;
+    this.logger = new Logger({ name: "Chicken", id: this.id, color: "sienna" });
 
     this.RestingManager = new RestingManager();
     this.PositionManager = new PositionManager({
@@ -48,10 +50,13 @@ export class Chicken {
       canvasHeight,
       top,
       left,
+      logger: this.logger.subLogger({ name: "Position", color: "forestGreen" }),
     });
-    this.HungerManager = new HungerManager({ hungerMeter, id: this.id });
-
-    this.logger = new Logger("Chicken Logger", this.id);
+    this.HungerManager = new HungerManager({
+      hungerMeter,
+      id: this.id,
+      logger: this.logger.subLogger({ name: "Hunger", color: "salmon" }),
+    });
   }
 
   public update({ ctx, timestamp }: { ctx: CanvasRenderingContext2D; timestamp: number }) {
@@ -64,8 +69,8 @@ export class Chicken {
     this.draw(ctx);
   }
 
-  public get boundaries() {
-    return this.PositionManager.chickenBoundaries;
+  public get boundary() {
+    return this.PositionManager.chickenBoundary;
   }
 
   public get hungerMeter() {
@@ -101,7 +106,7 @@ export class Chicken {
     }
 
     const foodIsAvailable = this.HungerManager.hasAvailableFood;
-    const reachedFood = this.HungerManager.hasReachedFood(currentPosition);
+    const reachedFood = this.PositionManager.hasReachedFood();
 
     if (foodIsAvailable && reachedFood) {
       this.updateStateAndAnimation(ChickenState.eating);
@@ -111,10 +116,7 @@ export class Chicken {
 
     if (foodIsAvailable && !reachedFood) {
       this.updateStateAndAnimation(ChickenState.walkingToFood);
-      this.HungerManager.walkToFood(
-        currentPosition,
-        this.PositionManager.walkTowardsDirection.bind(this.PositionManager),
-      );
+      this.PositionManager.walkTowardsFood(this.HungerManager.food as Food);
       return;
     }
 
@@ -150,7 +152,7 @@ export class Chicken {
   }
 
   private updateStateAndAnimation(state: ChickenState) {
-    this.logger.log("Updated behaviour: ", state);
+    this.logger.log("Updated behaviour -", state);
     this.state = state;
 
     switch (this.state) {
