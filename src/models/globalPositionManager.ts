@@ -3,7 +3,7 @@ import { Coordinates, Dimensions } from "../types/types";
 import { getDistance, getClosest } from "../utils/distance";
 import { getCoopProps, getTroughProps } from "../utils/drawItems";
 import { getFenceBoundaries } from "../utils/fenceUtils";
-import { getRandomValue, getValueWithinRange, isInRange } from "../utils/math";
+import { getRandomValue, getClosestValueWithinRange, isInRange } from "../utils/math";
 import { Food } from "./food";
 
 interface GlobalPositionManagerProps {
@@ -159,17 +159,20 @@ class GlobalPositionManager {
   private getClosestValidPosition = ({ left, top, height, width }: ZoneParams) => {
     const closestFreeZone = getClosest({ left, top, items: this.freeZones });
 
+    const topRange = {
+      min: closestFreeZone.top,
+      max: closestFreeZone.bottom - height,
+      value: top,
+    };
+    const leftRange = {
+      min: closestFreeZone.left,
+      max: closestFreeZone.right - width,
+      value: left,
+    };
+
     return {
-      top: getValueWithinRange({
-        min: closestFreeZone.top,
-        max: closestFreeZone.bottom - height,
-        value: top,
-      }),
-      left: getValueWithinRange({
-        min: closestFreeZone.left,
-        max: closestFreeZone.right - width,
-        value: left,
-      }),
+      top: isInRange(topRange) ? top : getClosestValueWithinRange(topRange),
+      left: isInRange(leftRange) ? left : getClosestValueWithinRange(leftRange),
     };
   };
 

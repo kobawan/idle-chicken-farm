@@ -38,14 +38,14 @@ export const Farm: React.FC = memo(() => {
     if (!sprite) {
       return;
     }
+    globalPositionManager.updateCanvasDimension({ canvasWidth, canvasHeight });
+
     const newItems = getItems(canvasWidth, canvasHeight, sprite);
     const newChickens = getChickens(canvasWidth, canvasHeight, sprite);
     const newFood = getFood(canvasWidth, canvasHeight, sprite);
     dispatch(setItemsAction(newItems));
     dispatch(setChickensAction(newChickens));
     dispatch(setFoodAction(newFood));
-
-    globalPositionManager.updateCanvasDimension({ canvasWidth, canvasHeight });
 
     setStartFadingLoadingPage(true);
     setIsLoading(false);
