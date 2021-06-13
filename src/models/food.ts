@@ -58,12 +58,12 @@ export class Food {
     }
   }
 
-  public hasFinished() {
+  public get hasFinished() {
     return !this.foodMeter;
   }
 
-  public isAvailable() {
-    return this.animalsEating.length <= FOOD_MAX_EATERS && !this.hasFinished();
+  public get isAvailable() {
+    return this.animalsEating.length <= FOOD_MAX_EATERS && !this.hasFinished;
   }
 
   public startEating(id: string) {
@@ -79,7 +79,7 @@ export class Food {
     }
   }
 
-  private getSpriteCoordinates(): CanvasCoordinates {
+  private get spriteCoordinates(): CanvasCoordinates {
     const { small, medium, large } = spriteCoordinatesMap.food;
     if (this.foodMeter <= 10) {
       return small;
@@ -93,17 +93,16 @@ export class Food {
   }
 
   private draw(ctx: CanvasRenderingContext2D) {
-    const spriteCoordinates = this.getSpriteCoordinates();
     ctx.drawImage(
       this.sprite,
-      spriteCoordinates.x,
-      spriteCoordinates.y,
-      spriteCoordinates.width,
-      spriteCoordinates.height,
+      this.spriteCoordinates.x,
+      this.spriteCoordinates.y,
+      this.spriteCoordinates.width,
+      this.spriteCoordinates.height,
       this.left,
       this.top,
-      spriteCoordinates.width * RESIZE_BY,
-      spriteCoordinates.height * RESIZE_BY,
+      this.spriteCoordinates.width * RESIZE_BY,
+      this.spriteCoordinates.height * RESIZE_BY,
     );
   }
 }

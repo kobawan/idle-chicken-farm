@@ -64,12 +64,12 @@ export class Chicken {
     this.draw(ctx);
   }
 
-  public getBoundaries() {
+  public get boundaries() {
     return this.PositionManager.chickenBoundaries;
   }
 
-  public getHungerMeter() {
-    return this.HungerManager.getHungerMeter();
+  public get hungerMeter() {
+    return this.HungerManager.hungerMeter;
   }
 
   public getSavingState(): SavedChickenState {
@@ -87,7 +87,7 @@ export class Chicken {
     this.HungerManager.onUnmount();
   }
 
-  private getSpriteCoordinates() {
+  private get spriteCoordinates() {
     return spriteCoordinatesMap.chicken[this.breed][this.currentAnimation];
   }
 
@@ -100,7 +100,7 @@ export class Chicken {
       return;
     }
 
-    const foodIsAvailable = this.HungerManager.hasAvailableFood();
+    const foodIsAvailable = this.HungerManager.hasAvailableFood;
     const reachedFood = this.HungerManager.hasReachedFood(currentPosition);
 
     if (foodIsAvailable && reachedFood) {
@@ -118,7 +118,7 @@ export class Chicken {
       return;
     }
 
-    if (this.HungerManager.isHungry()) {
+    if (this.HungerManager.isHungry) {
       this.updateStateAndAnimation(ChickenState.searchingForFood);
       this.HungerManager.searchForFood(currentPosition);
       return;
@@ -135,18 +135,17 @@ export class Chicken {
   }
 
   private draw(ctx: CanvasRenderingContext2D) {
-    const spriteCoordinates = this.getSpriteCoordinates();
     const { left, top } = this.PositionManager.position;
     ctx.drawImage(
       this.sprite,
-      spriteCoordinates.x,
-      spriteCoordinates.y,
-      spriteCoordinates.width,
-      spriteCoordinates.height,
+      this.spriteCoordinates.x,
+      this.spriteCoordinates.y,
+      this.spriteCoordinates.width,
+      this.spriteCoordinates.height,
       left,
       top,
-      spriteCoordinates.width * RESIZE_BY,
-      spriteCoordinates.height * RESIZE_BY,
+      this.spriteCoordinates.width * RESIZE_BY,
+      this.spriteCoordinates.height * RESIZE_BY,
     );
   }
 

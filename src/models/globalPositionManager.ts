@@ -22,6 +22,16 @@ class GlobalPositionManager {
   private canvasHeight: number;
   private canvasWidth: number;
 
+  constructor({ canvasHeight, canvasWidth }: GlobalPositionManagerProps) {
+    this.canvasHeight = canvasHeight;
+    this.canvasWidth = canvasWidth;
+  }
+
+  public updateCanvasDimension({ canvasHeight, canvasWidth }: GlobalPositionManagerProps) {
+    this.canvasHeight = canvasHeight;
+    this.canvasWidth = canvasWidth;
+  }
+
   public get noGoZones(): Zone[] {
     const coop = getCoopProps(this.canvasWidth, this.canvasHeight);
     const coopZone = {
@@ -101,19 +111,9 @@ class GlobalPositionManager {
     ];
   }
 
-  constructor({ canvasHeight, canvasWidth }: GlobalPositionManagerProps) {
-    this.canvasHeight = canvasHeight;
-    this.canvasWidth = canvasWidth;
-  }
-
-  public updateCanvasDimension({ canvasHeight, canvasWidth }: GlobalPositionManagerProps) {
-    this.canvasHeight = canvasHeight;
-    this.canvasWidth = canvasWidth;
-  }
-
   public getClosestFood = (coord: Coordinates, food: Food[]) => {
     const allAvailableFood = food.filter(
-      (item) => item.isAvailable() && getDistance(coord, item) < FOOD_MAX_DISTANCE_PX,
+      (item) => item.isAvailable && getDistance(coord, item) < FOOD_MAX_DISTANCE_PX,
     );
     if (!allAvailableFood.length) {
       return undefined;

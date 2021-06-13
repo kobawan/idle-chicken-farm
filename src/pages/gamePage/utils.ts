@@ -8,7 +8,7 @@ export const handleChickenHover = (
   const { clientX, clientY } = event;
   chickens.forEach((chicken) => {
     const { id, name, gender } = chicken;
-    const { minX, minY, maxX, maxY } = chicken.getBoundaries();
+    const { minX, minY, maxX, maxY } = chicken.boundaries;
     const withinBoundaries =
       clientX >= minX && clientX <= maxX && clientY >= minY && clientY <= maxY;
     const isHovered = hasTooltip(id);

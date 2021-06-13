@@ -16,10 +16,10 @@ interface HungerManagerProps {
 
 export class HungerManager {
   private food: Food | undefined;
-  private hungerMeter: number;
   private lastHungerIncrease = 0;
   private id: string;
   private logger: Logger;
+  public hungerMeter: number;
   public isSearchingForFood = false;
   public isEating = false;
 
@@ -53,10 +53,6 @@ export class HungerManager {
     }
   }
 
-  public hasFood() {
-    return !!this.food;
-  }
-
   public hasReachedFood(currentPos: Coordinates) {
     if (!this.food) {
       return false;
@@ -84,10 +80,10 @@ export class HungerManager {
     }
     this.hungerMeter = Math.max(this.hungerMeter - 1, 0);
     this.food.updateFoodMeter();
-    if (this.isFull() || this.food.hasFinished()) {
+    if (this.isFull || this.food.hasFinished) {
       this.stopEating();
 
-      if (!this.isFull()) {
+      if (!this.isFull) {
         this.searchForFood(position);
       }
     }
@@ -106,16 +102,12 @@ export class HungerManager {
     walkTowardsDirection(dx, dy);
   }
 
-  public getHungerMeter() {
-    return this.hungerMeter;
-  }
-
-  public isHungry() {
+  public get isHungry() {
     return this.hungerMeter > CHICKEN_MIN_HUNGER;
   }
 
-  public hasAvailableFood() {
-    return !!this.food && this.food.isAvailable();
+  public get hasAvailableFood() {
+    return !!this.food && this.food.isAvailable;
   }
 
   public searchForFood(position: Coordinates) {
@@ -151,7 +143,7 @@ export class HungerManager {
     CustomEventEmitter.off(EventName.NotFoundRequestedFood, this.stopSearching.bind(this));
   }
 
-  private isFull() {
+  private get isFull() {
     return !this.hungerMeter;
   }
 
