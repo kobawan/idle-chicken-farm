@@ -81,6 +81,7 @@ export class PositionManager {
 
     // FIXME: check for obstacles and add checkpoints
     this.path = [destination];
+    this.logger.log("Path set:", this.path);
   }
 
   public walkTowardsFood(food: Food) {
@@ -166,7 +167,7 @@ export class PositionManager {
   };
 
   private updateDirection(dx: number, limit?: number) {
-    if (dx === 0 || (limit && dx <= limit)) {
+    if (dx === 0 || (limit && Math.abs(dx) <= limit)) {
       return;
     }
     this.direction = dx > 0 ? Direction.right : Direction.left;
