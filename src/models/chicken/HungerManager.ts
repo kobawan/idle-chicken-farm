@@ -86,7 +86,7 @@ export class HungerManager {
 
   public searchForFood(position: Coordinates) {
     if (!this.isSearchingForFood) {
-      this.logger.log("Start searching for food");
+      this.logger.log("Searching for food");
       this.isSearchingForFood = true;
       CustomEventEmitter.emit(EventName.RequestFood, { position, id: this.id });
     }
@@ -96,14 +96,14 @@ export class HungerManager {
     if (this.id === id) {
       this.food = food;
       this.isSearchingForFood = false;
-      this.logger.log("Stopped searching for food: found it!");
+      this.logger.log("Found food!");
     }
   }
 
   private stopSearching({ id }: { id: string }) {
     if (this.id === id) {
       this.isSearchingForFood = false;
-      this.logger.log("Stopped searching for food: did not find any!");
+      this.logger.log("Did not find food!");
     }
   }
 

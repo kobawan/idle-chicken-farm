@@ -12,7 +12,7 @@ type DrawDynamicObjectsProps = ChickenItems &
 export const getChickens = (
   canvasWidth: number,
   canvasHeight: number,
-  sprite: HTMLImageElement,
+  sprites: HTMLImageElement[],
 ) => {
   const savedChickens = getStorageKey(StorageKeys.chickens) as null | SavedChickenState[];
   if (!savedChickens) {
@@ -24,7 +24,7 @@ export const getChickens = (
         breed,
         gender,
         name: generateName(gender, getAvailableNames(chickens)),
-        sprite,
+        sprites,
       });
       chickens.push(chicken);
       return chickens;
@@ -35,7 +35,7 @@ export const getChickens = (
     return new Chicken({
       canvasWidth,
       canvasHeight,
-      sprite,
+      sprites,
       top: topRatio ? topRatio * canvasHeight : undefined,
       left: leftRatio ? leftRatio * canvasWidth : undefined,
       ...props,

@@ -74,7 +74,7 @@ const getVersion = (): GameSaveVersions => {
 const migrateChickensV1toV2 = (
   canvasWidth: number,
   canvasHeight: number,
-  sprite: HTMLImageElement,
+  sprites: HTMLImageElement[],
 ) => {
   const savedChickens = getStorageKey(StorageKeys.chickens) as SavedChickenStateV1[] | null;
   if (!savedChickens || !savedChickens.length) {
@@ -95,7 +95,7 @@ const migrateChickensV1toV2 = (
     breed: ChickenBreed.white,
     gender: "female",
     name: generateName("female", getAvailableNames(migratedChickens)),
-    sprite,
+    sprites,
   }).getSavingState();
 
   setStorageKey(StorageKeys.chickens, [...migratedChickens, whiteChicken]);
@@ -119,18 +119,22 @@ const migrateFoodV1toV2 = (canvasWidth: number, canvasHeight: number) => {
   setStorageKey(StorageKeys.food, migratedFood);
 };
 
-const migrateV1toV2 = (canvasWidth: number, canvasHeight: number, sprite: HTMLImageElement) => {
+const migrateV1toV2 = (canvasWidth: number, canvasHeight: number, sprites: HTMLImageElement[]) => {
   const version = getVersion();
   if (version !== GameSaveVersions.v1) {
     return;
   }
-  migrateChickensV1toV2(canvasWidth, canvasHeight, sprite);
+  migrateChickensV1toV2(canvasWidth, canvasHeight, sprites);
   migrateFoodV1toV2(canvasWidth, canvasHeight);
 
   setStorageKey(StorageKeys.version, GameSaveVersions.v2);
 };
 
-export const initSave = (canvasWidth: number, canvasHeight: number, sprite: HTMLImageElement) => {
+export const initSave = (
+  canvasWidth: number,
+  canvasHeight: number,
+  sprites: HTMLImageElement[],
+) => {
   addDefaultVersion();
-  migrateV1toV2(canvasWidth, canvasHeight, sprite);
+  migrateV1toV2(canvasWidth, canvasHeight, sprites);
 };

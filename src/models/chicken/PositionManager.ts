@@ -1,5 +1,5 @@
 import { CHICKEN_MOVEMENT_PX } from "../../gameConfig";
-import { Boundary, Coordinates } from "../../types/types";
+import { Boundary, Coordinates, Direction } from "../../types/types";
 import { Logger } from "../../utils/Logger";
 import { getRandomValue } from "../../utils/math";
 import { CHICKEN_RADIUS, CHICKEN_SIZE, FOOD_RADIUS } from "../../utils/spriteCoordinates";
@@ -31,6 +31,7 @@ export class PositionManager {
   private logger: Logger;
   private path: Coordinates[] = [];
   private hasBegunJourney = false;
+  public direction: Direction = Direction.right;
 
   constructor({ canvasWidth, canvasHeight, top, left, logger }: PositionManagerProps) {
     this.canvasWidth = canvasWidth;
@@ -90,6 +91,7 @@ export class PositionManager {
 
     const { dx, dy } = this.getDistance(this.currentCheckpoint);
     const { left, top } = this.getNewPosition(dx, dy);
+    this.updateDirection(dx, CHICKEN_MOVEMENT_PX);
 
     this.top = top;
     this.left = left;
@@ -107,8 +109,8 @@ export class PositionManager {
 
   private getDistance(destination: Coordinates) {
     return {
-      dx: destination.left - this.left - CHICKEN_RADIUS,
-      dy: destination.top - this.top - CHICKEN_RADIUS,
+      dx: Math.round(destination.left - this.left - CHICKEN_RADIUS),
+      dy: Math.round(destination.top - this.top - CHICKEN_RADIUS),
     };
   }
 
@@ -129,10 +131,10 @@ export class PositionManager {
 
       this.logger.log(`Trying direction: [${dx},${dy}]`);
       directionsToTry.splice(randIndex, 1);
+      this.updateDirection(dx);
 
-      const pos = this.getNewPosition(dx, dy);
-      left = pos.left;
-      top = pos.top;
+      left = this.left + CHICKEN_MOVEMENT_PX * dx;
+      top = this.top + CHICKEN_MOVEMENT_PX * dy;
     } while (
       !globalPositionManager.canGoToCoordinates({
         left,
@@ -162,4 +164,11 @@ export class PositionManager {
           : this.top - CHICKEN_MOVEMENT_PX,
     };
   };
+
+  private updateDirection(dx: number, limit?: number) {
+    if (dx === 0 || (limit && dx <= limit)) {
+      return;
+    }
+    this.direction = dx > 0 ? Direction.right : Direction.left;
+  }
 }

@@ -1,4 +1,4 @@
-import { ChickenBreed, Gender } from "../../types/types";
+import { ChickenBreed, Direction, Gender } from "../../types/types";
 import { generateId } from "../../utils/math";
 import { RestingManager } from "./RestingManager";
 import { ChickenPose, ChickenState, ChickenProps } from "./types";
@@ -16,7 +16,7 @@ export class Chicken {
   private state = ChickenState.wandering;
   private timestamp = 0;
   private fps = 0;
-  private sprite: HTMLImageElement;
+  private sprites: HTMLImageElement[];
   private RestingManager: RestingManager;
   private PositionManager: PositionManager;
   private HungerManager: HungerManager;
@@ -35,13 +35,13 @@ export class Chicken {
     hungerMeter,
     name,
     gender,
-    sprite,
+    sprites,
   }: ChickenProps) {
     this.breed = breed;
     this.id = id || generateId();
     this.name = name;
     this.gender = gender;
-    this.sprite = sprite;
+    this.sprites = sprites;
     this.logger = new Logger({ name: "Chicken", id: this.id, color: "sienna" });
 
     this.RestingManager = new RestingManager();
@@ -138,9 +138,13 @@ export class Chicken {
 
   private draw(ctx: CanvasRenderingContext2D) {
     const { left, top } = this.PositionManager.position;
+    const isReversedSprite = this.PositionManager.direction === Direction.left;
+
     ctx.drawImage(
-      this.sprite,
-      this.spriteCoordinates.x,
+      isReversedSprite ? this.sprites[1] : this.sprites[0],
+      isReversedSprite
+        ? Math.round(this.sprites[1].width - this.spriteCoordinates.x)
+        : this.spriteCoordinates.x,
       this.spriteCoordinates.y,
       this.spriteCoordinates.width,
       this.spriteCoordinates.height,

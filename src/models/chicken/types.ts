@@ -5,7 +5,7 @@ export interface ChickenProps {
   gender: Gender;
   canvasWidth: number;
   canvasHeight: number;
-  sprite: HTMLImageElement;
+  sprites: HTMLImageElement[];
   id?: string;
   breed: ChickenBreed;
   top?: number;

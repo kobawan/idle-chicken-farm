@@ -20,6 +20,11 @@ export interface Boundary {
   maxY: number;
 }
 
+export enum Direction {
+  left = "left",
+  right = "right",
+}
+
 export interface StaticItems {
   items: Item[];
 }
