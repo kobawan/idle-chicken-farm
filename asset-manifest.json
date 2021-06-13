@@ -1,23 +1,24 @@
 {
   "files": {
-    "main.css": "/idle-chicken-farm/static/css/main.c666a1d4.chunk.css",
-    "main.js": "/idle-chicken-farm/static/js/main.c862f963.chunk.js",
-    "main.js.map": "/idle-chicken-farm/static/js/main.c862f963.chunk.js.map",
+    "main.css": "/idle-chicken-farm/static/css/main.0e3363e8.chunk.css",
+    "main.js": "/idle-chicken-farm/static/js/main.960d8bc7.chunk.js",
+    "main.js.map": "/idle-chicken-farm/static/js/main.960d8bc7.chunk.js.map",
     "runtime-main.js": "/idle-chicken-farm/static/js/runtime-main.fd40c43c.js",
     "runtime-main.js.map": "/idle-chicken-farm/static/js/runtime-main.fd40c43c.js.map",
-    "static/js/2.73f37e2f.chunk.js": "/idle-chicken-farm/static/js/2.73f37e2f.chunk.js",
-    "static/js/2.73f37e2f.chunk.js.map": "/idle-chicken-farm/static/js/2.73f37e2f.chunk.js.map",
+    "static/js/2.97baf073.chunk.js": "/idle-chicken-farm/static/js/2.97baf073.chunk.js",
+    "static/js/2.97baf073.chunk.js.map": "/idle-chicken-farm/static/js/2.97baf073.chunk.js.map",
     "index.html": "/idle-chicken-farm/index.html",
-    "precache-manifest.322648979c2180599bfa5c9250d2f761.js": "/idle-chicken-farm/precache-manifest.322648979c2180599bfa5c9250d2f761.js",
+    "precache-manifest.913a4800bf0ee79003014361b1188a17.js": "/idle-chicken-farm/precache-manifest.913a4800bf0ee79003014361b1188a17.js",
     "service-worker.js": "/idle-chicken-farm/service-worker.js",
-    "static/css/main.c666a1d4.chunk.css.map": "/idle-chicken-farm/static/css/main.c666a1d4.chunk.css.map",
-    "static/js/2.73f37e2f.chunk.js.LICENSE.txt": "/idle-chicken-farm/static/js/2.73f37e2f.chunk.js.LICENSE.txt",
-    "static/media/farm.module.scss": "/idle-chicken-farm/static/media/farmBg.507ab01a.png"
+    "static/css/main.0e3363e8.chunk.css.map": "/idle-chicken-farm/static/css/main.0e3363e8.chunk.css.map",
+    "static/js/2.97baf073.chunk.js.LICENSE.txt": "/idle-chicken-farm/static/js/2.97baf073.chunk.js.LICENSE.txt",
+    "static/media/gamePage.module.scss": "/idle-chicken-farm/static/media/farmBg.507ab01a.png",
+    "static/media/farm_sprite.png": "/idle-chicken-farm/static/media/farm_sprite.aab29c37.png"
   },
   "entrypoints": [
     "static/js/runtime-main.fd40c43c.js",
-    "static/js/2.73f37e2f.chunk.js",
-    "static/css/main.c666a1d4.chunk.css",
-    "static/js/main.c862f963.chunk.js"
+    "static/js/2.97baf073.chunk.js",
+    "static/css/main.0e3363e8.chunk.css",
+    "static/js/main.960d8bc7.chunk.js"
   ]
 }
