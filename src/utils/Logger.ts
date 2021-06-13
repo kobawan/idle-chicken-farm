@@ -1,8 +1,12 @@
-const allowedLogs: string[] = [];
+let allowedLogs: string[] = [];
 const hasLoggingEnabled = (id: string) => allowedLogs.includes(id);
 
-window.enableDebugging = (id: string) => {
+window.startDebug = (id: string) => {
   allowedLogs.push(id);
+};
+
+window.stopDebug = () => {
+  allowedLogs = [];
 };
 
 interface LoggerProps {
