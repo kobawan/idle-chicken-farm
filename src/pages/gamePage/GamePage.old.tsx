@@ -5,7 +5,6 @@ import { ChickenCanvas } from "../../components/chickenCanvas/ChickenCanvas";
 import { FoodCanvas } from "../../components/foodCanvas/FoodCanvas";
 import { InteractionLayer } from "../../components/interactionLayer/InteractionLayer";
 import { Menu } from "../../components/menu/Menu";
-import { StaticCanvas } from "../../components/StaticCanvas/StaticCanvas";
 import {
   OnDetectTooltipCbProps,
   TooltipOverlay,
@@ -32,7 +31,6 @@ export const GamePage: React.FC<GamePageProps> = ({
   isInfoOpen,
   canvasWidth,
   canvasHeight,
-  items,
   sprite,
   dispatch,
 }) => {
@@ -50,7 +48,6 @@ export const GamePage: React.FC<GamePageProps> = ({
       />
       <InteractionLayer>
         <div className={styles.bg} />
-        <StaticCanvas canvasWidth={canvasWidth} canvasHeight={canvasHeight} items={items} />
         <FoodCanvas
           canvasWidth={canvasWidth}
           canvasHeight={canvasHeight}

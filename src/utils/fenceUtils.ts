@@ -1,150 +1,87 @@
-import { RESIZE_BY, SCREEN_PADDING_PX } from "../gameConfig";
-import { spriteCoordinatesMap } from "./spriteCoordinates";
-
-const getLeftEdge = ({ horizontalGap }: { horizontalGap: number }) => {
-  return SCREEN_PADDING_PX + horizontalGap;
-};
-
-const getRightEdge = ({
-  fenceWidth,
-  horizontalGap,
-  width,
-}: {
-  fenceWidth: number;
-  horizontalGap: number;
-  width: number;
-}) => {
-  return width - fenceWidth * RESIZE_BY - getLeftEdge({ horizontalGap });
-};
-
-const getTopEdge = ({ verticalGap }: { verticalGap: number }) => {
-  return SCREEN_PADDING_PX + verticalGap;
-};
-
-const getBottomEdge = ({
-  fenceHeight,
-  verticalGap,
-  height,
-}: {
-  fenceHeight: number;
-  verticalGap: number;
-  height: number;
-}) => {
-  return height - fenceHeight * RESIZE_BY - getTopEdge({ verticalGap });
-};
+import { SCREEN_PADDING_PX } from "../gameConfig";
+import { FENCE_SIZE } from "./spriteCoordinates";
 
 const calculateFenceHorizontalGap = (width: number) => {
-  const { sideLeft, sideRight, top } = spriteCoordinatesMap.fence;
-  const leftFenceWidth = sideLeft.width * RESIZE_BY;
-  const rightFenceWidth = sideRight.width * RESIZE_BY;
-  const topFenceWidth = top.width * RESIZE_BY;
-  const widthAvailable = width - SCREEN_PADDING_PX * 2 - leftFenceWidth - rightFenceWidth;
-  const amountHorizontalFences = Math.floor(widthAvailable / topFenceWidth);
-  const horizontalGap = (widthAvailable - amountHorizontalFences * topFenceWidth) / 2;
+  const widthAvailable = width - SCREEN_PADDING_PX * 2;
+  const amountHorizontalFences = Math.floor(widthAvailable / FENCE_SIZE);
 
   return {
-    horizontalGap,
+    horizontalGap: (width - FENCE_SIZE * amountHorizontalFences) / 2,
     amountHorizontalFences,
   };
 };
 
 const calculateFenceVerticalGap = (height: number) => {
-  const { top, bottom, sideLeft } = spriteCoordinatesMap.fence;
-  const topFenceHeight = top.height * RESIZE_BY;
-  const bottomFenceHeight = bottom.height * RESIZE_BY;
-  const sideFenceHeight = sideLeft.height * RESIZE_BY;
-  const heightAvailable = height - SCREEN_PADDING_PX * 2 - topFenceHeight - bottomFenceHeight;
-  const amountVerticalFences = Math.floor(heightAvailable / sideFenceHeight);
-  const verticalGap = (heightAvailable - amountVerticalFences * sideFenceHeight) / 2;
+  const heightAvailable = height - SCREEN_PADDING_PX * 2;
+  const amountVerticalFences = Math.floor(heightAvailable / FENCE_SIZE);
 
   return {
-    verticalGap,
+    verticalGap: (height - FENCE_SIZE * amountVerticalFences) / 2,
     amountVerticalFences,
   };
 };
 
-export const getFenceBoundaries = (width: number, height: number) => {
-  const { sideRight, sideLeft, top, bottom } = spriteCoordinatesMap.fence;
-  const { verticalGap } = calculateFenceVerticalGap(height);
-  const { horizontalGap } = calculateFenceHorizontalGap(width);
-
-  return {
-    left: getLeftEdge({ horizontalGap }) + sideLeft.width * RESIZE_BY,
-    right: getRightEdge({ width, horizontalGap, fenceWidth: sideRight.width }),
-    top: getTopEdge({ verticalGap }) + top.height * RESIZE_BY,
-    bottom: getBottomEdge({ height, verticalGap, fenceHeight: bottom.height }),
-  };
-};
-
 export const getWholeFenceProps = (width: number, height: number) => {
-  const {
-    topLeft,
-    topRight,
-    bottomLeft,
-    bottomRight,
-    top,
-    bottom,
-    sideLeft,
-    sideRight,
-  } = spriteCoordinatesMap.fence;
-
-  // WIDTH FILLING
   const { amountHorizontalFences, horizontalGap } = calculateFenceHorizontalGap(width);
-
-  // HEIGHT FILLING
   const { amountVerticalFences, verticalGap } = calculateFenceVerticalGap(height);
 
-  const leftEdge = getLeftEdge({ horizontalGap });
-  const topEdge = getTopEdge({ verticalGap });
+  const left = horizontalGap + FENCE_SIZE / 2;
+  const right = width - left;
+  const top = verticalGap + FENCE_SIZE / 2;
+  const bottom = height - top;
 
-  const topFence = new Array(amountHorizontalFences).fill(0).map((_, i) => ({
-    top: topEdge,
-    left: leftEdge + topLeft.width * RESIZE_BY + i * (top.width * RESIZE_BY),
-    spriteCoordinates: top,
-  }));
-
-  const bottomFenceTopPos = getBottomEdge({ height, verticalGap, fenceHeight: bottomLeft.height });
-  const bottomFence = new Array(amountHorizontalFences).fill(0).map((_, i) => ({
-    top: bottomFenceTopPos,
-    left: leftEdge + bottomLeft.width * RESIZE_BY + i * (bottom.width * RESIZE_BY),
-    spriteCoordinates: bottom,
-  }));
-
-  const leftFence = new Array(amountVerticalFences).fill(0).map((_, i) => ({
-    top: topEdge + topLeft.height * RESIZE_BY + i * (sideLeft.height * RESIZE_BY),
-    left: leftEdge,
-    spriteCoordinates: sideLeft,
-  }));
-
-  const rightFenceLeftPos = getRightEdge({ width, horizontalGap, fenceWidth: sideRight.width });
-  const rightFence = new Array(amountVerticalFences).fill(0).map((_, i) => ({
-    top: topEdge + topRight.height * RESIZE_BY + i * (sideRight.height * RESIZE_BY),
-    left: rightFenceLeftPos,
-    spriteCoordinates: sideRight,
-  }));
-
-  const corners = [
+  return [
     {
-      top: topEdge,
-      left: leftEdge,
-      spriteCoordinates: topLeft,
+      key: "fence",
+      frame: 0,
+      setXY: { x: left, y: top },
     },
     {
-      top: topEdge,
-      left: getRightEdge({ width, horizontalGap, fenceWidth: topRight.width }),
-      spriteCoordinates: topRight,
+      key: "fence",
+      frame: 1,
+      repeat: amountHorizontalFences - 3,
+      setXY: { x: left + FENCE_SIZE, y: top, stepX: FENCE_SIZE },
     },
     {
-      top: getBottomEdge({ height, verticalGap, fenceHeight: bottomLeft.height }),
-      left: leftEdge,
-      spriteCoordinates: bottomLeft,
+      key: "fence",
+      frame: 3,
+      setXY: { x: right, y: top },
     },
     {
-      top: getBottomEdge({ height, verticalGap, fenceHeight: bottomRight.height }),
-      left: getRightEdge({ width, horizontalGap, fenceWidth: bottomRight.width }),
-      spriteCoordinates: bottomRight,
+      key: "fence",
+      frame: 4,
+      repeat: amountVerticalFences - 3,
+      setXY: { x: left, y: top + FENCE_SIZE, stepY: FENCE_SIZE },
+    },
+    {
+      key: "fence",
+      frame: 7,
+      repeat: amountVerticalFences - 3,
+      setXY: {
+        x: right,
+        y: top + FENCE_SIZE,
+        stepY: FENCE_SIZE,
+      },
+    },
+    {
+      key: "fence",
+      frame: 8,
+      setXY: { x: left, y: bottom },
+    },
+    {
+      key: "fence",
+      frame: 9,
+      repeat: amountHorizontalFences - 3,
+      setXY: {
+        x: left + FENCE_SIZE,
+        y: bottom,
+        stepX: FENCE_SIZE,
+      },
+    },
+    {
+      key: "fence",
+      frame: 11,
+      setXY: { x: right, y: bottom },
     },
   ];
-
-  return [...corners, ...topFence, ...bottomFence, ...leftFence, ...rightFence];
 };

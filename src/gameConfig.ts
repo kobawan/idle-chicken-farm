@@ -1,10 +1,10 @@
 // GENERAL
 export const SAVING_INTERVAL = 5000;
 export const LOADING_PAGE_MIN_MS = 1000;
-export const SCREEN_PADDING_PX = 5;
+export const SCREEN_PADDING_PX = 6;
 
 // CANVAS ITEMS
-export const RESIZE_BY = 2;
+export const RESIZE_BY = 1;
 
 // FOOD
 export const FOOD_MAX_DISTANCE_PX = 300;

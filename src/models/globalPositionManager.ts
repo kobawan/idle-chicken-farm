@@ -1,8 +1,6 @@
-import { FOOD_MAX_DISTANCE_PX, RESIZE_BY } from "../gameConfig";
+import { FOOD_MAX_DISTANCE_PX } from "../gameConfig";
 import { Coordinates, Dimensions } from "../types/types";
 import { getDistance, getClosest } from "../utils/distance";
-import { getCoopProps, getTroughProps } from "../utils/drawItems";
-import { getFenceBoundaries } from "../utils/fenceUtils";
 import { getRandomValue, getClosestValueWithinRange, isInRange } from "../utils/math";
 import { Food } from "./food";
 
@@ -33,28 +31,13 @@ class GlobalPositionManager {
   }
 
   public get noGoZones(): Zone[] {
-    const coop = getCoopProps(this.canvasWidth, this.canvasHeight);
-    const coopZone = {
-      left: coop.left,
-      top: coop.top,
-      right: coop.left + coop.spriteCoordinates.width * RESIZE_BY,
-      bottom: coop.top + coop.spriteCoordinates.height * RESIZE_BY,
-    };
-
-    const trough = getTroughProps(this.canvasWidth, this.canvasHeight);
-    const troughZone = {
-      left: trough.left + trough.deviationX,
-      top: trough.top + trough.deviationY,
-      right: trough.left + trough.deviationX + trough.spriteCoordinates.width * RESIZE_BY,
-      bottom: trough.top + trough.deviationY + trough.spriteCoordinates.height * RESIZE_BY,
-    };
-
-    // FIXME: items need be in order of left to right in the screen
-    return [coopZone, troughZone];
+    // TODO: remove as it is not working anymore
+    return [];
   }
 
   private get gameBoundaries(): Zone {
-    return getFenceBoundaries(this.canvasWidth, this.canvasHeight);
+    // TODO: remove as it is not working anymore
+    return {} as Zone;
   }
 
   // TODO: Let's do it dynamically

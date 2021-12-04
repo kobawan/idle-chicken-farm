@@ -1,6 +1,5 @@
 import React from "react";
 import { Chicken } from "../models/chicken/chicken";
-import { Item } from "../models/item";
 import { Food } from "../models/food";
 
 export interface Coordinates {
@@ -25,10 +24,6 @@ export enum Direction {
   right = "right",
 }
 
-export interface StaticItems {
-  items: Item[];
-}
-
 export interface FoodItems {
   food: Food[];
 }
@@ -37,7 +32,7 @@ export interface ChickenItems {
   chickens: Chicken[];
 }
 
-export type FarmItems = StaticItems & ChickenItems & FoodItems;
+export type FarmItems = ChickenItems & FoodItems;
 
 export enum ChickenBreed {
   lightbrown = "lightbrown",

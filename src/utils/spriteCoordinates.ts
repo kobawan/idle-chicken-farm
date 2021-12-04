@@ -13,22 +13,10 @@ export type ChickenSprite = Record<ChickenPose, CanvasCoordinates>;
 
 interface SpriteCoordinatesMap {
   chicken: Record<ChickenBreed, ChickenSprite>;
-  coop: CanvasCoordinates;
-  trough: CanvasCoordinates;
   food: {
     small: CanvasCoordinates;
     medium: CanvasCoordinates;
     large: CanvasCoordinates;
-  };
-  fence: {
-    topLeft: CanvasCoordinates;
-    topRight: CanvasCoordinates;
-    bottomLeft: CanvasCoordinates;
-    bottomRight: CanvasCoordinates;
-    sideLeft: CanvasCoordinates;
-    sideRight: CanvasCoordinates;
-    top: CanvasCoordinates;
-    bottom: CanvasCoordinates;
   };
 }
 
@@ -36,6 +24,9 @@ const STANDARD_CHICKEN_DIMENSION = 16;
 const STANDARD_FOOD_HEIGHT = 16;
 const STANDARD_FOOD_WIDTH = 15;
 
+export const FENCE_SIZE = 16 * RESIZE_BY;
+
+// TODO: remove this
 export const spriteCoordinatesMap: SpriteCoordinatesMap = {
   chicken: {
     [ChickenBreed.orange]: {
@@ -119,18 +110,6 @@ export const spriteCoordinatesMap: SpriteCoordinatesMap = {
       },
     },
   },
-  coop: {
-    x: 213,
-    y: 16,
-    width: 56,
-    height: 50,
-  },
-  trough: {
-    x: 112,
-    y: 83,
-    width: 34,
-    height: 15,
-  },
   food: {
     small: {
       x: 111,
@@ -149,56 +128,6 @@ export const spriteCoordinatesMap: SpriteCoordinatesMap = {
       y: 96,
       width: STANDARD_FOOD_WIDTH,
       height: STANDARD_FOOD_HEIGHT,
-    },
-  },
-  fence: {
-    topLeft: {
-      x: 0,
-      y: 0,
-      width: 4,
-      height: 16,
-    },
-    top: {
-      x: 14,
-      y: 0,
-      width: 20,
-      height: 16,
-    },
-    topRight: {
-      x: 60,
-      y: 0,
-      width: 4,
-      height: 16,
-    },
-    bottomLeft: {
-      x: 0,
-      y: 32,
-      width: 4,
-      height: 16,
-    },
-    sideLeft: {
-      x: 0,
-      y: 16,
-      width: 4,
-      height: 15,
-    },
-    sideRight: {
-      x: 60,
-      y: 16,
-      width: 4,
-      height: 15,
-    },
-    bottomRight: {
-      x: 60,
-      y: 32,
-      width: 4,
-      height: 16,
-    },
-    bottom: {
-      x: 14,
-      y: 32,
-      width: 20,
-      height: 16,
     },
   },
 };
