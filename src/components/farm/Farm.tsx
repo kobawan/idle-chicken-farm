@@ -21,9 +21,6 @@ export const Farm: React.FC = memo(() => {
   //   const newFood = getFood(canvasWidth, canvasHeight, sprites[0]);
   //   dispatch(setChickensAction(newChickens));
   //   dispatch(setFoodAction(newFood));
-
-  //   setStartFadingLoadingPage(true);
-  //   setIsLoading(false);
   // }, []);
 
   return (

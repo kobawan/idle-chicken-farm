@@ -35,8 +35,8 @@ export interface ChickenItems {
 export type FarmItems = ChickenItems & FoodItems;
 
 export enum ChickenBreed {
-  lightbrown = "lightbrown",
-  brown = "brown",
+  lightbrown = "light-brown",
+  brown = "dark-brown",
   orange = "orange",
   white = "white",
 }

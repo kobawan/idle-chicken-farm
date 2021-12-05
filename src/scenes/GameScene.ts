@@ -1,52 +1,58 @@
 import Phaser from "phaser";
-import { getWholeFenceProps } from "../utils/fenceUtils";
-import { FENCE_SIZE } from "../utils/spriteCoordinates";
+import { ChickenFrameIndex, createChickenAnimations } from "../anims/ChickenAnims";
+import { ChickenBreed } from "../types/types";
+
+const TILES = "tiles";
+const TILEMAP = "farm";
+const SPRITE_FILE_NAME = "farm_sprite";
+
+enum Layer {
+  Background = "Background",
+  Ground = "Ground",
+  Fence = "Fence",
+  Coop = "Coop",
+  Trough = "Trough",
+}
 
 export default class GameScene extends Phaser.Scene {
   public preload() {
     this.load.setBaseURL(process.env.PUBLIC_URL);
 
-    this.load.image("background", "assets/farm_bg.png");
-    this.load.image("coop", "assets/coop.png");
-    this.load.image("trough", "assets/trough.png");
-    this.load.spritesheet("fence", "assets/fence.png", {
-      frameWidth: FENCE_SIZE,
-      frameHeight: FENCE_SIZE,
-    });
-    this.load.spritesheet("chickens", "assets/chickens.png", { frameWidth: 16, frameHeight: 16 });
+    this.load.image(TILES, "assets/tiles/farm_sprite.png");
+    this.load.tilemapTiledJSON(TILEMAP, "assets/tiles/farm.json");
+
+    this.load.atlas("chicken", "assets/chickens/chickens.png", "assets/chickens/chickens.json");
   }
 
   public create() {
-    this.addBgImage();
-    this.addFence();
-    this.physics.add.staticImage(
-      Math.floor(this.gameSize.width * 0.2),
-      Math.floor(this.gameSize.height * 0.2),
-      "coop",
+    const map = this.make.tilemap({ key: TILEMAP });
+    const tileset = map.addTilesetImage(SPRITE_FILE_NAME, TILES);
+    map.createLayer(Layer.Background, tileset);
+    map.createLayer(Layer.Ground, tileset);
+    const fenceLayer = map.createLayer(Layer.Fence, tileset);
+    const coopLayer = map.createLayer(Layer.Coop, tileset);
+    const troughLayer = map.createLayer(Layer.Trough, tileset);
+
+    fenceLayer.setCollisionByProperty({ collides: true });
+    coopLayer.setCollisionByProperty({ collides: true });
+    troughLayer.setCollisionByProperty({ collides: true });
+
+    // debugDraw(this, fenceLayer);
+    // debugDraw(this, coopLayer);
+    // debugDraw(this, troughLayer);
+
+    createChickenAnimations(this);
+
+    const orangeChicken = this.physics.add.sprite(
+      this.cameras.main.width / 2,
+      this.cameras.main.height / 2,
+      "chicken",
+      `${ChickenBreed.orange}-right-${ChickenFrameIndex.Standing}.png`,
     );
-    this.physics.add.staticImage(
-      Math.floor(this.gameSize.width * 0.2) + 70,
-      Math.floor(this.gameSize.height * 0.2) + 40,
-      "trough",
-    );
-  }
+    orangeChicken.anims.play(`${ChickenBreed.orange}-walking-right`);
 
-  private get gameSize() {
-    return { width: this.cameras.main.width, height: this.cameras.main.height };
-  }
-
-  private addBgImage() {
-    const image = this.add.image(this.gameSize.width / 2, this.gameSize.height / 2, "background");
-    const scaleX = this.gameSize.width / image.width;
-    const scaleY = this.gameSize.height / image.height;
-    const scale = Math.max(scaleX, scaleY);
-    image.setScale(scale).setScrollFactor(0);
-    return image;
-  }
-
-  private addFence() {
-    const fence = this.physics.add.staticGroup();
-    fence.createMultiple(getWholeFenceProps(this.gameSize.width, this.gameSize.height));
-    return fence;
+    this.physics.add.collider(orangeChicken, fenceLayer);
+    this.physics.add.collider(orangeChicken, coopLayer);
+    this.physics.add.collider(orangeChicken, troughLayer);
   }
 }
